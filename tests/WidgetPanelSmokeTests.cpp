@@ -192,9 +192,9 @@ void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()
     QVERIFY(xLabel != nullptr);
     QVERIFY(probeLabel != nullptr);
     QVERIFY(sampleLabel != nullptr);
-    QCOMPARE(xLabel->text(), QStringLiteral("X 456"));
-    QCOMPARE(probeLabel->text(), QStringLiteral("探针 -58.790 μm"));
-    QCOMPARE(sampleLabel->text(), QStringLiteral("采样 5 / 24"));
+    QCOMPARE(xLabel->text(), QStringLiteral("X: <b>456</b>"));
+    QCOMPARE(probeLabel->text(), QStringLiteral("探针: <b>-58.790</b>"));
+    QCOMPARE(sampleLabel->text(), QStringLiteral("采样: <b>5</b> / 24"));
 }
 
 void WidgetPanelSmokeTests::bottomStatusBarUsesPrototypeMetaStrip()

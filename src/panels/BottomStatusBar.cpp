@@ -2,17 +2,18 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLocale>
 
 #include "theme/Theme.h"
 
 BottomStatusBar::BottomStatusBar(QWidget *parent)
-    : QWidget(parent)
+: QWidget(parent)
 {
     setFixedHeight(28);
 
     auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(12, 0, 12, 0);
-    layout->setSpacing(16);
+    layout->setSpacing(0);
 
     m_probeLabel = new QLabel;
     m_xLabel = new QLabel;
@@ -30,22 +31,46 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_connectionLabel->setObjectName(QStringLiteral("bottomConnectionLabel"));
     m_measureStateLabel->setObjectName(QStringLiteral("bottomMeasureStateLabel"));
 
-    const auto labelStyle = QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().text.name());
-    m_probeLabel->setStyleSheet(labelStyle);
-    m_xLabel->setStyleSheet(labelStyle);
-    m_yLabel->setStyleSheet(labelStyle);
-    m_sampleLabel->setStyleSheet(labelStyle);
-    m_fpsLabel->setStyleSheet(labelStyle);
-    m_connectionLabel->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;}"));
-    m_measureStateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;}"));
+    const auto monoStyle = QStringLiteral("font-size:11px;font-family:Consolas;color:%1;").arg(Theme::palette().text.name());
+    const auto monoMutedStyle = QStringLiteral("font-size:11px;font-family:Consolas;color:%1;").arg(Theme::palette().textMuted.name());
+    m_probeLabel->setStyleSheet(monoStyle);
+    m_xLabel->setStyleSheet(monoStyle);
+    m_yLabel->setStyleSheet(monoStyle);
+    m_sampleLabel->setStyleSheet(monoStyle);
+    m_fpsLabel->setStyleSheet(monoStyle);
+    m_connectionLabel->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
+    m_measureStateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;font-family:Consolas;}"));
+
+    m_probeLabel->setTextFormat(Qt::RichText);
+    m_xLabel->setTextFormat(Qt::RichText);
+    m_yLabel->setTextFormat(Qt::RichText);
+    m_sampleLabel->setTextFormat(Qt::RichText);
+    m_fpsLabel->setTextFormat(Qt::RichText);
 
     layout->addWidget(m_probeLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_xLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_yLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_sampleLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_fpsLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_connectionLabel);
+    layout->addSpacing(8);
     layout->addWidget(m_measureStateLabel);
+    layout->addSpacing(8);
+
+    auto *xAxisPill = new QLabel(QStringLiteral("X 轴正常"));
+    xAxisPill->setObjectName(QStringLiteral("bottomXAxisPill"));
+    xAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;}"));
+    auto *yAxisPill = new QLabel(QStringLiteral("Y 轴正常"));
+    yAxisPill->setObjectName(QStringLiteral("bottomYAxisPill"));
+    yAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;}"));
+    layout->addWidget(xAxisPill);
+    layout->addWidget(yAxisPill);
+
     layout->addStretch();
 
     auto *buildLabel = new QLabel(QStringLiteral("构建 #2026.04.20"));
@@ -56,11 +81,11 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     auto *sep2 = new QLabel(QStringLiteral("|"));
     auto *versionLabel = new QLabel(QStringLiteral("v1.0.1"));
     versionLabel->setObjectName(QStringLiteral("bottomVersionLabel"));
-    buildLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
-    sep1->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
-    userLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
-    sep2->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
-    versionLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    buildLabel->setStyleSheet(monoMutedStyle);
+    sep1->setStyleSheet(monoMutedStyle);
+    userLabel->setStyleSheet(monoMutedStyle);
+    sep2->setStyleSheet(monoMutedStyle);
+    versionLabel->setStyleSheet(monoMutedStyle);
     layout->addWidget(buildLabel);
     layout->addWidget(sep1);
     layout->addWidget(userLabel);
@@ -79,23 +104,23 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
 
 void BottomStatusBar::setPosition(const MachinePosition &position)
 {
-    m_xLabel->setText(QStringLiteral("X %1").arg(position.x));
-    m_yLabel->setText(QStringLiteral("Y %1").arg(position.y));
+    m_xLabel->setText(QStringLiteral("X: <b>%1</b>").arg(QLocale().toString(position.x)));
+    m_yLabel->setText(QStringLiteral("Y: <b>%1</b>").arg(QLocale().toString(position.y)));
 }
 
 void BottomStatusBar::setProbeValue(double probeValue)
 {
-    m_probeLabel->setText(QStringLiteral("探针 %1 μm").arg(QString::number(probeValue, 'f', 3)));
+    m_probeLabel->setText(QStringLiteral("探针: <b>%1</b>").arg(QString::number(probeValue, 'f', 3)));
 }
 
 void BottomStatusBar::setSampleProgress(int current, int total)
 {
-    m_sampleLabel->setText(QStringLiteral("采样 %1 / %2").arg(current).arg(total));
+    m_sampleLabel->setText(QStringLiteral("采样: <b>%1</b> / %2").arg(current).arg(total));
 }
 
 void BottomStatusBar::setFrameRate(double fps)
 {
-    m_fpsLabel->setText(QStringLiteral("FPS %1").arg(QString::number(fps, 'f', 1)));
+    m_fpsLabel->setText(QStringLiteral("FPS: <b>%1</b>").arg(QString::number(fps, 'f', 2)));
 }
 
 void BottomStatusBar::setConnected(bool connected)
