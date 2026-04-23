@@ -30,6 +30,7 @@ private slots:
     void leftRailShowsPrototypeNavigation();
     void leftRailActiveStateMovesWhenButtonClicked();
     void leftRailUsesPrototypeDenseButtons();
+    void leftRailButtonsHaveToolTipsAndPointerCursor();
     void shellUsesCompactHeaderControlSizing();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
@@ -293,6 +294,16 @@ void MainWindowTests::rightColumnPanelsUseFlushStack()
     QVERIFY(servoPanel != nullptr);
     QVERIFY(!sensorPanel->styleSheet().contains(QStringLiteral("border-radius:10px")));
     QVERIFY(servoPanel->styleSheet().contains(QStringLiteral("border-bottom:1px solid")));
+}
+
+void MainWindowTests::leftRailButtonsHaveToolTipsAndPointerCursor()
+{
+    MainWindow window;
+    const auto buttons = window.findChildren<QPushButton*>(QStringLiteral("railCameraButton"));
+    QVERIFY(!buttons.isEmpty());
+    auto *btn = buttons.first();
+    QVERIFY(!btn->toolTip().isEmpty());
+    QCOMPARE(btn->cursor().shape(), Qt::PointingHandCursor);
 }
 
 QTEST_MAIN(MainWindowTests)
