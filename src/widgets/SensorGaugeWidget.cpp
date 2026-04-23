@@ -85,16 +85,18 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
     painter.setPen(Theme::palette().textMuted);
     painter.setFont(QFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold));
     painter.drawText(QRect(44, 12, width() - 56, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
-    painter.setPen(Theme::palette().text);
-    painter.setFont(QFont(QStringLiteral("Consolas"), 18, QFont::DemiBold));
-    painter.drawText(QRect(44, 32, width() - 56, 26), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_value, 'f', 2));
-    const int valWidth = painter.fontMetrics().horizontalAdvance(QString::number(m_value, 'f', 2));
-    painter.setPen(Theme::palette().textMuted);
-    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
-    painter.drawText(QRect(46 + valWidth, 42, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
-    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
-    painter.drawText(QRect(44, 68, width() / 2 - 50, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_min, 'f', 0));
-    painter.drawText(QRect(width() / 2, 68, width() / 2 - 12, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(m_max, 'f', 0));
+painter.setPen(Theme::palette().text);
+QFont valFont(QStringLiteral("Consolas"), 22, QFont::DemiBold);
+valFont.setLetterSpacing(QFont::AbsoluteSpacing, -1);
+painter.setFont(valFont);
+painter.drawText(QRect(44, 28, width() - 56, 28), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_value, 'f', 2));
+const int valWidth = painter.fontMetrics().horizontalAdvance(QString::number(m_value, 'f', 2));
+painter.setPen(Theme::palette().textMuted);
+painter.setFont(QFont(QStringLiteral("Consolas"), 10));
+painter.drawText(QRect(46 + valWidth, 40, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
+painter.setFont(QFont(QStringLiteral("Consolas"), 10));
+painter.drawText(QRect(44, 68, width() / 2 - 50, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_min, 'f', 0));
+painter.drawText(QRect(width() / 2, 68, width() / 2 - 12, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(m_max, 'f', 0));
 }
 
 QSize SensorGaugeWidget::sizeHint() const
