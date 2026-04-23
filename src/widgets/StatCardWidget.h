@@ -9,6 +9,9 @@
 class StatCardWidget : public QWidget
 {
 Q_OBJECT
+Q_PROPERTY(bool small READ isSmall WRITE setSmall NOTIFY smallChanged)
+Q_PROPERTY(int accentWidth READ accentWidth CONSTANT)
+Q_PROPERTY(int borderRadius READ borderRadius CONSTANT)
 
 public:
 explicit StatCardWidget(QWidget *parent = nullptr);
@@ -20,6 +23,7 @@ void setMetaText(const QString &metaText);
 void setAccentColor(const QColor &accentColor);
 void setTarget(const QString &target);
 void setTrend(double trend);
+void setSmall(bool small);
 
 [[nodiscard]] QString label() const;
 [[nodiscard]] QString value() const;
@@ -28,6 +32,11 @@ void setTrend(double trend);
 [[nodiscard]] QColor accentColor() const;
 [[nodiscard]] QString target() const;
 [[nodiscard]] double trend() const;
+[[nodiscard]] bool isSmall() const;
+[[nodiscard]] int accentWidth() const;
+[[nodiscard]] int borderRadius() const;
+
+Q_SIGNAL void smallChanged();
 
 protected:
 void paintEvent(QPaintEvent *event) override;
@@ -41,4 +50,5 @@ QString m_metaText;
 QColor m_accentColor;
 QString m_target;
 double m_trend = 0.0;
+bool m_small = false;
 };

@@ -18,6 +18,7 @@
 #include "theme/Theme.h"
 #include "widgets/DpadControlWidget.h"
 #include "widgets/LedIndicatorWidget.h"
+#include "widgets/StatCardWidget.h"
 
 class WidgetPanelSmokeTests : public QObject
 {
@@ -45,6 +46,8 @@ private slots:
     void measureModeTabsMoveActiveStateWhenClicked();
     void ledIndicatorDrawsGlowRingPerState();
     void ledIndicatorErrStateBlinks();
+  void statCardUsesConsolasValueFontAndInlineUnit();
+  void statCardSmallVariantUsesSmallerValueFont();
 };
 
 void WidgetPanelSmokeTests::dpadClickEmitsJogSignal()
@@ -377,6 +380,41 @@ void WidgetPanelSmokeTests::ledIndicatorErrStateBlinks()
 
     led.setState(LedIndicatorWidget::State::Ok);
     QVERIFY(!led.property("blinking").toBool());
+}
+
+void WidgetPanelSmokeTests::statCardUsesConsolasValueFontAndInlineUnit()
+{
+    StatCardWidget card;
+    card.setLabel(QStringLiteral("THK"));
+    card.setValue(QStringLiteral("11.500"));
+    card.setUnit(QStringLiteral("μm"));
+    card.resize(160, 80);
+    card.show();
+    QCoreApplication::processEvents();
+
+    QPixmap pixmap(card.size());
+    card.render(&pixmap);
+    QImage img = pixmap.toImage();
+
+    QVERIFY(!img.isNull());
+
+    QCOMPARE(card.property("small").toBool(), false);
+    QVERIFY(card.property("accentWidth").toInt() == 3);
+    QVERIFY(card.property("borderRadius").toInt() == 6);
+}
+
+void WidgetPanelSmokeTests::statCardSmallVariantUsesSmallerValueFont()
+{
+    StatCardWidget card;
+    card.setProperty("small", true);
+    card.setLabel(QStringLiteral("MAX"));
+    card.setValue(QStringLiteral("11.823"));
+    card.setUnit(QStringLiteral("μm"));
+    card.resize(160, 80);
+    card.show();
+    QCoreApplication::processEvents();
+
+    QCOMPARE(card.property("small").toBool(), true);
 }
 
 QTEST_MAIN(WidgetPanelSmokeTests)
