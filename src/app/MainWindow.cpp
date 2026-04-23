@@ -472,12 +472,12 @@ QWidget *MainWindow::createCameraPanel()
     header->rightLayout()->addWidget(batchLabel);
     header->rightLayout()->addWidget(batchInput);
     header->rightLayout()->addWidget(pauseButton);
-    header->rightLayout()->addWidget(expandButton);
-    layout->addWidget(header);
+header->rightLayout()->addWidget(expandButton);
+layout->addWidget(header);
 
-    auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
-    m_cameraView = new CameraViewWidget;
+auto *body = new QVBoxLayout;
+body->setContentsMargins(0, 0, 0, 0);
+m_cameraView = new CameraViewWidget;
     m_cameraView->setObjectName(QStringLiteral("cameraView"));
     body->addWidget(m_cameraView, 1);
     layout->addLayout(body);

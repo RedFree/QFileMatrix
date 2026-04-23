@@ -150,14 +150,17 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
     painter.setPen(QPen(QColor(110, 255, 180), 1));
     painter.drawLine(center.x(), 0, center.x(), height());
     painter.drawLine(0, center.y(), width(), center.y());
-    painter.drawEllipse(center, 10, 10);
+painter.drawEllipse(center, 9, 9);
 
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(6, 12, 22, 180));
-    painter.drawRoundedRect(QRect(10, 10, 248, 24), 4, 4);
-    painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
-    painter.setPen(Qt::white);
-    painter.drawText(QRect(16, 10, 238, 24), Qt::AlignVCenter | Qt::AlignLeft,
+painter.setPen(Qt::NoPen);
+painter.setBrush(QColor(6, 12, 22, 180));
+painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
+painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
+painter.setPen(Qt::white);
+painter.setBrush(QColor(80, 200, 120));
+painter.drawEllipse(QPointF(24, 22), 4, 4);
+painter.setBrush(Qt::NoBrush);
+painter.drawText(QRect(32, 10, 238, 24), Qt::AlignVCenter | Qt::AlignLeft,
                      QStringLiteral("CAM-01 · %1 · %2 FPS · 2560x1590")
                          .arg(m_paused ? QStringLiteral("PAUSED") : QStringLiteral("LIVE"))
                          .arg(QString::number(m_frameRate, 'f', 2)));
