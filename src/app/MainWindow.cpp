@@ -238,20 +238,20 @@ QWidget *MainWindow::createLeftRail()
         const char *tooltip;
         bool active;
     } navButtons[] = {
-        {"railCameraButton", "CAM", "相机", true},
-        {"railCurveButton", "CRV", "曲线", false},
-        {"railServoButton", "XY", "伺服", false},
-        {"railHistoryButton", "REC", "记录", false},
-        {"railStatsButton", "STA", "统计", false},
-        {"railGaugeButton", "GAG", "仪表", false},
+        {"railCameraButton", "相", "相机", true},
+        {"railCurveButton", "曲", "曲线", false},
+        {"railServoButton", "伺", "伺服", false},
+        {"railHistoryButton", "记", "记录", false},
+        {"railStatsButton", "统", "统计", false},
+        {"railGaugeButton", "仪", "仪表", false},
     };
 
     QList<QPushButton*> navButtonWidgets;
     for (const auto &spec : navButtons) {
-        auto *button = new QPushButton(QString::fromLatin1(spec.label));
+        auto *button = new QPushButton(QString::fromUtf8(spec.label));
         button->setObjectName(QString::fromLatin1(spec.name));
         button->setToolTip(QString::fromUtf8(spec.tooltip));
-        button->setFixedSize(36, 36);
+        button->setFixedSize(40, 40);
         button->setCursor(Qt::PointingHandCursor);
         button->setProperty("active", spec.active);
         button->setStyleSheet(Theme::railButtonStyle(spec.active));
@@ -271,18 +271,18 @@ QWidget *MainWindow::createLeftRail()
 
     layout->addStretch();
 
-    auto *settingsButton = new QPushButton(QStringLiteral("CFG"));
+    auto *settingsButton = new QPushButton(QStringLiteral("设"));
     settingsButton->setObjectName(QStringLiteral("railSettingsButton"));
     settingsButton->setToolTip(QStringLiteral("设置"));
-    settingsButton->setFixedSize(36, 36);
+    settingsButton->setFixedSize(40, 40);
     settingsButton->setCursor(Qt::PointingHandCursor);
     settingsButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(settingsButton);
 
-    auto *userButton = new QPushButton(QStringLiteral("USR"));
+    auto *userButton = new QPushButton(QStringLiteral("人"));
     userButton->setObjectName(QStringLiteral("railUserButton"));
     userButton->setToolTip(QStringLiteral("用户"));
-    userButton->setFixedSize(36, 36);
+    userButton->setFixedSize(40, 40);
     userButton->setCursor(Qt::PointingHandCursor);
     userButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(userButton);
@@ -300,7 +300,7 @@ QWidget *MainWindow::createCameraPanel()
 
     auto *header = new QHBoxLayout;
     header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(8);
+    header->setSpacing(6);
     auto *title = new QLabel(QStringLiteral("实时图像 · CAM-01"));
     title->setObjectName(QStringLiteral("cameraPanelTitleLabel"));
     title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
@@ -310,24 +310,24 @@ QWidget *MainWindow::createCameraPanel()
     auto *programLabel = new QLabel(QStringLiteral("程序号"));
     auto *programInput = new QLineEdit(QStringLiteral("1010"));
     programInput->setObjectName(QStringLiteral("cameraProgramInput"));
-    programInput->setFixedWidth(54);
-    programInput->setFixedHeight(26);
+    programInput->setFixedWidth(50);
+    programInput->setFixedHeight(24);
     auto *batchLabel = new QLabel(QStringLiteral("批号"));
     auto *batchInput = new QLineEdit(QStringLiteral("3"));
     batchInput->setObjectName(QStringLiteral("cameraBatchInput"));
-    batchInput->setFixedWidth(40);
-    batchInput->setFixedHeight(26);
+    batchInput->setFixedWidth(30);
+    batchInput->setFixedHeight(24);
     auto *pauseButton = new QPushButton(QStringLiteral("暂停"));
     pauseButton->setObjectName(QStringLiteral("cameraPauseButton"));
-    pauseButton->setFixedHeight(26);
+    pauseButton->setFixedHeight(24);
     auto *expandButton = new QPushButton(QStringLiteral("展开"));
     expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
-    expandButton->setFixedHeight(26);
+    expandButton->setFixedHeight(24);
     const auto fieldStyle = QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
                                 .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
     programInput->setStyleSheet(fieldStyle);
     batchInput->setStyleSheet(fieldStyle);
-    const auto buttonStyle = QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:5px 10px;color:%3;font-size:11px;}"
+    const auto buttonStyle = QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
                                             "QPushButton:hover{background:%4;}")
                                  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name());
     pauseButton->setStyleSheet(buttonStyle);
@@ -359,7 +359,7 @@ QWidget *MainWindow::createProfilePanel()
 
     auto *header = new QHBoxLayout;
     header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(8);
+    header->setSpacing(6);
     auto *title = new QLabel(QStringLiteral("膜厚轮廓曲线"));
     title->setObjectName(QStringLiteral("profilePanelTitleLabel"));
     title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
@@ -370,7 +370,7 @@ QWidget *MainWindow::createProfilePanel()
     scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
     scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
     scaleCombo->setFixedWidth(68);
-    scaleCombo->setFixedHeight(26);
+    scaleCombo->setFixedHeight(24);
     scaleCombo->setStyleSheet(QStringLiteral("QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
                                              "QComboBox::drop-down{border:none;width:18px;}")
                                  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));

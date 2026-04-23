@@ -21,7 +21,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
 
     auto *header = new QHBoxLayout;
     header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(8);
+    header->setSpacing(6);
     m_titleLabel = new QLabel(QStringLiteral("测量记录 · 0 条"));
     m_titleLabel->setObjectName(QStringLiteral("historyTitleLabel"));
     m_titleLabel->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
@@ -32,7 +32,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     search->setObjectName(QStringLiteral("historySearchInput"));
     search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
     search->setFixedWidth(150);
-    search->setFixedHeight(26);
+    search->setFixedHeight(24);
     search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
                               .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
     header->addWidget(search);
@@ -40,8 +40,8 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     const auto makeToolButton = [](const QString &name, const QString &text) {
         auto *button = new QPushButton(text);
         button->setObjectName(name);
-        button->setFixedHeight(26);
-        button->setStyleSheet(QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:5px 10px;color:%3;font-size:11px;}"
+        button->setFixedHeight(24);
+        button->setStyleSheet(QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
                                              "QPushButton:hover{background:%4;}")
                                   .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name()));
         return button;

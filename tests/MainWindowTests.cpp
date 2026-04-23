@@ -25,6 +25,7 @@ private slots:
     void historyPanelShowsPrototypeToolbar();
     void leftRailShowsPrototypeNavigation();
     void leftRailActiveStateMovesWhenButtonClicked();
+    void leftRailUsesPrototypeDenseButtons();
     void shellUsesCompactHeaderControlSizing();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
@@ -157,28 +158,48 @@ void MainWindowTests::leftRailActiveStateMovesWhenButtonClicked()
     QCOMPARE(curveButton->property("active").toBool(), true);
 }
 
+void MainWindowTests::leftRailUsesPrototypeDenseButtons()
+{
+    MainWindow window;
+    auto *cameraButton = window.findChild<QPushButton*>(QStringLiteral("railCameraButton"));
+    auto *curveButton = window.findChild<QPushButton*>(QStringLiteral("railCurveButton"));
+    auto *settingsButton = window.findChild<QPushButton*>(QStringLiteral("railSettingsButton"));
+    QVERIFY(cameraButton != nullptr);
+    QVERIFY(curveButton != nullptr);
+    QVERIFY(settingsButton != nullptr);
+
+    QCOMPARE(cameraButton->size(), QSize(40, 40));
+    QCOMPARE(curveButton->size(), QSize(40, 40));
+    QCOMPARE(settingsButton->size(), QSize(40, 40));
+    QVERIFY(cameraButton->text().size() <= 2);
+    QVERIFY(curveButton->text().size() <= 2);
+}
+
 void MainWindowTests::shellUsesCompactHeaderControlSizing()
 {
     MainWindow window;
     auto *railButton = window.findChild<QPushButton*>(QStringLiteral("railCameraButton"));
     auto *programInput = window.findChild<QLineEdit*>(QStringLiteral("cameraProgramInput"));
+    auto *batchInput = window.findChild<QLineEdit*>(QStringLiteral("cameraBatchInput"));
     auto *pauseButton = window.findChild<QPushButton*>(QStringLiteral("cameraPauseButton"));
     auto *scaleCombo = window.findChild<QComboBox*>(QStringLiteral("profileScaleCombo"));
     auto *searchInput = window.findChild<QLineEdit*>(QStringLiteral("historySearchInput"));
     auto *filterButton = window.findChild<QPushButton*>(QStringLiteral("historyFilterButton"));
     QVERIFY(railButton != nullptr);
     QVERIFY(programInput != nullptr);
+    QVERIFY(batchInput != nullptr);
     QVERIFY(pauseButton != nullptr);
     QVERIFY(scaleCombo != nullptr);
     QVERIFY(searchInput != nullptr);
     QVERIFY(filterButton != nullptr);
 
-    QCOMPARE(railButton->size(), QSize(36, 36));
-    QCOMPARE(programInput->height(), 26);
-    QCOMPARE(pauseButton->height(), 26);
-    QCOMPARE(scaleCombo->height(), 26);
-    QCOMPARE(searchInput->height(), 26);
-    QCOMPARE(filterButton->height(), 26);
+    QCOMPARE(railButton->size(), QSize(40, 40));
+    QCOMPARE(programInput->height(), 24);
+    QCOMPARE(batchInput->width(), 30);
+    QCOMPARE(pauseButton->height(), 24);
+    QCOMPARE(scaleCombo->height(), 24);
+    QCOMPARE(searchInput->height(), 24);
+    QCOMPARE(filterButton->height(), 24);
 }
 
 void MainWindowTests::historyTableUsesDenseRowSizing()
