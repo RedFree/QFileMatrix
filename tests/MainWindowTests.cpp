@@ -18,6 +18,7 @@ private slots:
     void manualSampleButtonPrependsHistoryRow();
     void selectingHistoryRowRefreshesThicknessCard();
     void currentGroupPanelShowsPrototypeFields();
+    void currentGroupPanelUsesCompactStatCards();
     void cameraPanelShowsPrototypeHeaderControls();
     void profilePanelShowsPrototypeHeaderControls();
     void historyPanelShowsPrototypeToolbar();
@@ -76,6 +77,18 @@ void MainWindowTests::currentGroupPanelShowsPrototypeFields()
     QVERIFY(window.findChild<QLabel*>(QStringLiteral("currentGroupVerdictLabel")) != nullptr);
     QVERIFY(window.findChild<StatCardWidget*>(QStringLiteral("leftHeightCard")) != nullptr);
     QVERIFY(window.findChild<StatCardWidget*>(QStringLiteral("rightHeightCard")) != nullptr);
+}
+
+void MainWindowTests::currentGroupPanelUsesCompactStatCards()
+{
+    MainWindow window;
+    auto *thicknessCard = window.findChild<StatCardWidget*>(QStringLiteral("thicknessCard"));
+    auto *maxCard = window.findChild<StatCardWidget*>(QStringLiteral("maxCard"));
+    QVERIFY(thicknessCard != nullptr);
+    QVERIFY(maxCard != nullptr);
+
+    QVERIFY(thicknessCard->minimumHeight() <= 84);
+    QVERIFY(maxCard->minimumHeight() <= 84);
 }
 
 void MainWindowTests::cameraPanelShowsPrototypeHeaderControls()

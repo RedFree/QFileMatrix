@@ -1,5 +1,6 @@
 #include "widgets/StatCardWidget.h"
 
+#include <QFont>
 #include <QPainter>
 
 #include "theme/Theme.h"
@@ -8,7 +9,7 @@ StatCardWidget::StatCardWidget(QWidget *parent)
     : QWidget(parent)
     , m_accentColor(Theme::palette().brand)
 {
-    setMinimumHeight(88);
+    setMinimumHeight(80);
 }
 
 void StatCardWidget::setLabel(const QString &label)
@@ -72,20 +73,21 @@ void StatCardWidget::paintEvent(QPaintEvent *event)
     painter.setPen(Theme::palette().border);
     painter.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 10, 10);
     painter.setPen(Theme::palette().textMuted);
-    painter.drawText(QRect(12, 10, width() - 24, 18), Qt::AlignLeft | Qt::AlignVCenter, m_label);
+    painter.setFont(QFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold));
+    painter.drawText(QRect(12, 9, width() - 24, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
     painter.setPen(m_accentColor);
-    painter.setFont(QFont(QStringLiteral("Segoe UI"), 18, QFont::DemiBold));
-    painter.drawText(QRect(12, 30, width() - 24, 28), Qt::AlignLeft | Qt::AlignVCenter, m_value);
+    painter.setFont(QFont(QStringLiteral("Segoe UI"), 16, QFont::DemiBold));
+    painter.drawText(QRect(12, 26, width() - 24, 24), Qt::AlignLeft | Qt::AlignVCenter, m_value);
     painter.setPen(Theme::palette().textMuted);
     painter.setFont(QFont(QStringLiteral("Segoe UI"), 9));
-    painter.drawText(QRect(12, 56, width() - 24, 16), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
+    painter.drawText(QRect(12, 48, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
     if (!m_metaText.isEmpty()) {
         painter.setPen(Theme::palette().text);
-        painter.drawText(QRect(12, 72, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, m_metaText);
+        painter.drawText(QRect(12, 62, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, m_metaText);
     }
 }
 
 QSize StatCardWidget::sizeHint() const
 {
-    return QSize(160, 88);
+    return QSize(156, 80);
 }
