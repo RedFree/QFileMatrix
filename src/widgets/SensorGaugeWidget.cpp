@@ -1,5 +1,7 @@
 #include "widgets/SensorGaugeWidget.h"
 
+#include <QFont>
+#include <QLinearGradient>
 #include <QPainter>
 
 #include "theme/Theme.h"
@@ -60,23 +62,39 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
 
     const QRect barRect(12, 12, 18, height() - 24);
     painter.setPen(Theme::palette().border);
-    painter.drawRect(barRect);
+    painter.drawRoundedRect(barRect, 3, 3);
     painter.fillRect(barRect.adjusted(1, 1, -1, -1), Theme::palette().bgSunken);
+
+    const double ticks[] = {0.0, 0.25, 0.5, 0.75, 1.0};
+    for (double t : ticks) {
+        const int y = barRect.bottom() - static_cast<int>(t * barRect.height());
+        painter.setPen(QPen(Theme::palette().border, 1));
+        painter.setOpacity(t == 0.5 ? 1.0 : 0.55);
+        painter.drawLine(QPoint(barRect.left(), y), QPoint(barRect.right(), y));
+    }
+    painter.setOpacity(1.0);
 
     const double clamped = qBound(0.0, (m_value - m_min) / (m_max - m_min), 1.0);
     const int fillHeight = static_cast<int>((barRect.height() - 4) * clamped);
     const QRect fillRect(barRect.left() + 2, barRect.bottom() - fillHeight - 1, barRect.width() - 4, fillHeight);
-    painter.fillRect(fillRect, Theme::palette().brand);
+    QLinearGradient gradient(fillRect.bottomLeft(), fillRect.topLeft());
+    gradient.setColorAt(0.0, Theme::palette().brand);
+    gradient.setColorAt(1.0, QColor(106, 139, 230));
+    painter.fillRect(fillRect, gradient);
 
     painter.setPen(Theme::palette().textMuted);
-    painter.drawText(QRect(44, 12, width() - 56, 18), Qt::AlignLeft | Qt::AlignVCenter, m_label);
+    painter.setFont(QFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold));
+    painter.drawText(QRect(44, 12, width() - 56, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
     painter.setPen(Theme::palette().text);
-    painter.setFont(QFont(QStringLiteral("Segoe UI"), 16, QFont::DemiBold));
-    painter.drawText(QRect(44, 34, width() - 56, 26), Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("%1 %2").arg(QString::number(m_value, 'f', 2), m_unit));
+    painter.setFont(QFont(QStringLiteral("Consolas"), 18, QFont::DemiBold));
+    painter.drawText(QRect(44, 32, width() - 56, 26), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_value, 'f', 2));
+    const int valWidth = painter.fontMetrics().horizontalAdvance(QString::number(m_value, 'f', 2));
     painter.setPen(Theme::palette().textMuted);
-    painter.setFont(QFont(QStringLiteral("Segoe UI"), 9));
-    painter.drawText(QRect(44, 68, width() - 56, 18), Qt::AlignLeft | Qt::AlignVCenter,
-                     QStringLiteral("%1 .. %2").arg(QString::number(m_min, 'f', 0), QString::number(m_max, 'f', 0)));
+    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
+    painter.drawText(QRect(46 + valWidth, 42, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
+    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
+    painter.drawText(QRect(44, 68, width() / 2 - 50, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_min, 'f', 0));
+    painter.drawText(QRect(width() / 2, 68, width() / 2 - 12, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(m_max, 'f', 0));
 }
 
 QSize SensorGaugeWidget::sizeHint() const
