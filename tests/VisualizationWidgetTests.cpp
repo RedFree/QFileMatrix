@@ -12,6 +12,7 @@ private slots:
     void cameraViewTracksCrosshairPosition();
     void cameraViewStoresPrototypeHudTelemetry();
     void profileChartStoresProfileData();
+    void profileChartHasAxisLabelMargins();
 };
 
 void VisualizationWidgetTests::cameraViewTracksCrosshairPosition()
@@ -47,6 +48,13 @@ void VisualizationWidgetTests::profileChartStoresProfileData()
     widget.setProfile(profile);
 
     QCOMPARE(widget.profile().size(), profile.size());
+}
+
+void VisualizationWidgetTests::profileChartHasAxisLabelMargins()
+{
+    ProfileChartWidget widget;
+    widget.resize(560, 320);
+    QVERIFY(widget.minimumSize().width() >= 420);
 }
 
 QTEST_MAIN(VisualizationWidgetTests)

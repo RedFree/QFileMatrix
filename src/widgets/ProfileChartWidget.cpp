@@ -1,5 +1,6 @@
 #include "widgets/ProfileChartWidget.h"
 
+#include <QFont>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -57,6 +58,17 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.drawLine(QPointF(xToPixel(gx), plot.top()), QPointF(xToPixel(gx), plot.bottom()));
     }
 
+    painter.setPen(Theme::palette().textMuted);
+    painter.setFont(QFont(QStringLiteral("Consolas"), 8));
+    for (double gy : {0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
+        const double py = yToPixel(gy);
+        painter.drawText(QRectF(0, py - 8, plot.left() - 4, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(static_cast<int>(gy)));
+    }
+    for (double gx : {0.0, 250.0, 500.0, 750.0, 1000.0, 1250.0}) {
+        const double px = xToPixel(gx);
+        painter.drawText(QRectF(px - 20, plot.bottom() + 2, 40, 14), Qt::AlignHCenter | Qt::AlignTop, QString::number(static_cast<int>(gx)));
+    }
+
     for (const auto &band : m_bands) {
         const QRectF bandRect(xToPixel(band.x), plot.top(), xToPixel(band.x + band.width) - xToPixel(band.x), plot.height());
         painter.fillRect(bandRect, band.fill);
@@ -66,7 +78,11 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
     }
 
     painter.setPen(QPen(Theme::palette().ok, 1, Qt::DashLine));
-    painter.drawLine(QPointF(plot.left(), yToPixel(11.5)), QPointF(plot.right(), yToPixel(11.5)));
+    const double targetY = yToPixel(11.5);
+    painter.drawLine(QPointF(plot.left(), targetY), QPointF(plot.right(), targetY));
+    painter.setPen(Theme::palette().ok);
+    painter.setFont(QFont(QStringLiteral("Consolas"), 7));
+    painter.drawText(QRectF(plot.left() - 38, targetY - 7, 34, 14), Qt::AlignRight | Qt::AlignVCenter, QStringLiteral("11.5"));
 
     if (!m_profile.isEmpty()) {
         QPainterPath path;
