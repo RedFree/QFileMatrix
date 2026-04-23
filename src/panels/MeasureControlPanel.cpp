@@ -77,8 +77,13 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     m_sampleCount = new QSpinBox;
     m_sampleCount->setRange(1, 999);
     m_sampleCount->setValue(5);
+    m_sampleCount->setStyleSheet(QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;text-align:right;min-width:50px;max-height:22px;}"
+        "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}")
+        .arg(Theme::palette().border.name(), Theme::palette().bgPanel.name(), Theme::palette().text.name()));
     sampleRow->addWidget(m_sampleCount);
-    sampleRow->addWidget(new QLabel(QStringLiteral("次")));
+    auto *unitLabel = new QLabel(QStringLiteral("次"));
+    unitLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    sampleRow->addWidget(unitLabel);
     sampleRow->addStretch();
     body->addLayout(sampleRow);
     connect(m_sampleCount, &QSpinBox::valueChanged, this, &MeasureControlPanel::sampleCountChanged);
