@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QSplitter>
 #include <QVBoxLayout>
 
@@ -57,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
     updateFromController();
     resize(1520, 940);
     setWindowTitle(QStringLiteral("工业软件测量系统"));
+    setWindowState(windowState() | Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
@@ -120,11 +122,24 @@ void MainWindow::buildUi()
     m_measurePanel = new MeasureControlPanel;
     m_measurePanel->setObjectName(QStringLiteral("measureControlPanel"));
     m_servoPanel = new ServoControlPanel;
-    rightLayout->addWidget(makeBodyPanel(m_sensorPanel));
-    rightLayout->addWidget(makeBodyPanel(m_measurePanel));
-    rightLayout->addWidget(makeBodyPanel(m_servoPanel));
+    auto *sensorWrap = makeBodyPanel(m_sensorPanel);
+    auto *measureWrap = makeBodyPanel(m_measurePanel);
+    auto *servoWrap = makeBodyPanel(m_servoPanel);
+    sensorWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    measureWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    servoWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    rightLayout->addWidget(sensorWrap);
+    rightLayout->addWidget(measureWrap);
+    rightLayout->addWidget(servoWrap);
     rightLayout->addStretch();
-    bodySplitter->addWidget(rightPanel);
+
+    auto *rightScrollArea = new QScrollArea;
+    rightScrollArea->setObjectName(QStringLiteral("rightControlScrollArea"));
+    rightScrollArea->setFrameShape(QFrame::NoFrame);
+    rightScrollArea->setWidgetResizable(true);
+    rightScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    rightScrollArea->setWidget(rightPanel);
+    bodySplitter->addWidget(rightScrollArea);
 
     bodySplitter->setStretchFactor(0, 0);
     bodySplitter->setStretchFactor(1, 1);

@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QScrollArea>
 #include <QtTest/QTest>
 
 #include "app/MainWindow.h"
@@ -27,6 +28,8 @@ private slots:
     void shellUsesCompactHeaderControlSizing();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
+    void mainWindowStartsMaximized();
+    void rightControlColumnUsesScrollContainer();
 };
 
 void MainWindowTests::mainWindowBuildsPrimaryRegions()
@@ -192,6 +195,25 @@ void MainWindowTests::mainWindowUsesRenamedSoftwareTitle()
     MainWindow window;
 
     QCOMPARE(window.windowTitle(), QStringLiteral("工业软件测量系统"));
+}
+
+void MainWindowTests::mainWindowStartsMaximized()
+{
+    MainWindow window;
+    window.show();
+    QCoreApplication::processEvents();
+
+    QVERIFY(window.isMaximized());
+}
+
+void MainWindowTests::rightControlColumnUsesScrollContainer()
+{
+    MainWindow window;
+
+    auto *scrollArea = window.findChild<QScrollArea*>(QStringLiteral("rightControlScrollArea"));
+    QVERIFY(scrollArea != nullptr);
+    QCOMPARE(scrollArea->widgetResizable(), true);
+    QCOMPARE(scrollArea->horizontalScrollBarPolicy(), Qt::ScrollBarAlwaysOff);
 }
 
 QTEST_MAIN(MainWindowTests)
