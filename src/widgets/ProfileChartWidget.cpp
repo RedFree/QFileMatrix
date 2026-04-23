@@ -50,10 +50,16 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
     painter.fillRect(rect(), Theme::palette().bgPanel);
 
     const QRectF plot = plotRect();
-    painter.setPen(QPen(Theme::palette().divider, 1));
+    painter.setPen(QPen(Theme::palette().divider, 1, Qt::DotLine));
     for (double gy : {-20.0, 0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
+        if (gy == 0.0) {
+            painter.setPen(QPen(Theme::palette().divider, 1, Qt::SolidLine));
+        } else {
+            painter.setPen(QPen(Theme::palette().divider, 1, Qt::DotLine));
+        }
         painter.drawLine(QPointF(plot.left(), yToPixel(gy)), QPointF(plot.right(), yToPixel(gy)));
     }
+    painter.setPen(QPen(Theme::palette().divider, 1, Qt::DotLine));
     for (double gx : {0.0, 250.0, 500.0, 750.0, 1000.0, 1250.0}) {
         painter.drawLine(QPointF(xToPixel(gx), plot.top()), QPointF(xToPixel(gx), plot.bottom()));
     }
@@ -128,10 +134,16 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.drawEllipse(QPointF(xToPixel(m_hoverPoint.x()), yToPixel(m_hoverPoint.y())), 3, 3);
         painter.setBrush(QColor("#FFFFFF"));
         painter.setPen(Theme::palette().border);
-        painter.drawRoundedRect(QRectF(width() - 124, 10, 114, 22), 4, 4);
-        painter.setPen(Theme::palette().text);
-        painter.drawText(QRectF(width() - 118, 10, 108, 22), Qt::AlignVCenter | Qt::AlignLeft,
-                         QStringLiteral("X %1  Y %2").arg(QString::number(m_hoverPoint.x(), 'f', 0), QString::number(m_hoverPoint.y(), 'f', 2)));
+        painter.drawRoundedRect(QRectF(width() - 180, 10, 170, 22), 4, 4);
+        painter.setPen(Theme::palette().textMuted);
+        painter.setFont(QFont(QStringLiteral("Consolas"), 10));
+        painter.drawText(QRectF(width() - 174, 10, 164, 22), Qt::AlignVCenter | Qt::AlignLeft,
+            QStringLiteral("X: %1 px  Y: ").arg(QString::number(m_hoverPoint.x(), 'f', 0)));
+        const auto xPartWidth = painter.fontMetrics().horizontalAdvance(
+            QStringLiteral("X: %1 px  Y: ").arg(QString::number(m_hoverPoint.x(), 'f', 0)));
+        painter.setPen(QColor("#C44A38"));
+        painter.drawText(QRectF(width() - 174 + xPartWidth, 10, 164 - xPartWidth, 22), Qt::AlignVCenter | Qt::AlignLeft,
+            QStringLiteral("%1 μm").arg(QString::number(m_hoverPoint.y(), 'f', 3)));
     }
 }
 
