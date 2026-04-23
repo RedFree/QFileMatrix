@@ -32,6 +32,7 @@ private slots:
     void deviceStatusBarExposesActionButtons();
     void deviceStatusBarUsesCompactPrototypeLayout();
     void bottomStatusBarUpdatesTelemetry();
+    void bottomStatusBarUsesPrototypeMetaStrip();
     void sensorPanelExposesPrototypeFields();
     void measurePanelExposesPrototypeControls();
     void rightPanelsUseCompactPrototypeSpacing();
@@ -192,6 +193,23 @@ void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()
     QCOMPARE(xLabel->text(), QStringLiteral("X 456"));
     QCOMPARE(probeLabel->text(), QStringLiteral("探针 -58.790 μm"));
     QCOMPARE(sampleLabel->text(), QStringLiteral("采样 5 / 24"));
+}
+
+void WidgetPanelSmokeTests::bottomStatusBarUsesPrototypeMetaStrip()
+{
+    BottomStatusBar bar;
+
+    auto *buildLabel = bar.findChild<QLabel*>(QStringLiteral("bottomBuildLabel"));
+    auto *userLabel = bar.findChild<QLabel*>(QStringLiteral("bottomUserLabel"));
+    auto *versionLabel = bar.findChild<QLabel*>(QStringLiteral("bottomVersionLabel"));
+    QVERIFY(buildLabel != nullptr);
+    QVERIFY(userLabel != nullptr);
+    QVERIFY(versionLabel != nullptr);
+
+    QCOMPARE(bar.height(), 28);
+    QCOMPARE(buildLabel->text(), QStringLiteral("构建 #2026.04.20"));
+    QCOMPARE(userLabel->text(), QStringLiteral("用户: HXS"));
+    QCOMPARE(versionLabel->text(), QStringLiteral("v1.0.1"));
 }
 
 void WidgetPanelSmokeTests::sensorPanelExposesPrototypeFields()

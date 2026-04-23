@@ -8,8 +8,10 @@
 BottomStatusBar::BottomStatusBar(QWidget *parent)
     : QWidget(parent)
 {
+    setFixedHeight(28);
+
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(12, 4, 12, 4);
+    layout->setContentsMargins(12, 0, 12, 0);
     layout->setSpacing(16);
 
     m_probeLabel = new QLabel;
@@ -46,12 +48,23 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     layout->addWidget(m_measureStateLabel);
     layout->addStretch();
 
-    auto *userLabel = new QLabel(QStringLiteral("HXS · 操作员"));
-    auto *versionLabel = new QLabel(QStringLiteral("工业软件测量系统 v0.1 / build 20260423"));
+    auto *buildLabel = new QLabel(QStringLiteral("构建 #2026.04.20"));
+    buildLabel->setObjectName(QStringLiteral("bottomBuildLabel"));
+    auto *sep1 = new QLabel(QStringLiteral("|"));
+    auto *userLabel = new QLabel(QStringLiteral("用户: HXS"));
+    userLabel->setObjectName(QStringLiteral("bottomUserLabel"));
+    auto *sep2 = new QLabel(QStringLiteral("|"));
+    auto *versionLabel = new QLabel(QStringLiteral("v1.0.1"));
     versionLabel->setObjectName(QStringLiteral("bottomVersionLabel"));
+    buildLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    sep1->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
     userLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    sep2->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
     versionLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    layout->addWidget(buildLabel);
+    layout->addWidget(sep1);
     layout->addWidget(userLabel);
+    layout->addWidget(sep2);
     layout->addWidget(versionLabel);
 
     setStyleSheet(QStringLiteral("background:%1;border-top:1px solid %2;").arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
