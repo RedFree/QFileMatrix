@@ -171,8 +171,10 @@ void MainWindowTests::leftRailUsesPrototypeDenseButtons()
     QCOMPARE(cameraButton->size(), QSize(40, 40));
     QCOMPARE(curveButton->size(), QSize(40, 40));
     QCOMPARE(settingsButton->size(), QSize(40, 40));
-    QVERIFY(cameraButton->text().size() <= 2);
-    QVERIFY(curveButton->text().size() <= 2);
+    QVERIFY(cameraButton->text().isEmpty());
+    QVERIFY(curveButton->text().isEmpty());
+    QCOMPARE(cameraButton->property("railIcon").toString(), QStringLiteral("camera"));
+    QCOMPARE(curveButton->property("railIcon").toString(), QStringLiteral("curve"));
 }
 
 void MainWindowTests::shellUsesCompactHeaderControlSizing()
