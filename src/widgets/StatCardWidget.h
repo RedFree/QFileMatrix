@@ -23,6 +23,7 @@ public:
     [[nodiscard]] QString value() const;
     [[nodiscard]] QString unit() const;
     [[nodiscard]] QString metaText() const;
+    [[nodiscard]] QColor accentColor() const;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

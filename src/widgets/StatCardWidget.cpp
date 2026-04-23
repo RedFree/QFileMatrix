@@ -62,6 +62,11 @@ QString StatCardWidget::metaText() const
     return m_metaText;
 }
 
+QColor StatCardWidget::accentColor() const
+{
+    return m_accentColor;
+}
+
 void StatCardWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)

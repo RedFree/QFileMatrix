@@ -566,6 +566,9 @@ void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
     m_deltaCard->setValue(QString::number(record.left, 'f', 3));
     m_rightCard->setValue(QString::number(record.right, 'f', 3));
     m_thicknessCard->setMetaText(QStringLiteral("Target 11.500  Δ %1").arg(QString::number(record.thick - 11.5, 'f', 3)));
+    m_thicknessCard->setAccentColor(record.verdict == QStringLiteral("ok")
+                                        ? Theme::palette().ok
+                                        : (record.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
     m_sensorPanel->setSensorValue(record.left);
     if (verdict != nullptr) {
         const bool ok = record.verdict == QStringLiteral("ok");

@@ -8,6 +8,7 @@
 #include <QtTest/QTest>
 
 #include "app/MainWindow.h"
+#include "theme/Theme.h"
 #include "widgets/StatCardWidget.h"
 
 class MainWindowTests : public QObject
@@ -21,6 +22,7 @@ private slots:
     void currentGroupPanelShowsPrototypeFields();
     void currentGroupPanelUsesCompactStatCards();
     void currentGroupPanelUsesCompactVerdictPill();
+    void currentGroupPanelUsesVerdictDrivenAccent();
     void cameraPanelShowsPrototypeHeaderControls();
     void profilePanelShowsPrototypeHeaderControls();
     void historyPanelShowsPrototypeToolbar();
@@ -104,6 +106,25 @@ void MainWindowTests::currentGroupPanelUsesCompactVerdictPill()
 
     QVERIFY(verdict->styleSheet().contains(QStringLiteral("padding:1px 6px")));
     QVERIFY(verdict->styleSheet().contains(QStringLiteral("font-size:9.5px")));
+}
+
+void MainWindowTests::currentGroupPanelUsesVerdictDrivenAccent()
+{
+    MainWindow window;
+    auto *table = window.findChild<QTableView*>(QStringLiteral("historyTable"));
+    auto *thicknessCard = window.findChild<StatCardWidget*>(QStringLiteral("thicknessCard"));
+    QVERIFY(table != nullptr);
+    QVERIFY(thicknessCard != nullptr);
+    QVERIFY(table->model()->rowCount() > 1);
+
+    table->selectRow(1);
+    QCoreApplication::processEvents();
+
+    const QString verdict = table->model()->index(1, 5).data().toString();
+    const QColor expected = verdict == QStringLiteral("ok")
+                                ? Theme::palette().ok
+                                : (verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err);
+    QCOMPARE(thicknessCard->accentColor(), expected);
 }
 
 void MainWindowTests::cameraPanelShowsPrototypeHeaderControls()
