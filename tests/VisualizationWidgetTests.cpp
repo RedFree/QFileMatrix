@@ -10,6 +10,7 @@ class VisualizationWidgetTests : public QObject
 
 private slots:
     void cameraViewTracksCrosshairPosition();
+    void cameraViewStoresPrototypeHudTelemetry();
     void profileChartStoresProfileData();
 };
 
@@ -20,6 +21,21 @@ void VisualizationWidgetTests::cameraViewTracksCrosshairPosition()
     widget.setCrosshairNormalizedPosition(QPointF(0.25, 0.75));
 
     QCOMPARE(widget.crosshairNormalizedPosition(), QPointF(0.25, 0.75));
+}
+
+void VisualizationWidgetTests::cameraViewStoresPrototypeHudTelemetry()
+{
+    CameraViewWidget widget;
+
+    widget.setStation(3);
+    widget.setFrameRate(22.0);
+    widget.setExposureMs(3.2);
+    widget.setGain(1.4);
+
+    QCOMPARE(widget.station(), 3);
+    QCOMPARE(widget.frameRate(), 22.0);
+    QCOMPARE(widget.exposureMs(), 3.2);
+    QCOMPARE(widget.gain(), 1.4);
 }
 
 void VisualizationWidgetTests::profileChartStoresProfileData()

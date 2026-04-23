@@ -43,6 +43,24 @@ void CameraViewWidget::setStation(int station)
     update();
 }
 
+void CameraViewWidget::setFrameRate(double frameRate)
+{
+    m_frameRate = frameRate;
+    update();
+}
+
+void CameraViewWidget::setExposureMs(double exposureMs)
+{
+    m_exposureMs = exposureMs;
+    update();
+}
+
+void CameraViewWidget::setGain(double gain)
+{
+    m_gain = gain;
+    update();
+}
+
 void CameraViewWidget::setCrosshairNormalizedPosition(const QPointF &position)
 {
     m_crosshair.setX(qBound(0.0, position.x(), 1.0));
@@ -64,6 +82,21 @@ bool CameraViewWidget::measuring() const
 int CameraViewWidget::station() const
 {
     return m_station;
+}
+
+double CameraViewWidget::frameRate() const
+{
+    return m_frameRate;
+}
+
+double CameraViewWidget::exposureMs() const
+{
+    return m_exposureMs;
+}
+
+double CameraViewWidget::gain() const
+{
+    return m_gain;
 }
 
 QPointF CameraViewWidget::crosshairNormalizedPosition() const
@@ -121,19 +154,28 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
 
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(6, 12, 22, 180));
-    painter.drawRoundedRect(QRect(10, 10, 210, 24), 4, 4);
-    painter.drawRoundedRect(QRect(width() - 160, 10, 150, 24), 4, 4);
+    painter.drawRoundedRect(QRect(10, 10, 248, 24), 4, 4);
+    painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
     painter.setPen(Qt::white);
-    painter.drawText(QRect(16, 10, 200, 24), Qt::AlignVCenter | Qt::AlignLeft,
-                     QStringLiteral("CAM-01 · %1 · 22.00 FPS").arg(m_paused ? QStringLiteral("PAUSED") : QStringLiteral("LIVE")));
-    painter.drawText(QRect(width() - 154, 10, 140, 24), Qt::AlignVCenter | Qt::AlignLeft,
-                     QStringLiteral("STN-%1 · 2560x1590").arg(m_station, 2, 10, QLatin1Char('0')));
+    painter.drawText(QRect(16, 10, 238, 24), Qt::AlignVCenter | Qt::AlignLeft,
+                     QStringLiteral("CAM-01 · %1 · %2 FPS · 2560x1590")
+                         .arg(m_paused ? QStringLiteral("PAUSED") : QStringLiteral("LIVE"))
+                         .arg(QString::number(m_frameRate, 'f', 2)));
+    painter.drawText(QRect(width() - 208, 10, 194, 24), Qt::AlignVCenter | Qt::AlignLeft,
+                     QStringLiteral("STN-%1 · EXP %2ms · GAIN %3x")
+                         .arg(m_station, 2, 10, QLatin1Char('0'))
+                         .arg(QString::number(m_exposureMs, 'f', 1))
+                         .arg(QString::number(m_gain, 'f', 1)));
 
     painter.setBrush(QColor(6, 12, 22, 180));
     painter.setPen(QColor(200, 247, 212));
     painter.drawRoundedRect(QRect(center.x() + 8, center.y() + 8, 88, 22), 3, 3);
     painter.drawText(QRect(center.x() + 14, center.y() + 8, 80, 22), Qt::AlignVCenter | Qt::AlignLeft,
                      QStringLiteral("%1, %2").arg(center.x()).arg(center.y()));
+
+    painter.setPen(QColor(150, 190, 255));
+    painter.drawText(QRect(static_cast<int>(width() * 0.32), static_cast<int>(height() * 0.15) - 14, 44, 12), Qt::AlignLeft | Qt::AlignVCenter,
+                     QStringLiteral("ROI 1"));
 }
 
 void CameraViewWidget::mousePressEvent(QMouseEvent *event)

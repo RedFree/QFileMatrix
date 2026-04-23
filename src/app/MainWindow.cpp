@@ -323,6 +323,10 @@ void MainWindow::updateFromController()
     m_servoPanel->setStep(state.step);
     m_cameraView->setPaused(state.paused);
     m_cameraView->setMeasuring(state.measuring);
+    m_cameraView->setStation(1);
+    m_cameraView->setFrameRate(22.0);
+    m_cameraView->setExposureMs(3.2);
+    m_cameraView->setGain(1.4);
     m_profileChart->setMeasuring(state.measuring);
     m_profileChart->setProfile(m_controller->currentProfile());
     if (auto *pauseButton = findChild<QPushButton*>(QStringLiteral("cameraPauseButton"))) {
