@@ -224,22 +224,29 @@ void MainWindow::buildUi()
     bodySplitter->addWidget(centerSplitter);
 
     auto *rightPanel = new QWidget;
+    rightPanel->setObjectName(QStringLiteral("rightControlColumn"));
+    rightPanel->setStyleSheet(QStringLiteral("background:%1;border-left:1px solid %2;")
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
     auto *rightLayout = new QVBoxLayout(rightPanel);
-    rightLayout->setContentsMargins(8, 8, 8, 8);
-    rightLayout->setSpacing(8);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
+    rightLayout->setSpacing(0);
     m_sensorPanel = new SensorPanel;
     m_measurePanel = new MeasureControlPanel;
     m_measurePanel->setObjectName(QStringLiteral("measureControlPanel"));
     m_servoPanel = new ServoControlPanel;
-    auto *sensorWrap = makeBodyPanel(m_sensorPanel);
-    auto *measureWrap = makeBodyPanel(m_measurePanel);
-    auto *servoWrap = makeBodyPanel(m_servoPanel);
-    sensorWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    measureWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    servoWrap->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    rightLayout->addWidget(sensorWrap);
-    rightLayout->addWidget(measureWrap);
-    rightLayout->addWidget(servoWrap);
+
+    const auto flushPanelStyle = QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;")
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name());
+    m_sensorPanel->setStyleSheet(flushPanelStyle);
+    m_measurePanel->setStyleSheet(flushPanelStyle);
+    m_servoPanel->setStyleSheet(flushPanelStyle);
+
+    m_sensorPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_measurePanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    m_servoPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    rightLayout->addWidget(m_sensorPanel);
+    rightLayout->addWidget(m_measurePanel);
+    rightLayout->addWidget(m_servoPanel);
     rightLayout->addStretch();
 
     auto *rightScrollArea = new QScrollArea;

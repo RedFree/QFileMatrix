@@ -8,6 +8,7 @@
 #include <QtTest/QTest>
 
 #include "app/MainWindow.h"
+#include "panels/SensorPanel.h"
 #include "theme/Theme.h"
 #include "widgets/StatCardWidget.h"
 
@@ -35,6 +36,7 @@ private slots:
     void mainWindowStartsMaximized();
     void rightControlColumnUsesScrollContainer();
     void thicknessCardShowsTargetAndTrend();
+    void rightColumnPanelsUseFlushStack();
 };
 
 void MainWindowTests::mainWindowBuildsPrimaryRegions()
@@ -280,6 +282,17 @@ void MainWindowTests::thicknessCardShowsTargetAndTrend()
 
     QCOMPARE(thicknessCard->target(), QStringLiteral("11.500"));
     QVERIFY(thicknessCard->metaText().isEmpty());
+}
+
+void MainWindowTests::rightColumnPanelsUseFlushStack()
+{
+    MainWindow window;
+    auto *sensorPanel = window.findChild<SensorPanel*>(QStringLiteral("sensorPanel"));
+    auto *servoPanel = window.findChild<QWidget*>(QStringLiteral("servoPanel"));
+    QVERIFY(sensorPanel != nullptr);
+    QVERIFY(servoPanel != nullptr);
+    QVERIFY(!sensorPanel->styleSheet().contains(QStringLiteral("border-radius:10px")));
+    QVERIFY(servoPanel->styleSheet().contains(QStringLiteral("border-bottom:1px solid")));
 }
 
 QTEST_MAIN(MainWindowTests)

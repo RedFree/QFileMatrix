@@ -10,8 +10,9 @@
 #include "widgets/SensorGaugeWidget.h"
 
 SensorPanel::SensorPanel(QWidget *parent)
-    : QWidget(parent)
+: QWidget(parent)
 {
+    setObjectName(QStringLiteral("sensorPanel"));
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(10, 10, 10, 10);
     layout->setSpacing(8);

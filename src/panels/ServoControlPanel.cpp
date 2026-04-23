@@ -13,8 +13,9 @@
 #include "widgets/DpadControlWidget.h"
 
 ServoControlPanel::ServoControlPanel(QWidget *parent)
-    : QWidget(parent)
+: QWidget(parent)
 {
+    setObjectName(QStringLiteral("servoPanel"));
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(10, 10, 10, 10);
     layout->setSpacing(8);
