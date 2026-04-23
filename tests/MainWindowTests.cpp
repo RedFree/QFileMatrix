@@ -34,6 +34,7 @@ private slots:
     void mainWindowUsesRenamedSoftwareTitle();
     void mainWindowStartsMaximized();
     void rightControlColumnUsesScrollContainer();
+    void thicknessCardShowsTargetAndTrend();
 };
 
 void MainWindowTests::mainWindowBuildsPrimaryRegions()
@@ -269,6 +270,16 @@ void MainWindowTests::rightControlColumnUsesScrollContainer()
     QVERIFY(scrollArea != nullptr);
     QCOMPARE(scrollArea->widgetResizable(), true);
     QCOMPARE(scrollArea->horizontalScrollBarPolicy(), Qt::ScrollBarAlwaysOff);
+}
+
+void MainWindowTests::thicknessCardShowsTargetAndTrend()
+{
+    MainWindow window;
+    auto *thicknessCard = window.findChild<StatCardWidget*>(QStringLiteral("thicknessCard"));
+    QVERIFY(thicknessCard != nullptr);
+
+    QCOMPARE(thicknessCard->target(), QStringLiteral("11.500"));
+    QVERIFY(thicknessCard->metaText().isEmpty());
 }
 
 QTEST_MAIN(MainWindowTests)

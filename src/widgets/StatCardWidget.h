@@ -8,31 +8,37 @@
 
 class StatCardWidget : public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
-    explicit StatCardWidget(QWidget *parent = nullptr);
+explicit StatCardWidget(QWidget *parent = nullptr);
 
-    void setLabel(const QString &label);
-    void setValue(const QString &value);
-    void setUnit(const QString &unit);
-    void setMetaText(const QString &metaText);
-    void setAccentColor(const QColor &accentColor);
+void setLabel(const QString &label);
+void setValue(const QString &value);
+void setUnit(const QString &unit);
+void setMetaText(const QString &metaText);
+void setAccentColor(const QColor &accentColor);
+void setTarget(const QString &target);
+void setTrend(double trend);
 
-    [[nodiscard]] QString label() const;
-    [[nodiscard]] QString value() const;
-    [[nodiscard]] QString unit() const;
-    [[nodiscard]] QString metaText() const;
-    [[nodiscard]] QColor accentColor() const;
+[[nodiscard]] QString label() const;
+[[nodiscard]] QString value() const;
+[[nodiscard]] QString unit() const;
+[[nodiscard]] QString metaText() const;
+[[nodiscard]] QColor accentColor() const;
+[[nodiscard]] QString target() const;
+[[nodiscard]] double trend() const;
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    QSize sizeHint() const override;
+void paintEvent(QPaintEvent *event) override;
+QSize sizeHint() const override;
 
 private:
-    QString m_label;
-    QString m_value;
-    QString m_unit;
-    QString m_metaText;
-    QColor m_accentColor;
+QString m_label;
+QString m_value;
+QString m_unit;
+QString m_metaText;
+QColor m_accentColor;
+QString m_target;
+double m_trend = 0.0;
 };

@@ -1,7 +1,9 @@
 #include "widgets/StatCardWidget.h"
 
+#include <QChar>
 #include <QFont>
 #include <QPainter>
+#include <cmath>
 
 #include "theme/Theme.h"
 
@@ -42,6 +44,18 @@ void StatCardWidget::setAccentColor(const QColor &accentColor)
     update();
 }
 
+void StatCardWidget::setTarget(const QString &target)
+{
+    m_target = target;
+    update();
+}
+
+void StatCardWidget::setTrend(double trend)
+{
+    m_trend = trend;
+    update();
+}
+
 QString StatCardWidget::label() const
 {
     return m_label;
@@ -67,6 +81,16 @@ QColor StatCardWidget::accentColor() const
     return m_accentColor;
 }
 
+QString StatCardWidget::target() const
+{
+    return m_target;
+}
+
+double StatCardWidget::trend() const
+{
+    return m_trend;
+}
+
 void StatCardWidget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
@@ -86,7 +110,28 @@ void StatCardWidget::paintEvent(QPaintEvent *event)
     painter.setPen(Theme::palette().textMuted);
     painter.setFont(QFont(QStringLiteral("Segoe UI"), 9));
     painter.drawText(QRect(12, 48, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
-    if (!m_metaText.isEmpty()) {
+    if (!m_target.isEmpty()) {
+        painter.setFont(QFont(QStringLiteral("Consolas"), 9));
+        const auto targetStr = QStringLiteral("TARGET %1").arg(m_target);
+        painter.setPen(Theme::palette().textMuted);
+        painter.drawText(QRect(12, 62, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, targetStr);
+        const auto targetWidth = painter.fontMetrics().horizontalAdvance(targetStr);
+        const bool significant = m_trend > 0.0005 || m_trend < -0.0005;
+        QString trendStr;
+        QColor trendColor;
+        if (significant && m_trend > 0) {
+            trendStr = QStringLiteral("%1 %2").arg(QChar(0x25B2), QString::number(m_trend, 'f', 3));
+            trendColor = Theme::palette().ok;
+        } else if (significant && m_trend < 0) {
+            trendStr = QStringLiteral("%1 %2").arg(QChar(0x25BC), QString::number(qAbs(m_trend), 'f', 3));
+            trendColor = Theme::palette().err;
+        } else {
+            trendStr = QStringLiteral("— 0.000");
+            trendColor = Theme::palette().textMuted;
+        }
+        painter.setPen(trendColor);
+        painter.drawText(QRect(14 + targetWidth, 62, width() - 24 - targetWidth, 14), Qt::AlignLeft | Qt::AlignVCenter, trendStr);
+    } else if (!m_metaText.isEmpty()) {
         painter.setPen(Theme::palette().text);
         painter.drawText(QRect(12, 62, width() - 24, 14), Qt::AlignLeft | Qt::AlignVCenter, m_metaText);
     }

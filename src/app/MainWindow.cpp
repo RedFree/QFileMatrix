@@ -530,7 +530,7 @@ QWidget *MainWindow::createStatsPanel()
     m_thicknessCard->setObjectName(QStringLiteral("thicknessCard"));
     m_thicknessCard->setLabel(QStringLiteral("厚度 THK"));
     m_thicknessCard->setUnit(QStringLiteral("μm"));
-    m_thicknessCard->setMetaText(QStringLiteral("Target 11.500"));
+    m_thicknessCard->setTarget(QStringLiteral("11.500"));
     m_maxCard = new StatCardWidget;
     m_maxCard->setObjectName(QStringLiteral("maxCard"));
     m_maxCard->setLabel(QStringLiteral("MAX"));
@@ -565,7 +565,8 @@ void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
     m_minCard->setValue(QString::number(record.hmin, 'f', 3));
     m_deltaCard->setValue(QString::number(record.left, 'f', 3));
     m_rightCard->setValue(QString::number(record.right, 'f', 3));
-    m_thicknessCard->setMetaText(QStringLiteral("Target 11.500  Δ %1").arg(QString::number(record.thick - 11.5, 'f', 3)));
+    m_thicknessCard->setTarget(QStringLiteral("11.500"));
+    m_thicknessCard->setTrend(record.thick - 11.5);
     m_thicknessCard->setAccentColor(record.verdict == QStringLiteral("ok")
                                         ? Theme::palette().ok
                                         : (record.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
