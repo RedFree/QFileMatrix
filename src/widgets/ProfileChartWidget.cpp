@@ -58,6 +58,11 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.drawLine(QPointF(xToPixel(gx), plot.top()), QPointF(xToPixel(gx), plot.bottom()));
     }
 
+    painter.setPen(QPen(Theme::palette().textMuted, 1, Qt::SolidLine));
+    painter.setOpacity(0.4);
+    painter.drawLine(QPointF(plot.left(), yToPixel(0.0)), QPointF(plot.right(), yToPixel(0.0)));
+    painter.setOpacity(1.0);
+
     painter.setPen(Theme::palette().textMuted);
     painter.setFont(QFont(QStringLiteral("Consolas"), 8));
     for (double gy : {0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
@@ -75,14 +80,18 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.setPen(QPen(band.stroke, 1.5));
         painter.drawRect(bandRect);
         painter.drawText(QRectF(bandRect.left() + 4, plot.top() + 4, 40, 16), band.label);
+        painter.setPen(band.stroke);
+        painter.setFont(QFont(QStringLiteral("Consolas"), 7));
+        painter.drawText(QRectF(bandRect.left() + 2, plot.bottom() - 16, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, QString::number(static_cast<int>(band.x)));
+        painter.drawText(QRectF(bandRect.right() - 42, plot.bottom() - 16, 40, 14), Qt::AlignRight | Qt::AlignVCenter, QString::number(static_cast<int>(band.x + band.width)));
     }
 
     painter.setPen(QPen(Theme::palette().ok, 1, Qt::DashLine));
     const double targetY = yToPixel(11.5);
     painter.drawLine(QPointF(plot.left(), targetY), QPointF(plot.right(), targetY));
     painter.setPen(Theme::palette().ok);
-    painter.setFont(QFont(QStringLiteral("Consolas"), 7));
-    painter.drawText(QRectF(plot.left() - 38, targetY - 7, 34, 14), Qt::AlignRight | Qt::AlignVCenter, QStringLiteral("11.5"));
+    painter.setFont(QFont(QStringLiteral("Consolas"), 8));
+    painter.drawText(QRectF(plot.right() - 72, targetY - 10, 68, 14), Qt::AlignRight | Qt::AlignVCenter, QStringLiteral("TARGET 11.5"));
 
     if (!m_profile.isEmpty()) {
         QPainterPath path;
@@ -91,9 +100,22 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
             path.lineTo(xToPixel(m_profile[i].x), yToPixel(m_profile[i].y));
         }
 
-        painter.setPen(QPen(QColor("#C44A38"), 1.5));
+        QPainterPath fillPath = path;
+        fillPath.lineTo(xToPixel(m_profile.last().x), plot.bottom());
+        fillPath.lineTo(xToPixel(m_profile.first().x), plot.bottom());
+        fillPath.closeSubpath();
+        painter.fillPath(fillPath, QColor(196, 74, 56, 15));
+
+        painter.setPen(QPen(QColor("#C44A38"), 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter.drawPath(path);
     }
+
+    painter.setPen(Theme::palette().border);
+    painter.setBrush(Theme::palette().bgPanel);
+    painter.drawRoundedRect(QRectF(plot.left() + 6, plot.top() + 4, 74, 18), 3, 3);
+    painter.setPen(Theme::palette().textMuted);
+    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
+    painter.drawText(QRectF(plot.left() + 10, plot.top() + 4, 66, 18), Qt::AlignVCenter | Qt::AlignHCenter, QStringLiteral("μm vs px"));
 
     if (m_measuring) {
         painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), QColor(84, 214, 160, 20));
