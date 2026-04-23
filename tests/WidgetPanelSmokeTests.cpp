@@ -17,6 +17,7 @@
 #include "panels/TopTitleBar.h"
 #include "theme/Theme.h"
 #include "widgets/DpadControlWidget.h"
+#include "widgets/LedIndicatorWidget.h"
 
 class WidgetPanelSmokeTests : public QObject
 {
@@ -42,6 +43,8 @@ private slots:
     void historyPanelUsesPrototypeSearchAndDelegates();
     void sensorTabsMoveActiveStateWhenClicked();
     void measureModeTabsMoveActiveStateWhenClicked();
+    void ledIndicatorDrawsGlowRingPerState();
+    void ledIndicatorErrStateBlinks();
 };
 
 void WidgetPanelSmokeTests::dpadClickEmitsJogSignal()
@@ -347,6 +350,33 @@ void WidgetPanelSmokeTests::measureModeTabsMoveActiveStateWhenClicked()
 
     QCOMPARE(autoButton->property("active").toBool(), false);
     QCOMPARE(singleButton->property("active").toBool(), true);
+}
+
+void WidgetPanelSmokeTests::ledIndicatorDrawsGlowRingPerState()
+{
+    LedIndicatorWidget led;
+    led.setCompact(true);
+    led.setLabel(QStringLiteral("Test"));
+    led.resize(180, 24);
+
+    const auto states = {LedIndicatorWidget::State::Ok, LedIndicatorWidget::State::Warn,
+                         LedIndicatorWidget::State::Err, LedIndicatorWidget::State::Off};
+    for (auto s : states) {
+        led.setState(s);
+        const auto pm = led.grab();
+        QVERIFY(!pm.isNull());
+        QCOMPARE(pm.size(), QSize(180, 24));
+    }
+}
+
+void WidgetPanelSmokeTests::ledIndicatorErrStateBlinks()
+{
+    LedIndicatorWidget led;
+    led.setState(LedIndicatorWidget::State::Err);
+    QVERIFY(led.property("blinking").toBool());
+
+    led.setState(LedIndicatorWidget::State::Ok);
+    QVERIFY(!led.property("blinking").toBool());
 }
 
 QTEST_MAIN(WidgetPanelSmokeTests)

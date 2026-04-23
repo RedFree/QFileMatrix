@@ -4,11 +4,12 @@
 #include <QPaintEvent>
 #include <QSize>
 #include <QString>
+#include <QTimer>
 #include <QWidget>
 
 class LedIndicatorWidget : public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     enum class State {
@@ -31,15 +32,26 @@ public:
     [[nodiscard]] QString subLabel() const;
     [[nodiscard]] bool compact() const;
 
+    Q_PROPERTY(bool blinking READ isBlinking NOTIFY blinkingChanged)
+
+    [[nodiscard]] bool isBlinking() const;
+
+signals:
+    void blinkingChanged();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     QSize sizeHint() const override;
 
 private:
     QColor bulbColor() const;
+    QColor glowColor() const;
+    void onBlinkTick();
 
     State m_state = State::Off;
     QString m_label;
     QString m_subLabel;
     bool m_compact = false;
+    bool m_blinkOn = true;
+    QTimer m_blinkTimer;
 };
