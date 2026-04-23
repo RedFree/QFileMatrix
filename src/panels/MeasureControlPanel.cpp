@@ -57,7 +57,7 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     body->setSpacing(8);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
+    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;font-family:Consolas;}"));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setTextVisible(false);
@@ -127,8 +127,8 @@ void MeasureControlPanel::setMeasuring(bool measuring)
 {
     m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(measuring
-                                    ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 8px;color:#3550A8;font-size:11px;font-weight:600;}")
-                                    : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
+        ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 8px;color:#3550A8;font-size:11px;font-weight:600;font-family:Consolas;}")
+        : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;font-family:Consolas;}"));
 }
 
 void MeasureControlPanel::setSampleCount(int sampleCount)

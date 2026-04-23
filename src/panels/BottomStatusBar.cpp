@@ -64,10 +64,10 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
 
     auto *xAxisPill = new QLabel(QStringLiteral("X 轴正常"));
     xAxisPill->setObjectName(QStringLiteral("bottomXAxisPill"));
-    xAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;}"));
+    xAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
     auto *yAxisPill = new QLabel(QStringLiteral("Y 轴正常"));
     yAxisPill->setObjectName(QStringLiteral("bottomYAxisPill"));
-    yAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;}"));
+    yAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
     layout->addWidget(xAxisPill);
     layout->addWidget(yAxisPill);
 
@@ -127,14 +127,14 @@ void BottomStatusBar::setConnected(bool connected)
 {
     m_connectionLabel->setText(connected ? QStringLiteral("连接正常") : QStringLiteral("连接断开"));
     m_connectionLabel->setStyleSheet(connected
-                                         ? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;}")
-                                         : QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:9px;padding:1px 8px;color:#A54E2F;font-size:10px;font-weight:600;}"));
+        ? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}")
+        : QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:9px;padding:1px 8px;color:#A54E2F;font-size:10px;font-weight:600;font-family:Consolas;}"));
 }
 
 void BottomStatusBar::setMeasuring(bool measuring)
 {
     m_measureStateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
     m_measureStateLabel->setStyleSheet(measuring
-                                           ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:9px;padding:1px 8px;color:#3550A8;font-size:10px;font-weight:600;}")
-                                           : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;}"));
+        ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:9px;padding:1px 8px;color:#3550A8;font-size:10px;font-weight:600;font-family:Consolas;}")
+        : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;font-family:Consolas;}"));
 }

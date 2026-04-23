@@ -58,7 +58,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
     m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#EAF0FB;border:1px solid #D6E0F3;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
+    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#EAF0FB;border:1px solid #D6E0F3;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;font-family:Consolas;}"));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setValue(0);
@@ -67,7 +67,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_percentLabel = new QLabel(QStringLiteral("0%"));
     m_percentLabel->setObjectName(QStringLiteral("statusPercentLabel"));
     m_percentLabel->setMinimumWidth(40);
-    m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().text.name()));
+    m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text.name()));
 
     progressLayout->addWidget(m_progressTitleLabel);
     progressLayout->addWidget(m_progressBar);
@@ -121,6 +121,6 @@ void DeviceStatusBar::setMeasuring(bool measuring)
 {
     m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(measuring
-                                    ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 8px;color:#3550A8;font-size:11px;font-weight:600;}")
-                                    : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
+        ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 8px;color:#3550A8;font-size:11px;font-weight:600;font-family:Consolas;}")
+        : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;font-family:Consolas;}"));
 }

@@ -513,7 +513,7 @@ QWidget *MainWindow::createStatsPanel()
     header->titleLabel()->setObjectName(QStringLiteral("currentGroupTitleLabel"));
     auto *verdict = new QLabel(QStringLiteral("合格"));
     verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
-    verdict->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:8px;padding:1px 6px;color:#357A4D;font-size:9.5px;font-weight:600;}"));
+    verdict->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:8px;padding:1px 6px;color:#357A4D;font-size:9.5px;font-weight:600;font-family:Consolas;}"));
     header->rightLayout()->addWidget(verdict);
     outer->addWidget(header);
 
@@ -576,9 +576,9 @@ void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
         const bool warn = record.verdict == QStringLiteral("warn");
         verdict->setText(ok ? QStringLiteral("合格") : (warn ? QStringLiteral("临界") : QStringLiteral("超差")));
         verdict->setStyleSheet(ok
-                                    ? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:8px;padding:1px 6px;color:#357A4D;font-size:9.5px;font-weight:600;}")
-                                    : (warn
-                                           ? QStringLiteral("QLabel{background:#FFF9EA;border:1px solid #F2E2AC;border-radius:8px;padding:1px 6px;color:#9A6B00;font-size:9.5px;font-weight:600;}")
-                                           : QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:8px;padding:1px 6px;color:#A54E2F;font-size:9.5px;font-weight:600;}")));
+            ? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:8px;padding:1px 6px;color:#357A4D;font-size:9.5px;font-weight:600;font-family:Consolas;}")
+            : (warn
+            ? QStringLiteral("QLabel{background:#FFF9EA;border:1px solid #F2E2AC;border-radius:8px;padding:1px 6px;color:#9A6B00;font-size:9.5px;font-weight:600;font-family:Consolas;}")
+            : QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:8px;padding:1px 6px;color:#A54E2F;font-size:9.5px;font-weight:600;font-family:Consolas;}")));
     }
 }
