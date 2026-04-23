@@ -1,0 +1,211 @@
+#include "widgets/ProfileChartWidget.h"
+
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPainterPath>
+
+#include "theme/Theme.h"
+
+ProfileChartWidget::ProfileChartWidget(QWidget *parent)
+    : QWidget(parent)
+{
+    setMinimumSize(420, 260);
+    setMouseTracking(true);
+    m_bands = {
+        {250.0, 80.0, QStringLiteral("起始"), QColor(84, 122, 255, 40), QColor(84, 122, 255, 180)},
+        {600.0, 120.0, QStringLiteral("数据"), QColor(84, 214, 160, 30), QColor(84, 214, 160, 180)},
+        {900.0, 90.0, QStringLiteral("结束"), QColor(84, 122, 255, 40), QColor(84, 122, 255, 180)}
+    };
+}
+
+void ProfileChartWidget::setProfile(const ProfileData &profile)
+{
+    m_profile = profile;
+    update();
+}
+
+void ProfileChartWidget::setMeasuring(bool measuring)
+{
+    m_measuring = measuring;
+    update();
+}
+
+ProfileData ProfileChartWidget::profile() const
+{
+    return m_profile;
+}
+
+QVector<RefBand> ProfileChartWidget::bands() const
+{
+    return m_bands;
+}
+
+void ProfileChartWidget::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(rect(), Theme::palette().bgPanel);
+
+    const QRectF plot = plotRect();
+    painter.setPen(QPen(Theme::palette().divider, 1));
+    for (double gy : {-20.0, 0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
+        painter.drawLine(QPointF(plot.left(), yToPixel(gy)), QPointF(plot.right(), yToPixel(gy)));
+    }
+    for (double gx : {0.0, 250.0, 500.0, 750.0, 1000.0, 1250.0}) {
+        painter.drawLine(QPointF(xToPixel(gx), plot.top()), QPointF(xToPixel(gx), plot.bottom()));
+    }
+
+    for (const auto &band : m_bands) {
+        const QRectF bandRect(xToPixel(band.x), plot.top(), xToPixel(band.x + band.width) - xToPixel(band.x), plot.height());
+        painter.fillRect(bandRect, band.fill);
+        painter.setPen(QPen(band.stroke, 1.5));
+        painter.drawRect(bandRect);
+        painter.drawText(QRectF(bandRect.left() + 4, plot.top() + 4, 40, 16), band.label);
+    }
+
+    painter.setPen(QPen(Theme::palette().ok, 1, Qt::DashLine));
+    painter.drawLine(QPointF(plot.left(), yToPixel(11.5)), QPointF(plot.right(), yToPixel(11.5)));
+
+    if (!m_profile.isEmpty()) {
+        QPainterPath path;
+        path.moveTo(xToPixel(m_profile.first().x), yToPixel(m_profile.first().y));
+        for (int i = 1; i < m_profile.size(); ++i) {
+            path.lineTo(xToPixel(m_profile[i].x), yToPixel(m_profile[i].y));
+        }
+
+        painter.setPen(QPen(QColor("#C44A38"), 1.5));
+        painter.drawPath(path);
+    }
+
+    if (m_measuring) {
+        painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), QColor(84, 214, 160, 20));
+    }
+
+    if (m_hovering) {
+        painter.setPen(QPen(Theme::palette().brand, 1, Qt::DashLine));
+        painter.drawLine(QPointF(xToPixel(m_hoverPoint.x()), plot.top()), QPointF(xToPixel(m_hoverPoint.x()), plot.bottom()));
+        painter.setBrush(Theme::palette().brand);
+        painter.drawEllipse(QPointF(xToPixel(m_hoverPoint.x()), yToPixel(m_hoverPoint.y())), 3, 3);
+        painter.setBrush(QColor("#FFFFFF"));
+        painter.setPen(Theme::palette().border);
+        painter.drawRoundedRect(QRectF(width() - 124, 10, 114, 22), 4, 4);
+        painter.setPen(Theme::palette().text);
+        painter.drawText(QRectF(width() - 118, 10, 108, 22), Qt::AlignVCenter | Qt::AlignLeft,
+                         QStringLiteral("X %1  Y %2").arg(QString::number(m_hoverPoint.x(), 'f', 0), QString::number(m_hoverPoint.y(), 'f', 2)));
+    }
+}
+
+void ProfileChartWidget::mousePressEvent(QMouseEvent *event)
+{
+    DragState::Mode mode = DragState::None;
+    const int index = hitBand(event->pos(), &mode);
+    if (index >= 0) {
+        m_drag.bandIndex = index;
+        m_drag.mode = mode;
+        m_drag.startBandX = m_bands[index].x;
+        m_drag.startBandWidth = m_bands[index].width;
+        m_drag.startDataX = pixelToDataX(event->position().x());
+    }
+    updateHover(event->pos());
+}
+
+void ProfileChartWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_drag.bandIndex >= 0) {
+        auto &band = m_bands[m_drag.bandIndex];
+        const double currentX = pixelToDataX(event->position().x());
+        const double dx = currentX - m_drag.startDataX;
+
+        if (m_drag.mode == DragState::Move) {
+            band.x = qBound(0.0, m_drag.startBandX + dx, 1280.0 - band.width);
+        } else if (m_drag.mode == DragState::Left) {
+            const double newX = qBound(0.0, m_drag.startBandX + dx, m_drag.startBandX + m_drag.startBandWidth - 10.0);
+            band.width = m_drag.startBandWidth - (newX - m_drag.startBandX);
+            band.x = newX;
+        } else if (m_drag.mode == DragState::Right) {
+            band.width = qBound(10.0, m_drag.startBandWidth + dx, 1280.0 - band.x);
+        }
+        update();
+        return;
+    }
+
+    updateHover(event->pos());
+}
+
+void ProfileChartWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    m_drag = {};
+}
+
+QSize ProfileChartWidget::sizeHint() const
+{
+    return QSize(560, 320);
+}
+
+QRectF ProfileChartWidget::plotRect() const
+{
+    return QRectF(40, 14, width() - 54, height() - 38);
+}
+
+double ProfileChartWidget::xToPixel(double x) const
+{
+    const QRectF plot = plotRect();
+    return plot.left() + (x / 1280.0) * plot.width();
+}
+
+double ProfileChartWidget::yToPixel(double y) const
+{
+    const QRectF plot = plotRect();
+    constexpr double minY = -25.0;
+    constexpr double maxY = 100.0;
+    return plot.top() + (1.0 - (y - minY) / (maxY - minY)) * plot.height();
+}
+
+double ProfileChartWidget::pixelToDataX(double x) const
+{
+    const QRectF plot = plotRect();
+    return qBound(0.0, ((x - plot.left()) / plot.width()) * 1280.0, 1280.0);
+}
+
+void ProfileChartWidget::updateHover(const QPoint &pos)
+{
+    if (m_profile.isEmpty() || !plotRect().contains(pos)) {
+        m_hovering = false;
+        update();
+        return;
+    }
+
+    const double dataX = pixelToDataX(pos.x());
+    const int index = qBound(0, static_cast<int>(qRound(dataX / 4.0)), m_profile.size() - 1);
+    m_hoverPoint = QPointF(m_profile[index].x, m_profile[index].y);
+    m_hovering = true;
+    update();
+}
+
+int ProfileChartWidget::hitBand(const QPoint &pos, DragState::Mode *mode) const
+{
+    const QRectF plot = plotRect();
+    for (int i = 0; i < m_bands.size(); ++i) {
+        const QRectF bandRect(xToPixel(m_bands[i].x), plot.top(), xToPixel(m_bands[i].x + m_bands[i].width) - xToPixel(m_bands[i].x), plot.height());
+        const QRectF leftHandle(bandRect.left() - 4, bandRect.top(), 8, bandRect.height());
+        const QRectF rightHandle(bandRect.right() - 4, bandRect.top(), 8, bandRect.height());
+        if (leftHandle.contains(pos)) {
+            *mode = DragState::Left;
+            return i;
+        }
+        if (rightHandle.contains(pos)) {
+            *mode = DragState::Right;
+            return i;
+        }
+        if (bandRect.contains(pos)) {
+            *mode = DragState::Move;
+            return i;
+        }
+    }
+
+    *mode = DragState::None;
+    return -1;
+}

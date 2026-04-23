@@ -1,0 +1,127 @@
+#include "panels/SensorPanel.h"
+
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+#include <cmath>
+
+#include "theme/Theme.h"
+#include "widgets/SensorGaugeWidget.h"
+
+SensorPanel::SensorPanel(QWidget *parent)
+    : QWidget(parent)
+{
+    auto *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(8);
+
+    auto *headRow = new QHBoxLayout;
+    headRow->setContentsMargins(0, 0, 0, 0);
+    headRow->setSpacing(8);
+    auto *title = new QLabel(QStringLiteral("传感器"));
+    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
+    headRow->addWidget(title);
+
+    auto *tabRow = new QHBoxLayout;
+    tabRow->setContentsMargins(0, 0, 0, 0);
+    tabRow->setSpacing(4);
+    auto *heightTab = new QPushButton(QStringLiteral("高度"));
+    heightTab->setObjectName(QStringLiteral("heightTabButton"));
+    auto *lightTab = new QPushButton(QStringLiteral("光强"));
+    lightTab->setObjectName(QStringLiteral("lightTabButton"));
+    const auto tabStyle = [](bool active) {
+        if (active) {
+            return QStringLiteral("QPushButton{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:6px;padding:4px 10px;color:#3550A8;font-size:11px;font-weight:600;}");
+        }
+        return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:4px 10px;color:%1;font-size:11px;}"
+                              "QPushButton:hover{background:%2;border-color:%3;}")
+            .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().border.name());
+    };
+    heightTab->setProperty("active", true);
+    lightTab->setProperty("active", false);
+    heightTab->setStyleSheet(tabStyle(true));
+    lightTab->setStyleSheet(tabStyle(false));
+    const auto applyTabState = [heightTab, lightTab, tabStyle](QPushButton *activeButton) {
+        const bool heightActive = activeButton == heightTab;
+        heightTab->setProperty("active", heightActive);
+        lightTab->setProperty("active", !heightActive);
+        heightTab->setStyleSheet(tabStyle(heightActive));
+        lightTab->setStyleSheet(tabStyle(!heightActive));
+    };
+    connect(heightTab, &QPushButton::clicked, this, [applyTabState, heightTab] { applyTabState(heightTab); });
+    connect(lightTab, &QPushButton::clicked, this, [applyTabState, lightTab] { applyTabState(lightTab); });
+    tabRow->addWidget(heightTab);
+    tabRow->addWidget(lightTab);
+    tabRow->addStretch();
+    headRow->addStretch();
+    headRow->addLayout(tabRow, 1);
+    layout->addLayout(headRow);
+
+    m_gauge = new SensorGaugeWidget;
+    m_gauge->setLabel(QStringLiteral("高度 H"));
+    m_gauge->setUnit(QStringLiteral("μm"));
+    m_gauge->setRange(-1000.0, 1000.0);
+    m_gauge->setValue(-58.79);
+    layout->addWidget(m_gauge);
+
+    auto *detailGrid = new QGridLayout;
+    detailGrid->setHorizontalSpacing(10);
+    detailGrid->setVerticalSpacing(6);
+
+    auto *absLabel = new QLabel(QStringLiteral("ABS"));
+    auto *offsetLabel = new QLabel(QStringLiteral("OFFSET"));
+    auto *pkLabel = new QLabel(QStringLiteral("峰谷值"));
+    auto *absValue = new QLabel;
+    auto *offsetValue = new QLabel(QStringLiteral("0.000"));
+    auto *pkValue = new QLabel;
+    absValue->setObjectName(QStringLiteral("sensorAbsValueLabel"));
+    pkValue->setObjectName(QStringLiteral("sensorPkPkValueLabel"));
+    offsetValue->setObjectName(QStringLiteral("sensorOffsetValueLabel"));
+
+    const auto keyStyle = QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name());
+    const auto valStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text.name());
+    absLabel->setStyleSheet(keyStyle);
+    offsetLabel->setStyleSheet(keyStyle);
+    pkLabel->setStyleSheet(keyStyle);
+    absValue->setStyleSheet(valStyle);
+    offsetValue->setStyleSheet(valStyle);
+    pkValue->setStyleSheet(valStyle);
+
+    detailGrid->addWidget(absLabel, 0, 0);
+    detailGrid->addWidget(absValue, 0, 1);
+    detailGrid->addWidget(offsetLabel, 1, 0);
+    detailGrid->addWidget(offsetValue, 1, 1);
+    detailGrid->addWidget(pkLabel, 2, 0);
+    detailGrid->addWidget(pkValue, 2, 1);
+
+    auto *detailWrap = new QWidget;
+    detailWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;padding-top:8px;").arg(Theme::palette().divider.name()));
+    detailWrap->setLayout(detailGrid);
+    layout->addWidget(detailWrap);
+
+    refreshDerivedLabels(-58.79);
+}
+
+void SensorPanel::setSensorValue(double value)
+{
+    m_gauge->setValue(value);
+    refreshDerivedLabels(value);
+}
+
+double SensorPanel::sensorValue() const
+{
+    return m_gauge->value();
+}
+
+void SensorPanel::refreshDerivedLabels(double value)
+{
+    if (auto *absValue = findChild<QLabel*>(QStringLiteral("sensorAbsValueLabel"))) {
+        absValue->setText(QString::number(value, 'f', 3));
+    }
+    if (auto *pkValue = findChild<QLabel*>(QStringLiteral("sensorPkPkValueLabel"))) {
+        const double peak = std::abs(value);
+        pkValue->setText(QStringLiteral("%1 / %2")
+                             .arg(QString::number(peak, 'f', 2), QString::number(-peak * 0.8, 'f', 2)));
+    }
+}
