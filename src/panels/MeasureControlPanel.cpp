@@ -12,15 +12,20 @@
 #include "theme/Theme.h"
 
 MeasureControlPanel::MeasureControlPanel(QWidget *parent)
-    : QWidget(parent)
+: QWidget(parent)
 {
+    setObjectName(QStringLiteral("measureControlPanel"));
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(10, 10, 10, 10);
     layout->setSpacing(8);
 
+    auto *headRow = new QHBoxLayout;
+    headRow->setContentsMargins(0, 0, 0, 0);
+    headRow->setSpacing(6);
     auto *title = new QLabel(QStringLiteral("测量控制"));
     title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    layout->addWidget(title);
+    headRow->addWidget(title);
+    headRow->addStretch();
 
     auto *modeRow = new QHBoxLayout;
     modeRow->setContentsMargins(0, 0, 0, 0);
@@ -36,8 +41,8 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
             return QStringLiteral("QPushButton{background:transparent;border:none;border-bottom:2px solid #5070D7;color:#5070D7;font-size:11px;font-weight:600;padding:0 8px;min-height:22px;max-height:22px;}");
         }
         return QStringLiteral("QPushButton{background:transparent;border:none;color:%1;font-size:11px;padding:0 8px;min-height:22px;max-height:22px;}"
-                              "QPushButton:hover{color:%2;}")
-            .arg(Theme::palette().textMuted.name(), Theme::palette().text.name());
+        "QPushButton:hover{color:%2;}")
+        .arg(Theme::palette().textMuted.name(), Theme::palette().text.name());
     };
     autoButton->setProperty("active", true);
     singleButton->setProperty("active", false);
@@ -54,8 +59,8 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     connect(singleButton, &QPushButton::clicked, this, [applyModeState, singleButton] { applyModeState(singleButton); });
     modeRow->addWidget(autoButton);
     modeRow->addWidget(singleButton);
-    modeRow->addStretch();
-    layout->addLayout(modeRow);
+    headRow->addLayout(modeRow, 1);
+    layout->addLayout(headRow);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));

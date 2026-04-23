@@ -232,7 +232,6 @@ void MainWindow::buildUi()
     rightLayout->setSpacing(0);
     m_sensorPanel = new SensorPanel;
     m_measurePanel = new MeasureControlPanel;
-    m_measurePanel->setObjectName(QStringLiteral("measureControlPanel"));
     m_servoPanel = new ServoControlPanel;
 
     const auto flushPanelStyle = QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;")
