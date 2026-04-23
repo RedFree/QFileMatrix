@@ -6,11 +6,14 @@
 #include <QLineEdit>
 #include <QScrollArea>
 #include <QtTest/QTest>
+#include <QSignalSpy>
 
 #include "app/MainWindow.h"
 #include "panels/SensorPanel.h"
 #include "theme/Theme.h"
 #include "widgets/StatCardWidget.h"
+#include "dialogs/ManualSampleDialog.h"
+#include "dialogs/AlarmCenterDialog.h"
 
 class MainWindowTests : public QObject
 {
@@ -38,6 +41,8 @@ private slots:
     void rightControlColumnUsesScrollContainer();
     void thicknessCardShowsTargetAndTrend();
     void rightColumnPanelsUseFlushStack();
+    void manualSampleDialogShowsPositionAndConfirm();
+    void alarmCenterDialogShowsAlarmEntries();
 };
 
 void MainWindowTests::mainWindowBuildsPrimaryRegions()
@@ -304,6 +309,32 @@ void MainWindowTests::leftRailButtonsHaveToolTipsAndPointerCursor()
     auto *btn = buttons.first();
     QVERIFY(!btn->toolTip().isEmpty());
     QCOMPARE(btn->cursor().shape(), Qt::PointingHandCursor);
+}
+
+void MainWindowTests::manualSampleDialogShowsPositionAndConfirm()
+{
+    ManualSampleDialog dialog;
+    dialog.setPosition(QStringLiteral("12.345"), QStringLiteral("67.890"));
+    dialog.setProgram(QStringLiteral("1010"));
+    dialog.setBatch(QStringLiteral("3"));
+
+    auto *confirmButton = dialog.findChild<QPushButton*>(QStringLiteral("manualSampleConfirmButton"));
+    QVERIFY(confirmButton != nullptr);
+    QCOMPARE(confirmButton->text(), QStringLiteral("确认采样"));
+
+    auto *cancelButton = dialog.findChild<QPushButton*>(QStringLiteral("manualSampleCancelButton"));
+    QVERIFY(cancelButton != nullptr);
+
+    QVERIFY(dialog.program() == QStringLiteral("1010"));
+    QVERIFY(dialog.batch() == QStringLiteral("3"));
+}
+
+void MainWindowTests::alarmCenterDialogShowsAlarmEntries()
+{
+    AlarmCenterDialog dialog;
+    QCOMPARE(dialog.alarms().size(), 3);
+    QCOMPARE(dialog.alarms()[0].type, QStringLiteral("warn"));
+    QCOMPARE(dialog.alarms()[1].type, QStringLiteral("err"));
 }
 
 QTEST_MAIN(MainWindowTests)

@@ -25,6 +25,8 @@
 #include "widgets/PanelHeaderWidget.h"
 #include "widgets/ProfileChartWidget.h"
 #include "widgets/StatCardWidget.h"
+#include "dialogs/ManualSampleDialog.h"
+#include "dialogs/AlarmCenterDialog.h"
 
 namespace {
 class RailIconButton : public QPushButton
@@ -278,8 +280,15 @@ void MainWindow::wireUi()
     connect(m_measurePanel, &MeasureControlPanel::sampleCountChanged, m_controller, &AppController::setSampleCount);
 
     connect(m_deviceStatusBar, &DeviceStatusBar::startRequested, m_controller, &AppController::startMeasurement);
-    connect(m_deviceStatusBar, &DeviceStatusBar::manualRequested, m_controller, &AppController::manualSample);
     connect(m_deviceStatusBar, &DeviceStatusBar::stopRequested, m_controller, &AppController::stopMeasurement);
+    connect(m_deviceStatusBar, &DeviceStatusBar::manualRequested, this, [this] {
+        auto *dialog = new ManualSampleDialog(this);
+        const auto &pos = m_controller->state().pos;
+        dialog->setPosition(QString::number(pos.x, 'f', 3), QString::number(pos.y, 'f', 3));
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        connect(dialog, &ManualSampleDialog::sampleConfirmed, m_controller, &AppController::manualSample);
+        dialog->exec();
+    });
 
     connect(m_servoPanel, &ServoControlPanel::jogRequested, this, [this](int dx, int dy) {
         const auto step = m_controller->state().step;
@@ -302,6 +311,15 @@ void MainWindow::wireUi()
         m_selectedHistoryRow = row;
         updateFromController();
     });
+
+    auto *alarmButton = m_topTitleBar->findChild<QPushButton*>(QStringLiteral("alarmButton"));
+    if (alarmButton) {
+        connect(alarmButton, &QPushButton::clicked, this, [this] {
+            auto *dialog = new AlarmCenterDialog(this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->exec();
+        });
+    }
 }
 
 void MainWindow::updateFromController()
