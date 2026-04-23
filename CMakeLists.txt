@@ -41,13 +41,14 @@ target_include_directories(qfilematrix_app PUBLIC src)
 target_link_libraries(qfilematrix_app PUBLIC Qt6::Core qfilematrix_core qfilematrix_models)
 
 add_library(qfilematrix_widgets
-    src/theme/Theme.cpp
-    src/widgets/CameraViewWidget.cpp
-    src/widgets/LedIndicatorWidget.cpp
-    src/widgets/ProfileChartWidget.cpp
-    src/widgets/StatCardWidget.cpp
-    src/widgets/SensorGaugeWidget.cpp
-    src/widgets/DpadControlWidget.cpp
+  src/theme/Theme.cpp
+  src/widgets/CameraViewWidget.cpp
+  src/widgets/LedIndicatorWidget.cpp
+  src/widgets/PanelHeaderWidget.cpp
+  src/widgets/ProfileChartWidget.cpp
+  src/widgets/StatCardWidget.cpp
+  src/widgets/SensorGaugeWidget.cpp
+  src/widgets/DpadControlWidget.cpp
 )
 
 target_include_directories(qfilematrix_widgets PUBLIC src)

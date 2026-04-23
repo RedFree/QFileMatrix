@@ -10,26 +10,17 @@
 #include <QVBoxLayout>
 
 #include "theme/Theme.h"
+#include "widgets/PanelHeaderWidget.h"
 
 MeasureControlPanel::MeasureControlPanel(QWidget *parent)
-: QWidget(parent)
+    : QWidget(parent)
 {
     setObjectName(QStringLiteral("measureControlPanel"));
     auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-    auto *headRow = new QHBoxLayout;
-    headRow->setContentsMargins(0, 0, 0, 0);
-    headRow->setSpacing(6);
-    auto *title = new QLabel(QStringLiteral("测量控制"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    headRow->addWidget(title);
-    headRow->addStretch();
-
-    auto *modeRow = new QHBoxLayout;
-    modeRow->setContentsMargins(0, 0, 0, 0);
-    modeRow->setSpacing(4);
+    auto *header = new PanelHeaderWidget(QStringLiteral("测量控制"));
     auto *autoButton = new QPushButton(QStringLiteral("全自动"));
     autoButton->setObjectName(QStringLiteral("autoModeButton"));
     autoButton->setFixedHeight(22);
@@ -41,8 +32,8 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
             return QStringLiteral("QPushButton{background:transparent;border:none;border-bottom:2px solid #5070D7;color:#5070D7;font-size:11px;font-weight:600;padding:0 8px;min-height:22px;max-height:22px;}");
         }
         return QStringLiteral("QPushButton{background:transparent;border:none;color:%1;font-size:11px;padding:0 8px;min-height:22px;max-height:22px;}"
-        "QPushButton:hover{color:%2;}")
-        .arg(Theme::palette().textMuted.name(), Theme::palette().text.name());
+            "QPushButton:hover{color:%2;}")
+            .arg(Theme::palette().textMuted.name(), Theme::palette().text.name());
     };
     autoButton->setProperty("active", true);
     singleButton->setProperty("active", false);
@@ -57,10 +48,13 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     };
     connect(autoButton, &QPushButton::clicked, this, [applyModeState, autoButton] { applyModeState(autoButton); });
     connect(singleButton, &QPushButton::clicked, this, [applyModeState, singleButton] { applyModeState(singleButton); });
-    modeRow->addWidget(autoButton);
-    modeRow->addWidget(singleButton);
-    headRow->addLayout(modeRow, 1);
-    layout->addLayout(headRow);
+    header->rightLayout()->addWidget(autoButton);
+    header->rightLayout()->addWidget(singleButton);
+    layout->addWidget(header);
+
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
+    body->setSpacing(8);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
@@ -68,15 +62,15 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     m_progressBar->setRange(0, 100);
     m_progressBar->setTextVisible(false);
     m_progressBar->setFixedHeight(8);
-    layout->addWidget(m_stateLabel);
-    layout->addWidget(m_progressBar);
+    body->addWidget(m_stateLabel);
+    body->addWidget(m_progressBar);
 
     m_autoSampleCheck = new QCheckBox(QStringLiteral("自动采样"));
     m_autoSampleCheck->setObjectName(QStringLiteral("autoSampleCheck"));
     m_autoSampleCheck->setChecked(true);
     m_cycleTestCheck = new QCheckBox(QStringLiteral("循环测试"));
     m_cycleTestCheck->setObjectName(QStringLiteral("cycleTestCheck"));
-    layout->addWidget(m_autoSampleCheck);
+    body->addWidget(m_autoSampleCheck);
 
     auto *sampleRow = new QHBoxLayout;
     sampleRow->addWidget(m_cycleTestCheck);
@@ -86,7 +80,7 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     sampleRow->addWidget(m_sampleCount);
     sampleRow->addWidget(new QLabel(QStringLiteral("次")));
     sampleRow->addStretch();
-    layout->addLayout(sampleRow);
+    body->addLayout(sampleRow);
     connect(m_sampleCount, &QSpinBox::valueChanged, this, &MeasureControlPanel::sampleCountChanged);
 
     auto *buttons = new QGridLayout;
@@ -106,20 +100,22 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     buttons->addWidget(startButton, 0, 0);
     buttons->addWidget(manualButton, 0, 1);
     buttons->addWidget(stopButton, 1, 0, 1, 2);
-    layout->addLayout(buttons);
+    body->addLayout(buttons);
 
     connect(startButton, &QPushButton::clicked, this, &MeasureControlPanel::startRequested);
     connect(manualButton, &QPushButton::clicked, this, &MeasureControlPanel::manualRequested);
     connect(stopButton, &QPushButton::clicked, this, &MeasureControlPanel::stopRequested);
 
+    layout->addLayout(body);
+
     setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-                      "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-                      "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
-                      "QPushButton[role='danger'] {background:#FFF4F1;border-color:#F1D0C5;color:#A54E2F;}"
-                      "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
-                      "QProgressBar::chunk{background:%4;border-radius:4px;}"
-                  )
-                      .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name()));
+        "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
+        "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
+        "QPushButton[role='danger'] {background:#FFF4F1;border-color:#F1D0C5;color:#A54E2F;}"
+        "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
+        "QProgressBar::chunk{background:%4;border-radius:4px;}"
+        )
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)

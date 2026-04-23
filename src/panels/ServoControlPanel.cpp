@@ -11,31 +11,30 @@
 
 #include "theme/Theme.h"
 #include "widgets/DpadControlWidget.h"
+#include "widgets/PanelHeaderWidget.h"
 
 ServoControlPanel::ServoControlPanel(QWidget *parent)
-: QWidget(parent)
+    : QWidget(parent)
 {
     setObjectName(QStringLiteral("servoPanel"));
     auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-    auto *title = new QLabel(QStringLiteral("伺服 / 点动"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    auto *titleRow = new QHBoxLayout;
-    titleRow->setContentsMargins(0, 0, 0, 0);
-    titleRow->setSpacing(6);
-    titleRow->addWidget(title);
-    titleRow->addStretch();
+    auto *header = new PanelHeaderWidget(QStringLiteral("伺服 / 点动"));
     auto *homeButton = new QPushButton(QStringLiteral("回原点"));
     homeButton->setObjectName(QStringLiteral("servoHomeButton"));
     homeButton->setFixedHeight(22);
     connect(homeButton, &QPushButton::clicked, this, &ServoControlPanel::homeRequested);
-    titleRow->addWidget(homeButton);
-    layout->addLayout(titleRow);
+    header->rightLayout()->addWidget(homeButton);
+    layout->addWidget(header);
+
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
+    body->setSpacing(8);
 
     m_dpad = new DpadControlWidget;
-    layout->addWidget(m_dpad);
+    body->addWidget(m_dpad);
     connect(m_dpad, &DpadControlWidget::jogRequested, this, &ServoControlPanel::jogRequested);
     connect(m_dpad, &DpadControlWidget::homeRequested, this, &ServoControlPanel::homeRequested);
 
@@ -50,13 +49,13 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     m_stepSpin->setValue(200);
     m_stepSpin->setFixedHeight(26);
     stepRow->addWidget(m_stepSpin, 1);
-    layout->addLayout(stepRow);
+    body->addLayout(stepRow);
     connect(m_stepSpin, &QSpinBox::valueChanged, this, &ServoControlPanel::stepChanged);
 
-    m_jogHintLabel = new QLabel(QStringLiteral("↑ ↓ ← →  JOG   H  HOME"));
+    m_jogHintLabel = new QLabel(QStringLiteral("↑ ↓ ← → JOG H HOME"));
     m_jogHintLabel->setObjectName(QStringLiteral("servoJogHintLabel"));
     m_jogHintLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
-    layout->addWidget(m_jogHintLabel);
+    body->addWidget(m_jogHintLabel);
 
     auto *gotoWrap = new QWidget;
     auto *gotoLayout = new QGridLayout(gotoWrap);
@@ -87,20 +86,22 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     gotoLayout->addWidget(m_xSpin, 1, 0);
     gotoLayout->addWidget(m_ySpin, 1, 1);
     gotoLayout->addWidget(moveButton, 2, 0, 1, 2);
-    layout->addWidget(gotoWrap);
+    body->addWidget(gotoWrap);
     connect(moveButton, &QPushButton::clicked, this, [this] { emit gotoRequested(m_xSpin->value(), m_ySpin->value()); });
 
     auto *zHomeCheck = new QCheckBox(QStringLiteral("Z 轴回零"));
     zHomeCheck->setObjectName(QStringLiteral("servoZHomeCheck"));
-    layout->addWidget(zHomeCheck);
+    body->addWidget(zHomeCheck);
+
+    layout->addLayout(body);
 
     setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-                      "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-                      "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px;}"
-                      "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
-                      "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
-                   )
-                      .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name()));
+        "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
+        "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px;}"
+        "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
+        "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
+        )
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name()));
 }
 
 void ServoControlPanel::setPosition(const MachinePosition &position)

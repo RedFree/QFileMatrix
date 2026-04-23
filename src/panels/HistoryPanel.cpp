@@ -13,6 +13,7 @@
 
 #include "models/MeasurementTableModel.h"
 #include "theme/Theme.h"
+#include "widgets/PanelHeaderWidget.h"
 
 namespace {
 class HistoryVerdictDelegate : public QStyledItemDelegate
@@ -80,16 +81,11 @@ HistoryPanel::HistoryPanel(QWidget *parent)
 {
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(8);
+    layout->setSpacing(0);
 
-    auto *header = new QHBoxLayout;
-    header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(6);
-    m_titleLabel = new QLabel(QStringLiteral("测量记录 · 0 条"));
+    auto *header = new PanelHeaderWidget(QStringLiteral("测量记录 · 0 条"));
+    m_titleLabel = header->titleLabel();
     m_titleLabel->setObjectName(QStringLiteral("historyTitleLabel"));
-    m_titleLabel->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    header->addWidget(m_titleLabel);
-    header->addStretch();
 
     auto *search = new QLineEdit;
     search->setObjectName(QStringLiteral("historySearchInput"));
@@ -97,23 +93,23 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     search->setFixedWidth(140);
     search->setFixedHeight(24);
     search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
-                              .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
-    header->addWidget(search);
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
+    header->rightLayout()->addWidget(search);
 
     const auto makeToolButton = [](const QString &name, const QString &text) {
         auto *button = new QPushButton(text);
         button->setObjectName(name);
         button->setFixedHeight(24);
         button->setStyleSheet(QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-                                             "QPushButton:hover{background:%4;}")
-                                  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name()));
+            "QPushButton:hover{background:%4;}")
+            .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name()));
         return button;
     };
-    header->addWidget(makeToolButton(QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
-    header->addWidget(makeToolButton(QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
-    header->addWidget(makeToolButton(QStringLiteral("historyExportButton"), QStringLiteral("导出")));
-    header->addWidget(makeToolButton(QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
-    layout->addLayout(header);
+    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
+    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
+    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyExportButton"), QStringLiteral("导出")));
+    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
+    layout->addWidget(header);
 
     m_table = new QTableView;
     m_table->setObjectName(QStringLiteral("historyTable"));

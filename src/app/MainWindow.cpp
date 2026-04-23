@@ -22,6 +22,7 @@
 #include "panels/TopTitleBar.h"
 #include "theme/Theme.h"
 #include "widgets/CameraViewWidget.h"
+#include "widgets/PanelHeaderWidget.h"
 #include "widgets/ProfileChartWidget.h"
 #include "widgets/StatCardWidget.h"
 
@@ -414,17 +415,11 @@ QWidget *MainWindow::createCameraPanel()
     auto *frame = new QFrame;
     frame->setStyleSheet(Theme::frameStyle());
     auto *layout = new QVBoxLayout(frame);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-    auto *header = new QHBoxLayout;
-    header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(6);
-    auto *title = new QLabel(QStringLiteral("实时图像 · CAM-01"));
-    title->setObjectName(QStringLiteral("cameraPanelTitleLabel"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    header->addWidget(title);
-    header->addStretch();
+    auto *header = new PanelHeaderWidget(QStringLiteral("实时图像 · CAM-01"));
+    header->titleLabel()->setObjectName(QStringLiteral("cameraPanelTitleLabel"));
 
     auto *programLabel = new QLabel(QStringLiteral("程序号"));
     auto *programInput = new QLineEdit(QStringLiteral("1010"));
@@ -443,28 +438,31 @@ QWidget *MainWindow::createCameraPanel()
     expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
     expandButton->setFixedHeight(24);
     const auto fieldStyle = QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
-                                .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
     programInput->setStyleSheet(fieldStyle);
     batchInput->setStyleSheet(fieldStyle);
     const auto buttonStyle = QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-                                            "QPushButton:hover{background:%4;}")
-                                 .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name());
+        "QPushButton:hover{background:%4;}")
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name());
     pauseButton->setStyleSheet(buttonStyle);
     expandButton->setStyleSheet(buttonStyle);
     connect(pauseButton, &QPushButton::clicked, this, [this] {
         m_controller->setPaused(!m_controller->state().paused);
     });
-    header->addWidget(programLabel);
-    header->addWidget(programInput);
-    header->addWidget(batchLabel);
-    header->addWidget(batchInput);
-    header->addWidget(pauseButton);
-    header->addWidget(expandButton);
-    layout->addLayout(header);
+    header->rightLayout()->addWidget(programLabel);
+    header->rightLayout()->addWidget(programInput);
+    header->rightLayout()->addWidget(batchLabel);
+    header->rightLayout()->addWidget(batchInput);
+    header->rightLayout()->addWidget(pauseButton);
+    header->rightLayout()->addWidget(expandButton);
+    layout->addWidget(header);
 
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
     m_cameraView = new CameraViewWidget;
     m_cameraView->setObjectName(QStringLiteral("cameraView"));
-    layout->addWidget(m_cameraView, 1);
+    body->addWidget(m_cameraView, 1);
+    layout->addLayout(body);
     return frame;
 }
 
@@ -473,17 +471,11 @@ QWidget *MainWindow::createProfilePanel()
     auto *frame = new QFrame;
     frame->setStyleSheet(Theme::frameStyle());
     auto *layout = new QVBoxLayout(frame);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-    auto *header = new QHBoxLayout;
-    header->setContentsMargins(0, 0, 0, 0);
-    header->setSpacing(6);
-    auto *title = new QLabel(QStringLiteral("膜厚轮廓曲线"));
-    title->setObjectName(QStringLiteral("profilePanelTitleLabel"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    header->addWidget(title);
-    header->addStretch();
+    auto *header = new PanelHeaderWidget(QStringLiteral("膜厚轮廓曲线"));
+    header->titleLabel()->setObjectName(QStringLiteral("profilePanelTitleLabel"));
 
     auto *scaleCombo = new QComboBox;
     scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
@@ -491,18 +483,21 @@ QWidget *MainWindow::createProfilePanel()
     scaleCombo->setFixedWidth(68);
     scaleCombo->setFixedHeight(24);
     scaleCombo->setStyleSheet(QStringLiteral("QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
-                                             "QComboBox::drop-down{border:none;width:18px;}")
-                                 .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
+        "QComboBox::drop-down{border:none;width:18px;}")
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
     auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
     hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
     hint->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
-    header->addWidget(scaleCombo);
-    header->addWidget(hint);
-    layout->addLayout(header);
+    header->rightLayout()->addWidget(scaleCombo);
+    header->rightLayout()->addWidget(hint);
+    layout->addWidget(header);
 
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
     m_profileChart = new ProfileChartWidget;
     m_profileChart->setObjectName(QStringLiteral("profileChart"));
-    layout->addWidget(m_profileChart, 1);
+    body->addWidget(m_profileChart, 1);
+    layout->addLayout(body);
     return frame;
 }
 
@@ -511,21 +506,19 @@ QWidget *MainWindow::createStatsPanel()
     auto *container = new QFrame;
     container->setStyleSheet(Theme::frameStyle());
     auto *outer = new QVBoxLayout(container);
-    outer->setContentsMargins(10, 10, 10, 10);
-    outer->setSpacing(8);
+    outer->setContentsMargins(0, 0, 0, 0);
+    outer->setSpacing(0);
 
-    auto *header = new QHBoxLayout;
-    header->setContentsMargins(0, 0, 0, 0);
-    auto *title = new QLabel(QStringLiteral("当前组 · GROUP-01"));
-    title->setObjectName(QStringLiteral("currentGroupTitleLabel"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
+    auto *header = new PanelHeaderWidget(QStringLiteral("当前组 · GROUP-01"));
+    header->titleLabel()->setObjectName(QStringLiteral("currentGroupTitleLabel"));
     auto *verdict = new QLabel(QStringLiteral("合格"));
     verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
     verdict->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:8px;padding:1px 6px;color:#357A4D;font-size:9.5px;font-weight:600;}"));
-    header->addWidget(title);
-    header->addStretch();
-    header->addWidget(verdict);
-    outer->addLayout(header);
+    header->rightLayout()->addWidget(verdict);
+    outer->addWidget(header);
+
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
 
     auto *layout = new QGridLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -559,7 +552,8 @@ QWidget *MainWindow::createStatsPanel()
     layout->addWidget(m_minCard, 1, 1);
     layout->addWidget(m_deltaCard, 0, 2);
     layout->addWidget(m_rightCard, 1, 2);
-    outer->addLayout(layout);
+    body->addLayout(layout);
+    outer->addLayout(body);
     return container;
 }
 

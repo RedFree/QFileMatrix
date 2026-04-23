@@ -7,26 +7,19 @@
 #include <cmath>
 
 #include "theme/Theme.h"
+#include "widgets/PanelHeaderWidget.h"
 #include "widgets/SensorGaugeWidget.h"
 
 SensorPanel::SensorPanel(QWidget *parent)
-: QWidget(parent)
+    : QWidget(parent)
 {
     setObjectName(QStringLiteral("sensorPanel"));
     auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
 
-    auto *headRow = new QHBoxLayout;
-    headRow->setContentsMargins(0, 0, 0, 0);
-    headRow->setSpacing(6);
-    auto *title = new QLabel(QStringLiteral("传感器"));
-    title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
-    headRow->addWidget(title);
+    auto *header = new PanelHeaderWidget(QStringLiteral("传感器"));
 
-    auto *tabRow = new QHBoxLayout;
-    tabRow->setContentsMargins(0, 0, 0, 0);
-    tabRow->setSpacing(4);
     auto *heightTab = new QPushButton(QStringLiteral("高度"));
     heightTab->setObjectName(QStringLiteral("heightTabButton"));
     heightTab->setFixedHeight(22);
@@ -36,10 +29,10 @@ SensorPanel::SensorPanel(QWidget *parent)
     const auto tabStyle = [](bool active) {
         if (active) {
             return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:#5070D7;font-size:11px;font-weight:600;}"
-                                  "QPushButton:hover{background:rgba(80,112,215,0.08);}");
+                "QPushButton:hover{background:rgba(80,112,215,0.08);}");
         }
         return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%1;font-size:11px;}"
-                              "QPushButton:hover{background:%2;color:%3;}")
+            "QPushButton:hover{background:%2;color:%3;}")
             .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().text.name());
     };
     heightTab->setProperty("active", true);
@@ -55,19 +48,20 @@ SensorPanel::SensorPanel(QWidget *parent)
     };
     connect(heightTab, &QPushButton::clicked, this, [applyTabState, heightTab] { applyTabState(heightTab); });
     connect(lightTab, &QPushButton::clicked, this, [applyTabState, lightTab] { applyTabState(lightTab); });
-    tabRow->addWidget(heightTab);
-    tabRow->addWidget(lightTab);
-    tabRow->addStretch();
-    headRow->addStretch();
-    headRow->addLayout(tabRow, 1);
-    layout->addLayout(headRow);
+    header->rightLayout()->addWidget(heightTab);
+    header->rightLayout()->addWidget(lightTab);
+    layout->addWidget(header);
+
+    auto *body = new QVBoxLayout;
+    body->setContentsMargins(10, 10, 10, 10);
+    body->setSpacing(8);
 
     m_gauge = new SensorGaugeWidget;
     m_gauge->setLabel(QStringLiteral("高度 H"));
     m_gauge->setUnit(QStringLiteral("μm"));
     m_gauge->setRange(-1000.0, 1000.0);
     m_gauge->setValue(-58.79);
-    layout->addWidget(m_gauge);
+    body->addWidget(m_gauge);
 
     auto *detailGrid = new QGridLayout;
     detailGrid->setHorizontalSpacing(10);
@@ -102,8 +96,9 @@ SensorPanel::SensorPanel(QWidget *parent)
     auto *detailWrap = new QWidget;
     detailWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;padding-top:8px;").arg(Theme::palette().divider.name()));
     detailWrap->setLayout(detailGrid);
-    layout->addWidget(detailWrap);
+    body->addWidget(detailWrap);
 
+    layout->addLayout(body);
     refreshDerivedLabels(-58.79);
 }
 
