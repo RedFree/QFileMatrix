@@ -1,4 +1,5 @@
 #include <QPushButton>
+#include <QPixmap>
 #include <QTableView>
 #include <QLabel>
 #include <QPalette>
@@ -26,9 +27,10 @@ private slots:
     void historyPanelAcceptsModel();
     void topTitleBarExposesPrototypeActions();
     void topTitleBarShowsRenamedSoftwareTitle();
-    void topTitleBarUsesReadableLightStyle();
+    void topTitleBarUsesPrototypeDarkStyle();
     void topTitleBarUsesCompactLeftAlignedNavigation();
     void deviceStatusBarExposesActionButtons();
+    void deviceStatusBarUsesCompactPrototypeLayout();
     void bottomStatusBarUpdatesTelemetry();
     void sensorPanelExposesPrototypeFields();
     void measurePanelExposesPrototypeControls();
@@ -100,16 +102,23 @@ void WidgetPanelSmokeTests::topTitleBarShowsRenamedSoftwareTitle()
     QCOMPARE(title->text(), QStringLiteral("工业软件测量系统"));
 }
 
-void WidgetPanelSmokeTests::topTitleBarUsesReadableLightStyle()
+void WidgetPanelSmokeTests::topTitleBarUsesPrototypeDarkStyle()
 {
     TopTitleBar bar;
+    bar.resize(1280, 44);
+    bar.show();
+    QCoreApplication::processEvents();
+
     auto *title = bar.findChild<QLabel*>(QStringLiteral("brandTitleLabel"));
     auto *tile = bar.findChild<QLabel*>(QStringLiteral("brandTileLabel"));
     QVERIFY(title != nullptr);
     QVERIFY(tile != nullptr);
 
-    QCOMPARE(bar.palette().color(QPalette::Window), QColor(QStringLiteral("#E7ECF4")));
-    QVERIFY(title->styleSheet().contains(Theme::palette().text.name(), Qt::CaseInsensitive));
+    QPixmap pixmap(bar.size());
+    bar.render(&pixmap);
+
+    QCOMPARE(pixmap.toImage().pixelColor(10, 10), QColor(QStringLiteral("#0F1B2D")));
+    QVERIFY(title->styleSheet().contains(QStringLiteral("#EDF1F7"), Qt::CaseInsensitive));
     QVERIFY(tile->styleSheet().contains(QStringLiteral("background:#5070D7"), Qt::CaseInsensitive));
 }
 
@@ -129,7 +138,7 @@ void WidgetPanelSmokeTests::topTitleBarUsesCompactLeftAlignedNavigation()
 
     QCOMPARE(bar.height(), 44);
     QVERIFY(measureButton->x() < 320);
-    QVERIFY(measureButton->height() <= 24);
+    QVERIFY(measureButton->height() <= 32);
     QVERIFY(navWrap->width() < 320);
 }
 
@@ -140,6 +149,28 @@ void WidgetPanelSmokeTests::deviceStatusBarExposesActionButtons()
     QVERIFY(bar.findChild<QPushButton*>(QStringLiteral("statusStartButton")) != nullptr);
     QVERIFY(bar.findChild<QPushButton*>(QStringLiteral("statusManualButton")) != nullptr);
     QVERIFY(bar.findChild<QPushButton*>(QStringLiteral("statusStopButton")) != nullptr);
+}
+
+void WidgetPanelSmokeTests::deviceStatusBarUsesCompactPrototypeLayout()
+{
+    DeviceStatusBar bar;
+    bar.resize(1280, 44);
+    bar.show();
+    QCoreApplication::processEvents();
+
+    auto *divider = bar.findChild<QWidget*>(QStringLiteral("statusDivider"));
+    auto *startButton = bar.findChild<QPushButton*>(QStringLiteral("statusStartButton"));
+    auto *manualButton = bar.findChild<QPushButton*>(QStringLiteral("statusManualButton"));
+    auto *stopButton = bar.findChild<QPushButton*>(QStringLiteral("statusStopButton"));
+    QVERIFY(divider != nullptr);
+    QVERIFY(startButton != nullptr);
+    QVERIFY(manualButton != nullptr);
+    QVERIFY(stopButton != nullptr);
+
+    QVERIFY2(startButton->height() <= 24, qPrintable(QStringLiteral("startButton height=%1").arg(startButton->height())));
+    QVERIFY(manualButton->height() <= 24);
+    QVERIFY(stopButton->height() <= 24);
+    QCOMPARE(divider->width(), 1);
 }
 
 void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()

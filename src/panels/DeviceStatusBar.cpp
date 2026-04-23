@@ -24,8 +24,10 @@ LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const 
 DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     : QWidget(parent)
 {
+    setFixedHeight(44);
+
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(12, 8, 12, 8);
+    layout->setContentsMargins(14, 0, 14, 0);
     layout->setSpacing(18);
 
     auto *leftWrap = new QWidget;
@@ -41,17 +43,22 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     leftLayout->addWidget(makeStatus(QStringLiteral("emergencyStatus"), QStringLiteral("急停"), QStringLiteral("Released"), LedIndicatorWidget::State::Off));
     layout->addWidget(leftWrap);
 
-    layout->addStretch();
+    auto *divider = new QWidget;
+    divider->setObjectName(QStringLiteral("statusDivider"));
+    divider->setFixedSize(1, 22);
+    divider->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().border.name()));
+    layout->addWidget(divider);
 
     auto *progressWrap = new QWidget;
     auto *progressLayout = new QHBoxLayout(progressWrap);
     progressLayout->setContentsMargins(0, 0, 0, 0);
     progressLayout->setSpacing(10);
+    progressWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_progressTitleLabel = new QLabel(QStringLiteral("测量进度"));
-    m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
+    m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
     m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 10px;color:#3550A8;font-size:11px;font-weight:600;}"));
+    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:#EAF0FB;border:1px solid #D6E0F3;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setValue(0);
@@ -66,7 +73,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     progressLayout->addWidget(m_progressBar);
     progressLayout->addWidget(m_percentLabel);
     progressLayout->addWidget(m_stateLabel);
-    layout->addWidget(progressWrap);
+    layout->addWidget(progressWrap, 1);
 
     auto *actionWrap = new QWidget;
     auto *actionLayout = new QHBoxLayout(actionWrap);
@@ -76,10 +83,13 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     auto *startButton = new QPushButton(QStringLiteral("开始测量"));
     startButton->setObjectName(QStringLiteral("statusStartButton"));
     startButton->setProperty("role", QStringLiteral("primary"));
+    startButton->setFixedHeight(22);
     auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
     manualButton->setObjectName(QStringLiteral("statusManualButton"));
+    manualButton->setFixedHeight(22);
     auto *stopButton = new QPushButton(QStringLiteral("停止"));
     stopButton->setObjectName(QStringLiteral("statusStopButton"));
+    stopButton->setFixedHeight(22);
 
     connect(startButton, &QPushButton::clicked, this, &DeviceStatusBar::startRequested);
     connect(manualButton, &QPushButton::clicked, this, &DeviceStatusBar::manualRequested);
@@ -93,7 +103,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     setStyleSheet(QStringLiteral(
                       "QProgressBar{background:%1;border:1px solid %2;border-radius:4px;height:6px;}"
                       "QProgressBar::chunk{background:%3;border-radius:4px;}"
-                      "QPushButton{background:%4;border:1px solid %2;border-radius:6px;padding:6px 10px;color:%5;font-size:11px;}"
+                      "QPushButton{background:%4;border:1px solid %2;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%5;font-size:11px;}"
                       "QPushButton:hover{background:%1;}"
                       "QPushButton[role='primary']{background:%3;border-color:%3;color:white;}"
                       "QPushButton#statusStopButton{background:#FFF4F1;border-color:#F1D0C5;color:#A54E2F;}"
@@ -111,6 +121,6 @@ void DeviceStatusBar::setMeasuring(bool measuring)
 {
     m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(measuring
-                                    ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 10px;color:#3550A8;font-size:11px;font-weight:600;}")
-                                    : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 10px;color:#596579;font-size:11px;font-weight:600;}"));
+                                    ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:10px;padding:2px 8px;color:#3550A8;font-size:11px;font-weight:600;}")
+                                    : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:10px;padding:2px 8px;color:#596579;font-size:11px;font-weight:600;}"));
 }
