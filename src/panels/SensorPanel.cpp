@@ -18,7 +18,7 @@ SensorPanel::SensorPanel(QWidget *parent)
 
     auto *headRow = new QHBoxLayout;
     headRow->setContentsMargins(0, 0, 0, 0);
-    headRow->setSpacing(8);
+    headRow->setSpacing(6);
     auto *title = new QLabel(QStringLiteral("传感器"));
     title->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
     headRow->addWidget(title);
@@ -28,15 +28,18 @@ SensorPanel::SensorPanel(QWidget *parent)
     tabRow->setSpacing(4);
     auto *heightTab = new QPushButton(QStringLiteral("高度"));
     heightTab->setObjectName(QStringLiteral("heightTabButton"));
+    heightTab->setFixedHeight(22);
     auto *lightTab = new QPushButton(QStringLiteral("光强"));
     lightTab->setObjectName(QStringLiteral("lightTabButton"));
+    lightTab->setFixedHeight(22);
     const auto tabStyle = [](bool active) {
         if (active) {
-            return QStringLiteral("QPushButton{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:6px;padding:4px 10px;color:#3550A8;font-size:11px;font-weight:600;}");
+            return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:#5070D7;font-size:11px;font-weight:600;}"
+                                  "QPushButton:hover{background:rgba(80,112,215,0.08);}");
         }
-        return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:4px 10px;color:%1;font-size:11px;}"
-                              "QPushButton:hover{background:%2;border-color:%3;}")
-            .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().border.name());
+        return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%1;font-size:11px;}"
+                              "QPushButton:hover{background:%2;color:%3;}")
+            .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().text.name());
     };
     heightTab->setProperty("active", true);
     lightTab->setProperty("active", false);

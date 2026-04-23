@@ -34,6 +34,7 @@ private slots:
     void bottomStatusBarUpdatesTelemetry();
     void sensorPanelExposesPrototypeFields();
     void measurePanelExposesPrototypeControls();
+    void rightPanelsUseCompactPrototypeSpacing();
     void servoPanelExposesPrototypeControls();
     void sensorTabsMoveActiveStateWhenClicked();
     void measureModeTabsMoveActiveStateWhenClicked();
@@ -210,6 +211,43 @@ void WidgetPanelSmokeTests::measurePanelExposesPrototypeControls()
     QVERIFY(panel.findChild<QPushButton*>(QStringLiteral("singleModeButton")) != nullptr);
     QVERIFY(panel.findChild<QWidget*>(QStringLiteral("autoSampleCheck")) != nullptr);
     QVERIFY(panel.findChild<QWidget*>(QStringLiteral("cycleTestCheck")) != nullptr);
+}
+
+void WidgetPanelSmokeTests::rightPanelsUseCompactPrototypeSpacing()
+{
+    SensorPanel sensorPanel;
+    MeasureControlPanel measurePanel;
+
+    sensorPanel.resize(320, 320);
+    measurePanel.resize(320, 320);
+    sensorPanel.show();
+    measurePanel.show();
+    QCoreApplication::processEvents();
+
+    auto *heightTab = sensorPanel.findChild<QPushButton*>(QStringLiteral("heightTabButton"));
+    auto *lightTab = sensorPanel.findChild<QPushButton*>(QStringLiteral("lightTabButton"));
+    auto *autoButton = measurePanel.findChild<QPushButton*>(QStringLiteral("autoModeButton"));
+    auto *singleButton = measurePanel.findChild<QPushButton*>(QStringLiteral("singleModeButton"));
+    auto *startButton = measurePanel.findChild<QPushButton*>(QStringLiteral("startButton"));
+    auto *manualButton = measurePanel.findChild<QPushButton*>(QStringLiteral("manualButton"));
+    auto *stopButton = measurePanel.findChild<QPushButton*>(QStringLiteral("stopButton"));
+    QVERIFY(heightTab != nullptr);
+    QVERIFY(lightTab != nullptr);
+    QVERIFY(autoButton != nullptr);
+    QVERIFY(singleButton != nullptr);
+    QVERIFY(startButton != nullptr);
+    QVERIFY(manualButton != nullptr);
+    QVERIFY(stopButton != nullptr);
+
+    QVERIFY(heightTab->height() <= 24);
+    QVERIFY(lightTab->height() <= 24);
+    QVERIFY(autoButton->height() <= 24);
+    QVERIFY(singleButton->height() <= 24);
+    QVERIFY(startButton->height() <= 28);
+    QVERIFY(manualButton->height() <= 28);
+    QVERIFY(stopButton->height() <= 28);
+    QVERIFY(!heightTab->styleSheet().contains(QStringLiteral("#EEF2FF"), Qt::CaseInsensitive));
+    QVERIFY(!autoButton->styleSheet().contains(QStringLiteral("background:#FFFFFF"), Qt::CaseInsensitive));
 }
 
 void WidgetPanelSmokeTests::servoPanelExposesPrototypeControls()
