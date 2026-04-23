@@ -1,6 +1,10 @@
 #include "panels/TopTitleBar.h"
 
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QSizePolicy>
+#include <QVBoxLayout>
 
 namespace {
 QPushButton *makeNavButton(const QString &name, const QString &text, bool active = false)
