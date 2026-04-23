@@ -2,6 +2,7 @@
 #include <QPixmap>
 #include <QTableView>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPalette>
 #include <QtTest/QSignalSpy>
 #include <QtTest/QTest>
@@ -38,6 +39,7 @@ private slots:
     void rightPanelsUseCompactPrototypeSpacing();
     void servoPanelExposesPrototypeControls();
     void servoPanelUsesCompactPrototypeLayout();
+    void historyPanelUsesPrototypeSearchAndDelegates();
     void sensorTabsMoveActiveStateWhenClicked();
     void measureModeTabsMoveActiveStateWhenClicked();
 };
@@ -295,6 +297,22 @@ void WidgetPanelSmokeTests::servoPanelUsesCompactPrototypeLayout()
     QVERIFY(homeButton->height() <= 24);
     QVERIFY(moveButton->height() <= 24);
     QVERIFY(hintLabel->text().contains(QStringLiteral("HOME")));
+}
+
+void WidgetPanelSmokeTests::historyPanelUsesPrototypeSearchAndDelegates()
+{
+    HistoryPanel panel;
+
+    auto *search = panel.findChild<QLineEdit*>(QStringLiteral("historySearchInput"));
+    auto *table = panel.findChild<QTableView*>(QStringLiteral("historyTable"));
+    QVERIFY(search != nullptr);
+    QVERIFY(table != nullptr);
+
+    QCOMPARE(search->width(), 140);
+    QVERIFY(table->itemDelegateForColumn(5) != nullptr);
+    QVERIFY(table->itemDelegateForColumn(6) != nullptr);
+    QVERIFY(table->itemDelegateForColumn(5)->objectName() == QStringLiteral("historyVerdictDelegate"));
+    QVERIFY(table->itemDelegateForColumn(6)->objectName() == QStringLiteral("historyNumericDelegate"));
 }
 
 void WidgetPanelSmokeTests::sensorTabsMoveActiveStateWhenClicked()

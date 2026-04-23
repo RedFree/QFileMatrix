@@ -5,12 +5,75 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPainter>
 #include <QPushButton>
+#include <QStyledItemDelegate>
 #include <QTableView>
 #include <QVBoxLayout>
 
 #include "models/MeasurementTableModel.h"
 #include "theme/Theme.h"
+
+namespace {
+class HistoryVerdictDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+    {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+
+        if (option.state & QStyle::State_Selected) {
+            painter->fillRect(option.rect, QColor(QStringLiteral("#EEF2FF")));
+        }
+
+        const QString verdict = index.data(Qt::DisplayRole).toString();
+        QColor bg = QColor(QStringLiteral("#F3F5F8"));
+        QColor border = QColor(QStringLiteral("#E2E6EC"));
+        QColor fg = QColor(QStringLiteral("#596579"));
+        QString text = QStringLiteral("待定");
+
+        if (verdict == QStringLiteral("ok")) {
+            bg = QColor(QStringLiteral("#EEF7F0"));
+            border = QColor(QStringLiteral("#D7ECDC"));
+            fg = QColor(QStringLiteral("#357A4D"));
+            text = QStringLiteral("合格");
+        } else if (verdict == QStringLiteral("warn")) {
+            bg = QColor(QStringLiteral("#FFF9EA"));
+            border = QColor(QStringLiteral("#F2E2AC"));
+            fg = QColor(QStringLiteral("#9A6B00"));
+            text = QStringLiteral("临界");
+        } else if (verdict == QStringLiteral("err")) {
+            bg = QColor(QStringLiteral("#FFF4F1"));
+            border = QColor(QStringLiteral("#F1D0C5"));
+            fg = QColor(QStringLiteral("#A54E2F"));
+            text = QStringLiteral("超差");
+        }
+
+        const QRect pillRect = option.rect.adjusted(6, 5, -6, -5);
+        painter->setPen(border);
+        painter->setBrush(bg);
+        painter->drawRoundedRect(pillRect, 8, 8);
+        painter->setPen(fg);
+        painter->drawText(pillRect, Qt::AlignCenter, text);
+        painter->restore();
+    }
+};
+
+class HistoryNumericDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
+    }
+};
+}
 
 HistoryPanel::HistoryPanel(QWidget *parent)
     : QWidget(parent)
@@ -31,7 +94,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     auto *search = new QLineEdit;
     search->setObjectName(QStringLiteral("historySearchInput"));
     search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
-    search->setFixedWidth(150);
+    search->setFixedWidth(140);
     search->setFixedHeight(24);
     search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
                               .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
@@ -63,6 +126,16 @@ HistoryPanel::HistoryPanel(QWidget *parent)
                                         "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:11px;font-weight:600;}"
                                         "QTableView::item:selected{background:#EEF2FF;color:%5;}")
                                .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgRail.name(), Theme::palette().text.name()));
+
+    auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
+    verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
+    m_table->setItemDelegateForColumn(5, verdictDelegate);
+
+    auto *numericDelegate = new HistoryNumericDelegate(m_table);
+    numericDelegate->setObjectName(QStringLiteral("historyNumericDelegate"));
+    for (int column : {6, 7, 8, 9, 10, 12, 13}) {
+        m_table->setItemDelegateForColumn(column, numericDelegate);
+    }
 
     layout->addWidget(m_table);
 }
