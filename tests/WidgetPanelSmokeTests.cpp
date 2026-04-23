@@ -205,19 +205,22 @@ void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()
 
 void WidgetPanelSmokeTests::bottomStatusBarUsesPrototypeMetaStrip()
 {
-    BottomStatusBar bar;
+BottomStatusBar bar;
 
-    auto *buildLabel = bar.findChild<QLabel*>(QStringLiteral("bottomBuildLabel"));
-    auto *userLabel = bar.findChild<QLabel*>(QStringLiteral("bottomUserLabel"));
-    auto *versionLabel = bar.findChild<QLabel*>(QStringLiteral("bottomVersionLabel"));
-    QVERIFY(buildLabel != nullptr);
-    QVERIFY(userLabel != nullptr);
-    QVERIFY(versionLabel != nullptr);
+auto *buildLabel = bar.findChild<QLabel*>(QStringLiteral("bottomBuildLabel"));
+auto *userLabel = bar.findChild<QLabel*>(QStringLiteral("bottomUserLabel"));
+auto *versionLabel = bar.findChild<QLabel*>(QStringLiteral("bottomVersionLabel"));
+auto *connectionLabel = bar.findChild<QLabel*>(QStringLiteral("bottomConnectionLabel"));
+QVERIFY(buildLabel != nullptr);
+QVERIFY(userLabel != nullptr);
+QVERIFY(versionLabel != nullptr);
+QVERIFY(connectionLabel != nullptr);
 
-    QCOMPARE(bar.height(), 28);
-    QCOMPARE(buildLabel->text(), QStringLiteral("构建 #2026.04.20"));
-    QCOMPARE(userLabel->text(), QStringLiteral("用户: HXS"));
-    QCOMPARE(versionLabel->text(), QStringLiteral("v1.0.1"));
+QCOMPARE(bar.height(), 28);
+QCOMPARE(buildLabel->text(), QStringLiteral("构建 #2026.04.20"));
+QCOMPARE(userLabel->text(), QStringLiteral("用户: HXS"));
+QCOMPARE(versionLabel->text(), QStringLiteral("v1.0.1"));
+QCOMPARE(connectionLabel->text(), QStringLiteral("连接成功"));
 }
 
 void WidgetPanelSmokeTests::sensorPanelExposesPrototypeFields()

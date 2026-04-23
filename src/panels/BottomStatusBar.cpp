@@ -3,8 +3,40 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLocale>
+#include <QPainter>
 
 #include "theme/Theme.h"
+
+namespace {
+class LedBulb : public QWidget
+{
+public:
+explicit LedBulb(const QColor &color, QWidget *parent = nullptr)
+: QWidget(parent), m_color(color)
+{
+setFixedSize(9, 9);
+setAttribute(Qt::WA_TranslucentBackground);
+}
+void setColor(const QColor &c) { m_color = c; update(); }
+protected:
+void paintEvent(QPaintEvent *) override
+{
+QPainter p(this);
+p.setRenderHint(QPainter::Antialiasing);
+p.setPen(Qt::NoPen);
+p.setBrush(m_color);
+p.drawEllipse(rect().adjusted(1, 1, -1, -1));
+}
+private:
+QColor m_color;
+};
+} // namespace
+
+static void setLedBulbColor(QWidget *led, const QColor &color)
+{
+if (auto *bulb = dynamic_cast<LedBulb*>(led))
+bulb->setColor(color);
+}
 
 BottomStatusBar::BottomStatusBar(QWidget *parent)
 : QWidget(parent)
@@ -55,10 +87,14 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     layout->addSpacing(16);
     layout->addWidget(m_sampleLabel);
     layout->addSpacing(16);
-    layout->addWidget(m_fpsLabel);
-    layout->addSpacing(16);
-    layout->addWidget(m_connectionLabel);
-    layout->addSpacing(8);
+layout->addWidget(m_fpsLabel);
+layout->addSpacing(16);
+auto *led = new LedBulb(QColor(QStringLiteral("#357A4D")));
+m_connectionLed = led;
+layout->addWidget(m_connectionLed);
+layout->addSpacing(4);
+layout->addWidget(m_connectionLabel);
+layout->addSpacing(8);
     layout->addWidget(m_measureStateLabel);
     layout->addSpacing(8);
 
@@ -125,10 +161,13 @@ void BottomStatusBar::setFrameRate(double fps)
 
 void BottomStatusBar::setConnected(bool connected)
 {
-    m_connectionLabel->setText(connected ? QStringLiteral("连接正常") : QStringLiteral("连接断开"));
-    m_connectionLabel->setStyleSheet(connected
-        ? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}")
-        : QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:9px;padding:1px 8px;color:#A54E2F;font-size:10px;font-weight:600;font-family:Consolas;}"));
+m_connectionLabel->setText(connected ? QStringLiteral("连接成功") : QStringLiteral("连接断开"));
+m_connectionLabel->setStyleSheet(connected
+? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}")
+: QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:9px;padding:1px 8px;color:#A54E2F;font-size:10px;font-weight:600;font-family:Consolas;}"));
+setLedBulbColor(m_connectionLed, connected
+? QColor(QStringLiteral("#357A4D"))
+: QColor(QStringLiteral("#A54E2F")));
 }
 
 void BottomStatusBar::setMeasuring(bool measuring)
