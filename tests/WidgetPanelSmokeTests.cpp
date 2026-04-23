@@ -36,6 +36,7 @@ private slots:
     void measurePanelExposesPrototypeControls();
     void rightPanelsUseCompactPrototypeSpacing();
     void servoPanelExposesPrototypeControls();
+    void servoPanelUsesCompactPrototypeLayout();
     void sensorTabsMoveActiveStateWhenClicked();
     void measureModeTabsMoveActiveStateWhenClicked();
 };
@@ -257,6 +258,25 @@ void WidgetPanelSmokeTests::servoPanelExposesPrototypeControls()
     QVERIFY2(panel.findChild<QPushButton*>(QStringLiteral("servoHomeButton")) != nullptr, "missing servoHomeButton");
     QVERIFY2(panel.findChild<QLabel*>(QStringLiteral("servoJogHintLabel")) != nullptr, "missing servoJogHintLabel");
     QVERIFY2(panel.findChild<QPushButton*>(QStringLiteral("servoMoveButton")) != nullptr, "missing servoMoveButton");
+}
+
+void WidgetPanelSmokeTests::servoPanelUsesCompactPrototypeLayout()
+{
+    ServoControlPanel panel;
+    panel.resize(320, 420);
+    panel.show();
+    QCoreApplication::processEvents();
+
+    auto *homeButton = panel.findChild<QPushButton*>(QStringLiteral("servoHomeButton"));
+    auto *moveButton = panel.findChild<QPushButton*>(QStringLiteral("servoMoveButton"));
+    auto *hintLabel = panel.findChild<QLabel*>(QStringLiteral("servoJogHintLabel"));
+    QVERIFY(homeButton != nullptr);
+    QVERIFY(moveButton != nullptr);
+    QVERIFY(hintLabel != nullptr);
+
+    QVERIFY(homeButton->height() <= 24);
+    QVERIFY(moveButton->height() <= 24);
+    QVERIFY(hintLabel->text().contains(QStringLiteral("HOME")));
 }
 
 void WidgetPanelSmokeTests::sensorTabsMoveActiveStateWhenClicked()
