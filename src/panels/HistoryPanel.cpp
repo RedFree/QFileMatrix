@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
+#include <QPalette>
 #include <QPushButton>
 #include <QStyledItemDelegate>
 #include <QTableView>
@@ -56,7 +57,7 @@ public:
         const QRect pillRect = option.rect.adjusted(6, 5, -6, -5);
         painter->setPen(border);
         painter->setBrush(bg);
-        painter->drawRoundedRect(pillRect, 8, 8);
+        painter->drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
         painter->setPen(fg);
         painter->drawText(pillRect, Qt::AlignCenter, text);
         painter->restore();
@@ -66,13 +67,34 @@ public:
 class HistoryNumericDelegate : public QStyledItemDelegate
 {
 public:
-    using QStyledItemDelegate::QStyledItemDelegate;
+using QStyledItemDelegate::QStyledItemDelegate;
 
-    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
-    {
-        QStyledItemDelegate::initStyleOption(option, index);
-        option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
-    }
+void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+{
+QStyledItemDelegate::initStyleOption(option, index);
+option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
+}
+};
+
+class HistoryThickDelegate : public QStyledItemDelegate
+{
+public:
+using QStyledItemDelegate::QStyledItemDelegate;
+
+void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+{
+QStyledItemDelegate::initStyleOption(option, index);
+option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
+const auto verdictIdx = index.sibling(index.row(), 5);
+const QString verdict = verdictIdx.data(Qt::DisplayRole).toString();
+if (verdict == QStringLiteral("ok")) {
+option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#357A4D")));
+} else if (verdict == QStringLiteral("warn")) {
+option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#9A6B00")));
+} else if (verdict == QStringLiteral("err")) {
+option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#A54E2F")));
+}
+}
 };
 }
 
@@ -123,13 +145,17 @@ HistoryPanel::HistoryPanel(QWidget *parent)
                                         "QTableView::item:selected{background:#EEF2FF;color:%5;}")
                                .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgRail.name(), Theme::palette().text.name()));
 
-    auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
-    verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
-    m_table->setItemDelegateForColumn(5, verdictDelegate);
+auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
+verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
+m_table->setItemDelegateForColumn(5, verdictDelegate);
 
-    auto *numericDelegate = new HistoryNumericDelegate(m_table);
-    numericDelegate->setObjectName(QStringLiteral("historyNumericDelegate"));
-    for (int column : {6, 7, 8, 9, 10, 12, 13}) {
+auto *thickDelegate = new HistoryThickDelegate(m_table);
+thickDelegate->setObjectName(QStringLiteral("historyThickDelegate"));
+m_table->setItemDelegateForColumn(6, thickDelegate);
+
+auto *numericDelegate = new HistoryNumericDelegate(m_table);
+numericDelegate->setObjectName(QStringLiteral("historyNumericDelegate"));
+for (int column : {7, 8, 9, 10, 12, 13}) {
         m_table->setItemDelegateForColumn(column, numericDelegate);
     }
 

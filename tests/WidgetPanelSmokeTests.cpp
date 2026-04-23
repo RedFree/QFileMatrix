@@ -317,8 +317,8 @@ void WidgetPanelSmokeTests::historyPanelUsesPrototypeSearchAndDelegates()
     QCOMPARE(search->width(), 140);
     QVERIFY(table->itemDelegateForColumn(5) != nullptr);
     QVERIFY(table->itemDelegateForColumn(6) != nullptr);
-    QVERIFY(table->itemDelegateForColumn(5)->objectName() == QStringLiteral("historyVerdictDelegate"));
-    QVERIFY(table->itemDelegateForColumn(6)->objectName() == QStringLiteral("historyNumericDelegate"));
+QVERIFY(table->itemDelegateForColumn(5)->objectName() == QStringLiteral("historyVerdictDelegate"));
+QVERIFY(table->itemDelegateForColumn(6)->objectName() == QStringLiteral("historyThickDelegate"));
 }
 
 void WidgetPanelSmokeTests::sensorTabsMoveActiveStateWhenClicked()
