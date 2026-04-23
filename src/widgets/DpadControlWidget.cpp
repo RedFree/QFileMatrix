@@ -2,6 +2,7 @@
 
 #include <QGridLayout>
 #include <QLabel>
+#include <QLocale>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -46,25 +47,41 @@ DpadControlWidget::DpadControlWidget(QWidget *parent)
 
     auto *readout = new QVBoxLayout;
     readout->setContentsMargins(0, 0, 0, 0);
-    readout->setSpacing(6);
+    readout->setSpacing(3);
 
+    auto *xRow = new QHBoxLayout;
     auto *xLabel = new QLabel(QStringLiteral("X"));
+    xLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
     m_xValue = new QLabel;
+    m_xValue->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-weight:600;font-family:Consolas;").arg(Theme::palette().text.name()));
+    m_xValue->setAlignment(Qt::AlignRight);
+    xRow->addWidget(xLabel);
+    xRow->addStretch();
+    xRow->addWidget(m_xValue);
+
+    auto *yRow = new QHBoxLayout;
     auto *yLabel = new QLabel(QStringLiteral("Y"));
+    yLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
     m_yValue = new QLabel;
+    m_yValue->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-weight:600;font-family:Consolas;").arg(Theme::palette().text.name()));
+    m_yValue->setAlignment(Qt::AlignRight);
+    yRow->addWidget(yLabel);
+    yRow->addStretch();
+    yRow->addWidget(m_yValue);
+
+    auto *stepRow = new QHBoxLayout;
     auto *stepLabel = new QLabel(QStringLiteral("STEP"));
+    stepLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
     m_stepValue = new QLabel;
+    m_stepValue->setStyleSheet(QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
+    m_stepValue->setAlignment(Qt::AlignRight);
+    stepRow->addWidget(stepLabel);
+    stepRow->addStretch();
+    stepRow->addWidget(m_stepValue);
 
-    xLabel->setStyleSheet(Theme::titleStyle());
-    yLabel->setStyleSheet(Theme::titleStyle());
-    stepLabel->setStyleSheet(Theme::titleStyle());
-
-    readout->addWidget(xLabel);
-    readout->addWidget(m_xValue);
-    readout->addWidget(yLabel);
-    readout->addWidget(m_yValue);
-    readout->addWidget(stepLabel);
-    readout->addWidget(m_stepValue);
+    readout->addLayout(xRow);
+    readout->addLayout(yRow);
+    readout->addLayout(stepRow);
     readout->addStretch();
 
     root->addLayout(grid);
@@ -98,7 +115,7 @@ int DpadControlWidget::step() const
 
 void DpadControlWidget::updateReadout()
 {
-    m_xValue->setText(QString::number(m_position.x));
-    m_yValue->setText(QString::number(m_position.y));
-    m_stepValue->setText(QString::number(m_step));
+    m_xValue->setText(QLocale().toString(m_position.x));
+    m_yValue->setText(QLocale().toString(m_position.y));
+    m_stepValue->setText(QStringLiteral("%1 pls").arg(QLocale().toString(m_step)));
 }
