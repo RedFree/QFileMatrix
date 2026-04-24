@@ -615,18 +615,21 @@ QWidget *MainWindow::createProfilePanel()
     auto *header = new PanelHeaderWidget(QStringLiteral("膜厚轮廓曲线"));
     header->titleLabel()->setObjectName(QStringLiteral("profilePanelTitleLabel"));
 
-    auto *scaleCombo = new QComboBox;
-    scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
-    scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
-    scaleCombo->setFixedWidth(68);
-    scaleCombo->setFixedHeight(24);
-    scaleCombo->setStyleSheet(QStringLiteral("QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
-        "QComboBox::drop-down{border:none;width:18px;}")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
-    auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
-    hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
-    hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));
-    header->rightLayout()->addWidget(scaleCombo);
+ auto *scaleLabel = new QLabel(QStringLiteral("量程"));
+ scaleLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
+ auto *scaleCombo = new QComboBox;
+ scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
+ scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
+ scaleCombo->setFixedWidth(68);
+ scaleCombo->setFixedHeight(24);
+ scaleCombo->setStyleSheet(QStringLiteral("QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
+ "QComboBox::drop-down{border:none;width:18px;}")
+ .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
+ auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
+ hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
+ hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));
+ header->rightLayout()->addWidget(scaleLabel);
+ header->rightLayout()->addWidget(scaleCombo);
     header->rightLayout()->addWidget(hint);
     layout->addWidget(header);
 
