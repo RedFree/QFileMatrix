@@ -68,7 +68,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_percentLabel = new QLabel(QStringLiteral("0%"));
     m_percentLabel->setObjectName(QStringLiteral("statusPercentLabel"));
     m_percentLabel->setMinimumWidth(40);
-    m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text.name()));
+    m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text1.name()));
 
     progressLayout->addWidget(m_progressTitleLabel);
     progressLayout->addWidget(m_progressBar);
@@ -81,36 +81,38 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     actionLayout->setContentsMargins(0, 0, 0, 0);
     actionLayout->setSpacing(6);
 
-    auto *startButton = new QPushButton(QStringLiteral("开始测量"));
-    startButton->setObjectName(QStringLiteral("statusStartButton"));
-    startButton->setProperty("role", QStringLiteral("primary"));
-    startButton->setFixedHeight(22);
-    auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
-    manualButton->setObjectName(QStringLiteral("statusManualButton"));
-    manualButton->setFixedHeight(22);
-    auto *stopButton = new QPushButton(QStringLiteral("停止"));
-    stopButton->setObjectName(QStringLiteral("statusStopButton"));
-    stopButton->setFixedHeight(22);
+ auto *startButton = new QPushButton(QStringLiteral("开始测量"));
+ startButton->setObjectName(QStringLiteral("statusStartButton"));
+ startButton->setProperty("role", QStringLiteral("primary"));
+ startButton->setFixedHeight(22);
+ m_startButton = startButton;
+ auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
+ manualButton->setObjectName(QStringLiteral("statusManualButton"));
+ manualButton->setFixedHeight(22);
+ m_manualButton = manualButton;
+ auto *stopButton = new QPushButton(QStringLiteral("停止"));
+ stopButton->setObjectName(QStringLiteral("statusStopButton"));
+ stopButton->setFixedHeight(22);
+ m_stopButton = stopButton;
 
-    connect(startButton, &QPushButton::clicked, this, &DeviceStatusBar::startRequested);
-    connect(manualButton, &QPushButton::clicked, this, &DeviceStatusBar::manualRequested);
-    connect(stopButton, &QPushButton::clicked, this, &DeviceStatusBar::stopRequested);
+ connect(startButton, &QPushButton::clicked, this, &DeviceStatusBar::startRequested);
+ connect(manualButton, &QPushButton::clicked, this, &DeviceStatusBar::manualRequested);
+ connect(stopButton, &QPushButton::clicked, this, &DeviceStatusBar::stopRequested);
 
-    actionLayout->addWidget(startButton);
-    actionLayout->addWidget(manualButton);
-    actionLayout->addWidget(stopButton);
+ actionLayout->addWidget(startButton);
+ actionLayout->addWidget(manualButton);
+ actionLayout->addWidget(stopButton);
+ stopButton->hide();
     layout->addWidget(actionWrap);
 
-    setStyleSheet(QStringLiteral(
-                      "QProgressBar{background:%1;border:1px solid %2;border-radius:4px;height:6px;}"
-                      "QProgressBar::chunk{background:%3;border-radius:4px;}"
-                      "QPushButton{background:%4;border:1px solid %2;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%5;font-size:11px;}"
-                      "QPushButton:hover{background:%1;}"
-                      "QPushButton[role='primary']{background:%3;border-color:%3;color:white;}"
-  "QPushButton#statusStopButton{background:%6;border-color:%7;color:%8;}"
-  )
-  .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().brand.name(), Theme::palette().bgPanel.name(), Theme::palette().text.name(),
-    Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
+ setStyleSheet(QStringLiteral(
+ "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%3;font-size:11px;}"
+ "QPushButton:hover{background:%4;}"
+ "QPushButton[role='primary']{background:%5;border-color:%5;color:white;}"
+ "QPushButton#statusStopButton{background:%6;border-color:%7;color:%8;}"
+ )
+ .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text1.name(), Theme::palette().bgSunken.name(), Theme::palette().brand.name(),
+ Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
 }
 
 void DeviceStatusBar::setProgress(double progress)
@@ -121,10 +123,20 @@ void DeviceStatusBar::setProgress(double progress)
 
 void DeviceStatusBar::setMeasuring(bool measuring)
 {
-    m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
-  m_stateLabel->setStyleSheet(measuring
-    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-      .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
-    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-      .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
+ m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
+ m_stateLabel->setStyleSheet(measuring
+ ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
+ .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
+ : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
+ .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
+
+ if (m_startButton) m_startButton->setVisible(!measuring);
+ if (m_manualButton) m_manualButton->setVisible(!measuring);
+ if (m_stopButton) m_stopButton->setVisible(measuring);
+
+ m_progressBar->setStyleSheet(measuring
+ ? QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
+ .arg(Theme::palette().bgSunken.name(), Theme::palette().brand.name())
+ : QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
+ .arg(Theme::palette().bgSunken.name(), Theme::palette().ok.name()));
 }
