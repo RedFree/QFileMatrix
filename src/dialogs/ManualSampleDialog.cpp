@@ -48,7 +48,7 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
 
     auto *descLabel = new QLabel(QStringLiteral("将执行一次手动采样，采样完成后数据自动入表。请确认十字准线已定位目标区域。"));
     descLabel->setWordWrap(true);
-    descLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().text.name()));
+    descLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().textMuted.name()));
     bodyLayout->addWidget(descLabel);
 
     auto *grid = new QGridLayout;
