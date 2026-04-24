@@ -56,8 +56,8 @@ m_jogHintLabel = nullptr;
 auto *hintRow = new QHBoxLayout;
 hintRow->setContentsMargins(0, 0, 0, 0);
 hintRow->setSpacing(4);
-const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid #C9D0DA;border-bottom:2px solid #C9D0DA;border-radius:4px;background:%1;color:%2;font:500 10px Consolas;qproperty-alignment:AlignCenter;padding:0 4px;}")
-.arg(Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
+  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 10px Consolas;qproperty-alignment:AlignCenter;padding:0 4px;}")
+    .arg(Theme::palette().borderStrong.name(), Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
 const auto hintSpanStyle = QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
 for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
 auto *kbd = new QLabel(key);

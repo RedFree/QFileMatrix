@@ -6,20 +6,22 @@
 #include <QPushButton>
 #include <QSizePolicy>
 
+#include "theme/Theme.h"
+
 namespace {
 QPushButton *makeNavButton(const QString &name, const QString &text, bool active = false)
 {
-    auto *button = new QPushButton(text);
-    button->setObjectName(name);
-    button->setFlat(true);
-    button->setCursor(Qt::PointingHandCursor);
-    button->setFixedHeight(32);
-    button->setStyleSheet(active
-                              ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:#FFFFFF;border-bottom:2px solid #5070D7;}"
-                                               "QPushButton:hover{color:#FFFFFF;}")
-                              : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:#98A2B3;border-bottom:2px solid transparent;}"
-                                               "QPushButton:hover{color:#D3DAE6;}"));
-    return button;
+  auto *button = new QPushButton(text);
+  button->setObjectName(name);
+  button->setFlat(true);
+  button->setCursor(Qt::PointingHandCursor);
+  button->setFixedHeight(32);
+  button->setStyleSheet(active
+    ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:#FFFFFF;border-bottom:2px solid %1;}"
+      "QPushButton:hover{color:#FFFFFF;}").arg(Theme::palette().brand.name())
+    : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:#98A2B3;border-bottom:2px solid transparent;}"
+      "QPushButton:hover{color:#D3DAE6;}"));
+  return button;
 }
 }
 
@@ -45,7 +47,7 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     brandTile->setObjectName(QStringLiteral("brandTileLabel"));
     brandTile->setAlignment(Qt::AlignCenter);
     brandTile->setFixedSize(22, 22);
-    brandTile->setStyleSheet(QStringLiteral("background:#5070D7;color:#FFFFFF;border-radius:4px;font-size:11px;font-weight:700;"));
+    brandTile->setStyleSheet(QStringLiteral("background:%1;color:#FFFFFF;border-radius:4px;font-size:11px;font-weight:700;").arg(Theme::palette().brand.name()));
 
     auto *title = new QLabel(QStringLiteral("工业软件测量系统"), brandWrap);
     title->setObjectName(QStringLiteral("brandTitleLabel"));
@@ -58,7 +60,7 @@ TopTitleBar::TopTitleBar(QWidget *parent)
 
     auto *slash = new QLabel(QStringLiteral("/"), brandWrap);
     slash->setAttribute(Qt::WA_TranslucentBackground);
-    slash->setStyleSheet(QStringLiteral("background:transparent;color:#5B6573;font-size:11px;"));
+    slash->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;").arg(Theme::palette().textMuted.name()));
 
     auto *subtitle = new QLabel(QStringLiteral("高精度测量与过程监控"), brandWrap);
     subtitle->setObjectName(QStringLiteral("brandSubtitleLabel"));
@@ -125,7 +127,7 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     userChip->setAttribute(Qt::WA_TranslucentBackground);
     userChip->setAlignment(Qt::AlignCenter);
     userChip->setFixedSize(22, 22);
-    userChip->setStyleSheet(QStringLiteral("background:#5070D7;color:#FFFFFF;border-radius:11px;font-size:10px;font-weight:700;"));
+    userChip->setStyleSheet(QStringLiteral("background:%1;color:#FFFFFF;border-radius:11px;font-size:10px;font-weight:700;").arg(Theme::palette().brand.name()));
 
     actionLayout->addWidget(searchButton);
     actionLayout->addWidget(alarmButton);
@@ -156,6 +158,6 @@ void TopTitleBar::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    painter.fillRect(rect(), QColor(QStringLiteral("#0F1B2D")));
+    painter.fillRect(rect(), Theme::palette().bgHeader);
     painter.fillRect(QRect(0, height() - 1, width(), 1), QColor(255, 255, 255, 15));
 }

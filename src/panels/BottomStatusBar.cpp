@@ -70,8 +70,10 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_yLabel->setStyleSheet(monoStyle);
     m_sampleLabel->setStyleSheet(monoStyle);
     m_fpsLabel->setStyleSheet(monoStyle);
-    m_connectionLabel->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
-    m_measureStateLabel->setStyleSheet(QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;font-family:Consolas;}"));
+  m_connectionLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+    .arg(Theme::palette().okWeak.name(), Theme::palette().okWeak.darker(115).name(), Theme::palette().ok.name()));
+  m_measureStateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+    .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
 
     m_probeLabel->setTextFormat(Qt::RichText);
     m_xLabel->setTextFormat(Qt::RichText);
@@ -89,7 +91,7 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     layout->addSpacing(16);
 layout->addWidget(m_fpsLabel);
 layout->addSpacing(16);
-auto *led = new LedBulb(QColor(QStringLiteral("#357A4D")));
+  auto *led = new LedBulb(Theme::palette().ok);
 m_connectionLed = led;
 layout->addWidget(m_connectionLed);
 layout->addSpacing(4);
@@ -98,12 +100,14 @@ layout->addSpacing(8);
     layout->addWidget(m_measureStateLabel);
     layout->addSpacing(8);
 
-    auto *xAxisPill = new QLabel(QStringLiteral("X 轴正常"));
-    xAxisPill->setObjectName(QStringLiteral("bottomXAxisPill"));
-    xAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
-    auto *yAxisPill = new QLabel(QStringLiteral("Y 轴正常"));
-    yAxisPill->setObjectName(QStringLiteral("bottomYAxisPill"));
-    yAxisPill->setStyleSheet(QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 6px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}"));
+  const auto okPillStyle = QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 6px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+    .arg(Theme::palette().okWeak.name(), Theme::palette().okWeak.darker(115).name(), Theme::palette().ok.name());
+  auto *xAxisPill = new QLabel(QStringLiteral("X 轴正常"));
+  xAxisPill->setObjectName(QStringLiteral("bottomXAxisPill"));
+  xAxisPill->setStyleSheet(okPillStyle);
+  auto *yAxisPill = new QLabel(QStringLiteral("Y 轴正常"));
+  yAxisPill->setObjectName(QStringLiteral("bottomYAxisPill"));
+  yAxisPill->setStyleSheet(okPillStyle);
     layout->addWidget(xAxisPill);
     layout->addWidget(yAxisPill);
 
@@ -162,18 +166,22 @@ void BottomStatusBar::setFrameRate(double fps)
 void BottomStatusBar::setConnected(bool connected)
 {
 m_connectionLabel->setText(connected ? QStringLiteral("连接成功") : QStringLiteral("连接断开"));
-m_connectionLabel->setStyleSheet(connected
-? QStringLiteral("QLabel{background:#EEF7F0;border:1px solid #D7ECDC;border-radius:9px;padding:1px 8px;color:#357A4D;font-size:10px;font-weight:600;font-family:Consolas;}")
-: QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:9px;padding:1px 8px;color:#A54E2F;font-size:10px;font-weight:600;font-family:Consolas;}"));
-setLedBulbColor(m_connectionLed, connected
-? QColor(QStringLiteral("#357A4D"))
-: QColor(QStringLiteral("#A54E2F")));
+  m_connectionLabel->setStyleSheet(connected
+    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+      .arg(Theme::palette().okWeak.name(), Theme::palette().okWeak.darker(115).name(), Theme::palette().ok.name())
+    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+      .arg(Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
+  setLedBulbColor(m_connectionLed, connected
+    ? Theme::palette().ok
+    : Theme::palette().err);
 }
 
 void BottomStatusBar::setMeasuring(bool measuring)
 {
     m_measureStateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
-    m_measureStateLabel->setStyleSheet(measuring
-        ? QStringLiteral("QLabel{background:#EEF2FF;border:1px solid #D9E3FF;border-radius:9px;padding:1px 8px;color:#3550A8;font-size:10px;font-weight:600;font-family:Consolas;}")
-        : QStringLiteral("QLabel{background:#F3F5F8;border:1px solid #E2E6EC;border-radius:9px;padding:1px 8px;color:#596579;font-size:10px;font-weight:600;font-family:Consolas;}"));
+  m_measureStateLabel->setStyleSheet(measuring
+    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+      .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
+    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
+      .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
 }

@@ -6,19 +6,25 @@
 namespace Theme {
 
 struct Palette {
-    QColor bgApp;
-    QColor bgPanel;
-    QColor bgRail;
-    QColor bgSunken;
-    QColor bgHeader;
-    QColor border;
-    QColor divider;
-    QColor text;
-    QColor textMuted;
-    QColor brand;
-    QColor ok;
-    QColor warn;
-    QColor err;
+  QColor bgApp;
+  QColor bgPanel;
+  QColor bgRail;
+  QColor bgSunken;
+  QColor bgHeader;
+  QColor border;
+  QColor borderStrong;
+  QColor divider;
+  QColor text;
+  QColor textMuted;
+  QColor brand;
+  QColor brandStrong;
+  QColor brandWeak;
+  QColor ok;
+  QColor okWeak;
+  QColor warn;
+  QColor warnWeak;
+  QColor err;
+  QColor errWeak;
 };
 
 const Palette &palette();

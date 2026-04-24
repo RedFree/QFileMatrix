@@ -130,7 +130,7 @@ void WidgetPanelSmokeTests::topTitleBarUsesPrototypeDarkStyle()
 
     QCOMPARE(pixmap.toImage().pixelColor(10, 10), QColor(QStringLiteral("#0F1B2D")));
     QVERIFY(title->styleSheet().contains(QStringLiteral("#EDF1F7"), Qt::CaseInsensitive));
-    QVERIFY(tile->styleSheet().contains(QStringLiteral("background:#5070D7"), Qt::CaseInsensitive));
+    QVERIFY(tile->styleSheet().contains(Theme::palette().brand.name(), Qt::CaseInsensitive));
 }
 
 void WidgetPanelSmokeTests::topTitleBarUsesCompactLeftAlignedNavigation()

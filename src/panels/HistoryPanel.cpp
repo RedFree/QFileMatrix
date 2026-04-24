@@ -14,6 +14,7 @@
 
 #include "models/MeasurementTableModel.h"
 #include "theme/Theme.h"
+#include "theme/Theme.h"
 #include "widgets/PanelHeaderWidget.h"
 
 namespace {
@@ -27,32 +28,32 @@ public:
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
 
-        if (option.state & QStyle::State_Selected) {
-            painter->fillRect(option.rect, QColor(QStringLiteral("#EEF2FF")));
-        }
+  if (option.state & QStyle::State_Selected) {
+      painter->fillRect(option.rect, Theme::palette().brandWeak);
+    }
 
-        const QString verdict = index.data(Qt::DisplayRole).toString();
-        QColor bg = QColor(QStringLiteral("#F3F5F8"));
-        QColor border = QColor(QStringLiteral("#E2E6EC"));
-        QColor fg = QColor(QStringLiteral("#596579"));
-        QString text = QStringLiteral("待定");
+  const QString verdict = index.data(Qt::DisplayRole).toString();
+  QColor bg = Theme::palette().bgSunken;
+  QColor border = Theme::palette().border;
+  QColor fg = Theme::palette().textMuted;
+  QString text = QStringLiteral("待定");
 
-        if (verdict == QStringLiteral("ok")) {
-            bg = QColor(QStringLiteral("#EEF7F0"));
-            border = QColor(QStringLiteral("#D7ECDC"));
-            fg = QColor(QStringLiteral("#357A4D"));
-            text = QStringLiteral("合格");
-        } else if (verdict == QStringLiteral("warn")) {
-            bg = QColor(QStringLiteral("#FFF9EA"));
-            border = QColor(QStringLiteral("#F2E2AC"));
-            fg = QColor(QStringLiteral("#9A6B00"));
-            text = QStringLiteral("临界");
-        } else if (verdict == QStringLiteral("err")) {
-            bg = QColor(QStringLiteral("#FFF4F1"));
-            border = QColor(QStringLiteral("#F1D0C5"));
-            fg = QColor(QStringLiteral("#A54E2F"));
-            text = QStringLiteral("超差");
-        }
+  if (verdict == QStringLiteral("ok")) {
+    bg = Theme::palette().okWeak;
+    border = Theme::palette().okWeak.darker(115);
+    fg = Theme::palette().ok;
+    text = QStringLiteral("合格");
+  } else if (verdict == QStringLiteral("warn")) {
+    bg = Theme::palette().warnWeak;
+    border = Theme::palette().warnWeak.darker(115);
+    fg = Theme::palette().warn.darker(140);
+    text = QStringLiteral("临界");
+  } else if (verdict == QStringLiteral("err")) {
+    bg = Theme::palette().errWeak;
+    border = Theme::palette().errWeak.darker(115);
+    fg = Theme::palette().err;
+    text = QStringLiteral("超差");
+  }
 
         const QRect pillRect = option.rect.adjusted(6, 5, -6, -5);
         painter->setPen(border);
@@ -140,10 +141,11 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->verticalHeader()->setDefaultSectionSize(28);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setAlternatingRowColors(true);
-    m_table->setStyleSheet(QStringLiteral("QTableView{border:1px solid %1;border-radius:8px;background:white;alternate-background-color:%2;gridline-color:%3;}"
-                                        "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:11px;font-weight:600;}"
-                                        "QTableView::item:selected{background:#EEF2FF;color:%5;}")
-                               .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgRail.name(), Theme::palette().text.name()));
+  m_table->setStyleSheet(QStringLiteral("QTableView{border:1px solid %1;border-radius:8px;background:white;alternate-background-color:%2;gridline-color:%3;}"
+    "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:11px;font-weight:600;}"
+    "QTableView::item:selected{background:%6;color:%5;}")
+    .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgRail.name(), Theme::palette().text.name(),
+      Theme::palette().brandWeak.name()));
 
 auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
 verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));

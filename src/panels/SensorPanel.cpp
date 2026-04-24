@@ -28,8 +28,8 @@ SensorPanel::SensorPanel(QWidget *parent)
     lightTab->setFixedHeight(22);
     const auto tabStyle = [](bool active) {
         if (active) {
-            return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:#5070D7;font-size:11px;font-weight:600;}"
-                "QPushButton:hover{background:rgba(80,112,215,0.08);}");
+      return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%1;font-size:11px;font-weight:600;}"
+        "QPushButton:hover{background:rgba(0,122,203,0.08);}").arg(Theme::palette().brand.name());
         }
         return QStringLiteral("QPushButton{background:transparent;border:1px solid transparent;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%1;font-size:11px;}"
             "QPushButton:hover{background:%2;color:%3;}")

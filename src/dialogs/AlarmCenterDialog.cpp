@@ -86,11 +86,15 @@ void AlarmCenterDialog::rebuildList()
         rowLayout->setContentsMargins(10, 10, 14, 10);
         rowLayout->setSpacing(10);
 
-        const bool isErr = alarm.type == QStringLiteral("err");
-        auto *pill = new QLabel(isErr ? QStringLiteral("超差") : QStringLiteral("警告"));
-        pill->setStyleSheet(isErr
-            ? QStringLiteral("QLabel{background:#FFF4F1;border:1px solid #F1D0C5;border-radius:8px;padding:1px 6px;color:#A54E2F;font-size:9.5px;font-weight:600;font-family:Consolas;}")
-            : QStringLiteral("QLabel{background:#FFF9EA;border:1px solid #F2E2AC;border-radius:8px;padding:1px 6px;color:#9A6B00;font-size:9.5px;font-weight:600;font-family:Consolas;}"));
+  const bool isErr = alarm.type == QStringLiteral("err");
+  auto *pill = new QLabel(isErr ? QStringLiteral("超差") : QStringLiteral("警告"));
+  const auto pillStyle = [](const QColor &weakBg, const QColor &fg) {
+    return QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:8px;padding:1px 6px;color:%3;font-size:9.5px;font-weight:600;font-family:Consolas;}")
+      .arg(weakBg.name(), weakBg.darker(115).name(), fg.name());
+  };
+  pill->setStyleSheet(isErr
+    ? pillStyle(Theme::palette().errWeak, Theme::palette().err)
+    : pillStyle(Theme::palette().warnWeak, Theme::palette().warn.darker(140)));
 
         auto *contentWrap = new QWidget;
         contentWrap->setStyleSheet(QStringLiteral("background:transparent;"));
