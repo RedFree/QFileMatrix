@@ -369,14 +369,14 @@ void MainWindow::wireUi()
         updateFromController();
     });
 
-    auto *alarmButton = m_topTitleBar->findChild<QPushButton*>(QStringLiteral("alarmButton"));
-    if (alarmButton) {
-        connect(alarmButton, &QPushButton::clicked, this, [this] {
-            auto *dialog = new AlarmCenterDialog(this);
-            dialog->setAttribute(Qt::WA_DeleteOnClose);
-            dialog->exec();
-        });
-    }
+ auto *alarmButton = m_topTitleBar->findChild<QPushButton*>(QStringLiteral("alarmButton"));
+ if (alarmButton) {
+     connect(alarmButton, &QPushButton::clicked, this, [this, alarmButton] {
+         auto *popup = new AlarmCenterDialog(this);
+         const QPoint btnTopRight = alarmButton->mapToGlobal(QPoint(alarmButton->width(), 0));
+         popup->showPopup(btnTopRight);
+     });
+ }
 }
 
 void MainWindow::updateFromController()

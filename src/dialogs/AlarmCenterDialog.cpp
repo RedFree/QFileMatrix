@@ -9,11 +9,11 @@
 #include "theme/Theme.h"
 
 AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
-: QDialog(parent)
+    : QWidget(parent, Qt::Popup)
 {
     setWindowTitle(QStringLiteral("告警中心"));
     setFixedWidth(380);
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -30,7 +30,7 @@ AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
     closeButton->setCursor(Qt::PointingHandCursor);
     closeButton->setStyleSheet(QStringLiteral("QPushButton{border:none;color:%1;font-size:14px;}QPushButton:hover{color:%2;}")
         .arg(Theme::palette().textMuted.name(), Theme::palette().text.name()));
-    connect(closeButton, &QPushButton::clicked, this, &QDialog::reject);
+    connect(closeButton, &QPushButton::clicked, this, &QWidget::close);
     headerLayout->addWidget(m_countLabel);
     headerLayout->addStretch();
     headerLayout->addWidget(closeButton);
@@ -48,8 +48,9 @@ AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
     mainLayout->addWidget(m_scrollArea);
 
     setStyleSheet(QStringLiteral(
-        "QDialog{background:%1;border:1px solid %2;border-radius:8px;}"
+        "QWidget#alarmCenterPopup{background:%1;border:1px solid %2;border-radius:8px;}"
     ).arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
+    setObjectName(QStringLiteral("alarmCenterPopup"));
 
     setAlarms({
         {QStringLiteral("warn"), QStringLiteral("光源老化已达 78%，建议 2 周内更换"), QStringLiteral("14:45:02")},
@@ -70,6 +71,15 @@ QVector<AlarmEntry> AlarmCenterDialog::alarms() const
     return m_alarms;
 }
 
+void AlarmCenterDialog::showPopup(const QPoint &globalPos)
+{
+    adjustSize();
+    const int h = height();
+    move(globalPos.x() - width(), globalPos.y());
+    show();
+    raise();
+}
+
 void AlarmCenterDialog::rebuildList()
 {
     auto *container = new QWidget;
@@ -86,15 +96,15 @@ void AlarmCenterDialog::rebuildList()
         rowLayout->setContentsMargins(10, 10, 14, 10);
         rowLayout->setSpacing(10);
 
-  const bool isErr = alarm.type == QStringLiteral("err");
-  auto *pill = new QLabel(isErr ? QStringLiteral("超差") : QStringLiteral("警告"));
-  const auto pillStyle = [](const QColor &weakBg, const QColor &fg) {
-    return QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:8px;padding:1px 6px;color:%3;font-size:9.5px;font-weight:600;font-family:Consolas;}")
-      .arg(weakBg.name(), weakBg.darker(115).name(), fg.name());
-  };
-  pill->setStyleSheet(isErr
-    ? pillStyle(Theme::palette().errWeak, Theme::palette().err)
-    : pillStyle(Theme::palette().warnWeak, Theme::palette().warn.darker(140)));
+        const bool isErr = alarm.type == QStringLiteral("err");
+        auto *pill = new QLabel(isErr ? QStringLiteral("超差") : QStringLiteral("警告"));
+        const auto pillStyle = [](const QColor &weakBg, const QColor &fg) {
+            return QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:8px;padding:1px 6px;color:%3;font-size:9.5px;font-weight:600;font-family:Consolas;}")
+                .arg(weakBg.name(), weakBg.darker(115).name(), fg.name());
+        };
+        pill->setStyleSheet(isErr
+            ? pillStyle(Theme::palette().errWeak, Theme::palette().err)
+            : pillStyle(Theme::palette().warnWeak, Theme::palette().warn.darker(140)));
 
         auto *contentWrap = new QWidget;
         contentWrap->setStyleSheet(QStringLiteral("background:transparent;"));

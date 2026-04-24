@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include <QVector>
+#include <QWidget>
 
 class QLabel;
 class QPushButton;
@@ -13,15 +13,17 @@ struct AlarmEntry {
     QString time;
 };
 
-class AlarmCenterDialog : public QDialog
+class AlarmCenterDialog : public QWidget
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit AlarmCenterDialog(QWidget *parent = nullptr);
 
     void setAlarms(const QVector<AlarmEntry> &alarms);
     [[nodiscard]] QVector<AlarmEntry> alarms() const;
+
+    void showPopup(const QPoint &globalPos);
 
 private:
     void rebuildList();
