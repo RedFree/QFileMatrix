@@ -47,9 +47,9 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     brandTile->setObjectName(QStringLiteral("brandTileLabel"));
     brandTile->setAlignment(Qt::AlignCenter);
     brandTile->setFixedSize(22, 22);
-    brandTile->setStyleSheet(QStringLiteral("background:%1;color:#FFFFFF;border-radius:4px;font-size:11px;font-weight:700;").arg(Theme::palette().brand.name()));
+    brandTile->setStyleSheet(QStringLiteral("background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 %1,stop:1 #00C3D1);color:#FFFFFF;border-radius:4px;font-size:11px;font-weight:700;").arg(Theme::palette().brand.name()));
 
-    auto *title = new QLabel(QStringLiteral("工业软件测量系统"), brandWrap);
+    auto *title = new QLabel(QStringLiteral("FilmMetrix"), brandWrap);
     title->setObjectName(QStringLiteral("brandTitleLabel"));
     title->setAttribute(Qt::WA_TranslucentBackground);
     title->setStyleSheet(QStringLiteral("background:transparent;color:#EDF1F7;font-size:13px;font-weight:600;letter-spacing:0.01em;"));
@@ -62,7 +62,7 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     slash->setAttribute(Qt::WA_TranslucentBackground);
     slash->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;").arg(Theme::palette().textMuted.name()));
 
-    auto *subtitle = new QLabel(QStringLiteral("高精度测量与过程监控"), brandWrap);
+    auto *subtitle = new QLabel(QStringLiteral("全自动膜厚测试系统"), brandWrap);
     subtitle->setObjectName(QStringLiteral("brandSubtitleLabel"));
     subtitle->setAttribute(Qt::WA_TranslucentBackground);
     subtitle->setStyleSheet(QStringLiteral("background:transparent;color:#D3DAE6;font-size:12px;"));

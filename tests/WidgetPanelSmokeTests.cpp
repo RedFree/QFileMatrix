@@ -110,7 +110,7 @@ void WidgetPanelSmokeTests::topTitleBarShowsRenamedSoftwareTitle()
 
     auto *title = bar.findChild<QLabel*>(QStringLiteral("brandTitleLabel"));
     QVERIFY(title != nullptr);
-    QCOMPARE(title->text(), QStringLiteral("工业软件测量系统"));
+    QCOMPARE(title->text(), QStringLiteral("FilmMetrix"));
 }
 
 void WidgetPanelSmokeTests::topTitleBarUsesPrototypeDarkStyle()
