@@ -18,6 +18,90 @@
 #include "widgets/PanelHeaderWidget.h"
 
 namespace {
+class SearchLineEdit : public QLineEdit
+{
+public:
+    explicit SearchLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+    {
+        setTextMargins(20, 0, 4, 0);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QLineEdit::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QPen pen(Theme::palette().textMuted);
+        pen.setWidthF(1.4);
+        pen.setCapStyle(Qt::RoundCap);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+        const qreal cx = 10, cy = height() / 2.0;
+        painter.drawEllipse(QPointF(cx, cy), 4.0, 4.0);
+        painter.drawLine(QPointF(cx + 3, cy + 3), QPointF(cx + 6, cy + 6));
+    }
+};
+
+class HeaderToolButton : public QPushButton
+{
+public:
+    enum class Icon { Filter, Stats, Export, Trash };
+
+    explicit HeaderToolButton(Icon icon, const QString &text, QWidget *parent = nullptr)
+        : QPushButton(text, parent), m_icon(icon)
+    {
+        setFixedHeight(24);
+        setCursor(Qt::PointingHandCursor);
+        setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px 0 22px;color:%1;font-size:11px;}"
+            "QPushButton:hover{background:%2;}")
+            .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name()));
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPushButton::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QPen pen(Theme::palette().textMuted);
+        pen.setWidthF(1.3);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+        const qreal cx = 10, cy = height() / 2.0;
+        switch (m_icon) {
+        case Icon::Filter:
+            painter.setBrush(Theme::palette().textMuted);
+            painter.drawPolygon(QPolygonF({QPointF(cx - 4, cy - 3.5), QPointF(cx + 4, cy - 3.5), QPointF(cx + 1, cy + 0.5), QPointF(cx + 1, cy + 3.5), QPointF(cx - 1, cy + 3.5), QPointF(cx - 1, cy + 0.5)}));
+            break;
+        case Icon::Stats:
+            painter.setBrush(Theme::palette().textMuted);
+            painter.drawLine(QPointF(cx - 4, cy + 4), QPointF(cx + 4, cy + 4));
+            painter.drawRect(QRectF(cx - 4, cy + 0, 2.5, 4));
+            painter.drawRect(QRectF(cx - 1, cy - 4, 2.5, 8));
+            painter.drawRect(QRectF(cx + 2, cy - 2, 2.5, 6));
+            break;
+        case Icon::Export:
+            painter.drawLine(QPointF(cx, cy - 4), QPointF(cx, cy + 2));
+            painter.drawLine(QPointF(cx - 2.5, cy - 1.5), QPointF(cx, cy - 4));
+            painter.drawLine(QPointF(cx + 2.5, cy - 1.5), QPointF(cx, cy - 4));
+            painter.drawLine(QPointF(cx - 4, cy + 3.5), QPointF(cx + 4, cy + 3.5));
+            break;
+        case Icon::Trash:
+            painter.drawLine(QPointF(cx - 4, cy - 3), QPointF(cx + 4, cy - 3));
+            painter.drawRect(QRectF(cx - 2.5, cy - 1.5, 5, 7));
+            painter.drawLine(QPointF(cx - 1.5, cy - 3), QPointF(cx - 1.5, cy - 4));
+            painter.drawLine(QPointF(cx + 1.5, cy - 3), QPointF(cx + 1.5, cy - 4));
+            break;
+        }
+    }
+
+private:
+    Icon m_icon;
+};
+
 class HistoryVerdictDelegate : public QStyledItemDelegate
 {
 public:
@@ -110,28 +194,24 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_titleLabel = header->titleLabel();
     m_titleLabel->setObjectName(QStringLiteral("historyTitleLabel"));
 
-    auto *search = new QLineEdit;
-    search->setObjectName(QStringLiteral("historySearchInput"));
-    search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
-    search->setFixedWidth(140);
-    search->setFixedHeight(24);
-    search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
-    header->rightLayout()->addWidget(search);
+ auto *search = new SearchLineEdit;
+ search->setObjectName(QStringLiteral("historySearchInput"));
+ search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
+ search->setFixedWidth(140);
+ search->setFixedHeight(24);
+ search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
+ .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
+ header->rightLayout()->addWidget(search);
 
-    const auto makeToolButton = [](const QString &name, const QString &text) {
-        auto *button = new QPushButton(text);
-        button->setObjectName(name);
-        button->setFixedHeight(24);
-        button->setStyleSheet(QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-            "QPushButton:hover{background:%4;}")
-            .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name()));
-        return button;
-    };
-    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
-    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
-    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyExportButton"), QStringLiteral("导出")));
-    header->rightLayout()->addWidget(makeToolButton(QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
+ const auto makeToolButton = [](HeaderToolButton::Icon icon, const QString &name, const QString &text) {
+ auto *button = new HeaderToolButton(icon, text);
+ button->setObjectName(name);
+ return button;
+ };
+ header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Filter, QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
+ header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Stats, QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
+ header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Export, QStringLiteral("historyExportButton"), QStringLiteral("导出")));
+ header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Trash, QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
     layout->addWidget(header);
 
     m_table = new QTableView;
