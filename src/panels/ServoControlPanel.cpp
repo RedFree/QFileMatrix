@@ -1,9 +1,12 @@
 #include "panels/ServoControlPanel.h"
 
+#include <cmath>
+
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QLabel>
+#include <QPainter>
 #include <QPushButton>
 #include <QSignalBlocker>
 #include <QSpinBox>
@@ -12,6 +15,43 @@
 #include "theme/Theme.h"
 #include "widgets/DpadControlWidget.h"
 #include "widgets/PanelHeaderWidget.h"
+
+namespace {
+class ServoIconButton : public QPushButton
+{
+public:
+    explicit ServoIconButton(const QString &text, QWidget *parent = nullptr)
+        : QPushButton(text, parent)
+    {
+        setFixedHeight(22);
+        setCursor(Qt::PointingHandCursor);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPushButton::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        const QColor iconColor = Theme::palette().textMuted;
+        QPen pen(iconColor);
+        pen.setWidthF(1.3);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+        const qreal cx = 11, cy = height() / 2.0;
+        const qreal r = 4.5;
+        painter.drawArc(QRectF(cx - r, cy - r, r * 2, r * 2), -30 * 16, -280 * 16);
+        const qreal angle = -30.0 * M_PI / 180.0;
+        const qreal tipX = cx + r * std::cos(angle);
+        const qreal tipY = cy - r * std::sin(angle);
+        const qreal arrLen = 3.0;
+        painter.drawLine(QPointF(tipX, tipY), QPointF(tipX - arrLen, tipY - arrLen));
+        painter.drawLine(QPointF(tipX, tipY), QPointF(tipX + arrLen * 0.3, tipY - arrLen));
+    }
+};
+}
 
 ServoControlPanel::ServoControlPanel(QWidget *parent)
     : QWidget(parent)
@@ -22,9 +62,8 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     layout->setSpacing(0);
 
     auto *header = new PanelHeaderWidget(QStringLiteral("伺服 / 点动"));
-    auto *homeButton = new QPushButton(QStringLiteral("回原点"));
-    homeButton->setObjectName(QStringLiteral("servoHomeButton"));
-    homeButton->setFixedHeight(22);
+ auto *homeButton = new ServoIconButton(QStringLiteral("回原点"));
+ homeButton->setObjectName(QStringLiteral("servoHomeButton"));
     connect(homeButton, &QPushButton::clicked, this, &ServoControlPanel::homeRequested);
     header->rightLayout()->addWidget(homeButton);
     layout->addWidget(header);
@@ -119,7 +158,7 @@ body->addLayout(hintRow);
 
     setStyleSheet(Theme::fieldStyle() + QStringLiteral(
         "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-        "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px;}"
+        "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px 0 18px;}"
         "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
         "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
         )
