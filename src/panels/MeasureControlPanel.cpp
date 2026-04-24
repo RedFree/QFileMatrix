@@ -28,8 +28,8 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     singleButton->setObjectName(QStringLiteral("singleModeButton"));
     singleButton->setFixedHeight(22);
     const auto modeStyle = [](bool active) {
-        if (active) {
-            return QStringLiteral("QPushButton{background:transparent;border:none;border-bottom:2px solid #5070D7;color:#5070D7;font-size:11px;font-weight:600;padding:0 8px;min-height:22px;max-height:22px;}");
+if (active) {
+return QStringLiteral("QPushButton{background:transparent;border:none;border-bottom:2px solid #5070D7;color:#5070D7;font-size:11px;font-weight:600;padding:0 8px;min-height:22px;max-height:22px;border-radius:4px 4px 0 0;}");
         }
         return QStringLiteral("QPushButton{background:transparent;border:none;color:%1;font-size:11px;padding:0 8px;min-height:22px;max-height:22px;}"
             "QPushButton:hover{color:%2;}")
@@ -98,7 +98,7 @@ MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
     manualButton->setObjectName(QStringLiteral("manualButton"));
     manualButton->setFixedHeight(28);
-    auto *stopButton = new QPushButton(QStringLiteral("停止"));
+    auto *stopButton = new QPushButton(QStringLiteral("停止测量"));
     stopButton->setObjectName(QStringLiteral("stopButton"));
     stopButton->setProperty("role", QStringLiteral("danger"));
     stopButton->setFixedHeight(28);

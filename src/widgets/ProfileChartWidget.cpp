@@ -71,7 +71,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
 
     painter.setPen(Theme::palette().textMuted);
     painter.setFont(QFont(QStringLiteral("Consolas"), 8));
-    for (double gy : {0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
+    for (double gy : {-20.0, 0.0, 20.0, 40.0, 60.0, 80.0, 100.0}) {
         const double py = yToPixel(gy);
         painter.drawText(QRectF(0, py - 8, plot.left() - 4, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(static_cast<int>(gy)));
     }

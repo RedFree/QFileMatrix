@@ -11,9 +11,10 @@
 namespace {
 QPushButton *makeButton(const QString &name, const QString &text)
 {
-    auto *button = new QPushButton(text);
-    button->setObjectName(name);
-    return button;
+auto *button = new QPushButton(text);
+button->setObjectName(name);
+button->setFixedSize(32, 32);
+return button;
 }
 }
 
