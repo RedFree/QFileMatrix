@@ -90,7 +90,7 @@ void MainWindowTests::currentGroupPanelShowsPrototypeFields()
     MainWindow window;
 
     QVERIFY(window.findChild<QLabel*>(QStringLiteral("currentGroupTitleLabel")) != nullptr);
-    QVERIFY(window.findChild<QLabel*>(QStringLiteral("currentGroupVerdictLabel")) != nullptr);
+    QVERIFY(window.findChild<QWidget*>(QStringLiteral("currentGroupVerdictLabel")) != nullptr);
     QVERIFY(window.findChild<StatCardWidget*>(QStringLiteral("leftHeightCard")) != nullptr);
     QVERIFY(window.findChild<StatCardWidget*>(QStringLiteral("rightHeightCard")) != nullptr);
 }
@@ -110,11 +110,10 @@ void MainWindowTests::currentGroupPanelUsesCompactStatCards()
 void MainWindowTests::currentGroupPanelUsesCompactVerdictPill()
 {
     MainWindow window;
-    auto *verdict = window.findChild<QLabel*>(QStringLiteral("currentGroupVerdictLabel"));
+    auto *verdict = window.findChild<QWidget*>(QStringLiteral("currentGroupVerdictLabel"));
     QVERIFY(verdict != nullptr);
 
-    QVERIFY(verdict->styleSheet().contains(QStringLiteral("padding:1px 6px")));
-    QVERIFY(verdict->styleSheet().contains(QStringLiteral("font-size:9.5px")));
+    QVERIFY(verdict->height() <= 22);
 }
 
 void MainWindowTests::currentGroupPanelUsesVerdictDrivenAccent()

@@ -216,6 +216,69 @@ QFrame *makeBodyPanel(QWidget *content)
     layout->addWidget(content, 1);
     return frame;
 }
+
+class VerdictPillWidget : public QWidget
+{
+public:
+    explicit VerdictPillWidget(QWidget *parent = nullptr)
+        : QWidget(parent)
+    {
+        setFixedHeight(20);
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        setProperty("verdict", QStringLiteral("ok"));
+    }
+
+    QSize sizeHint() const override { return QSize(52, 20); }
+
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const QString v = property("verdict").toString();
+        QColor bg = Theme::palette().bgSunken;
+        QColor border = Theme::palette().border;
+        QColor fg = Theme::palette().textMuted;
+        QString text = QStringLiteral("待定");
+
+        if (v == QStringLiteral("ok")) {
+            bg = Theme::palette().okWeak;
+            border = Theme::palette().okWeak.darker(115);
+            fg = Theme::palette().ok;
+            text = QStringLiteral("合格");
+        } else if (v == QStringLiteral("warn")) {
+            bg = Theme::palette().warnWeak;
+            border = Theme::palette().warnWeak.darker(115);
+            fg = Theme::palette().warn.darker(140);
+            text = QStringLiteral("临界");
+        } else if (v == QStringLiteral("err")) {
+            bg = Theme::palette().errWeak;
+            border = Theme::palette().errWeak.darker(115);
+            fg = Theme::palette().err;
+            text = QStringLiteral("超差");
+        }
+
+        const QRect pillRect = rect().adjusted(0, 1, 0, -1);
+        painter.setPen(border);
+        painter.setBrush(bg);
+        painter.drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
+
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(fg);
+        const qreal dotR = 3.0;
+        const qreal dotX = pillRect.left() + pillRect.height() / 2.0;
+        const qreal dotY = pillRect.center().y();
+        painter.drawEllipse(QPointF(dotX, dotY), dotR, dotR);
+
+        painter.setPen(fg);
+        painter.setBrush(Qt::NoBrush);
+        const QFont font(QStringLiteral("Consolas"), 9);
+        painter.setFont(font);
+        const QRect textRect = pillRect.adjusted(qRound(pillRect.height() / 2.0) + 2, 0, -4, 0);
+        painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, text);
+    }
+};
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -584,11 +647,9 @@ QWidget *MainWindow::createStatsPanel()
 
     auto *header = new PanelHeaderWidget(QStringLiteral("当前组 · GROUP-01"));
     header->titleLabel()->setObjectName(QStringLiteral("currentGroupTitleLabel"));
-    auto *verdict = new QLabel(QStringLiteral("合格"));
-    verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
-    verdict->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:8px;padding:1px 6px;color:%3;font-size:9.5px;font-weight:600;font-family:Consolas;}")
-    .arg(Theme::palette().okWeak.name(), Theme::palette().okWeak.darker(115).name(), Theme::palette().ok.name()));
-    header->rightLayout()->addWidget(verdict);
+ auto *verdict = new VerdictPillWidget;
+ verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
+ header->rightLayout()->addWidget(verdict);
     outer->addWidget(header);
 
     auto *body = new QVBoxLayout;
@@ -640,7 +701,7 @@ m_rightCard->setUnit(QStringLiteral("μm"));
 
 void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
 {
-    auto *verdict = findChild<QLabel*>(QStringLiteral("currentGroupVerdictLabel"));
+    auto *verdict = findChild<QWidget*>(QStringLiteral("currentGroupVerdictLabel"));
     m_thicknessCard->setValue(QString::number(record.thick, 'f', 3));
     m_maxCard->setValue(QString::number(record.hmax, 'f', 3));
     m_minCard->setValue(QString::number(record.hmin, 'f', 3));
@@ -652,18 +713,8 @@ void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
                                         ? Theme::palette().ok
                                         : (record.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
     m_sensorPanel->setSensorValue(record.left);
-  if (verdict != nullptr) {
-    const bool ok = record.verdict == QStringLiteral("ok");
-    const bool warn = record.verdict == QStringLiteral("warn");
-    const auto pillStyle = [](const QColor &weakBg, const QColor &fg) {
-      return QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:8px;padding:1px 6px;color:%3;font-size:9.5px;font-weight:600;font-family:Consolas;}")
-        .arg(weakBg.name(), weakBg.darker(115).name(), fg.name());
-    };
-    verdict->setText(ok ? QStringLiteral("合格") : (warn ? QStringLiteral("临界") : QStringLiteral("超差")));
-    verdict->setStyleSheet(ok
-      ? pillStyle(Theme::palette().okWeak, Theme::palette().ok)
-      : (warn
-        ? pillStyle(Theme::palette().warnWeak, Theme::palette().warn.darker(140))
-        : pillStyle(Theme::palette().errWeak, Theme::palette().err)));
-  }
+ if (verdict != nullptr) {
+     verdict->setProperty("verdict", record.verdict);
+     verdict->update();
+ }
 }
