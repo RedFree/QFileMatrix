@@ -106,79 +106,95 @@ QPointF CameraViewWidget::crosshairNormalizedPosition() const
 
 void CameraViewWidget::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event)
+ Q_UNUSED(event)
 
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(rect(), QColor("#0E1218"));
+ QPainter painter(this);
+ painter.setRenderHint(QPainter::Antialiasing);
+ painter.fillRect(rect(), QColor("#0E1218"));
 
-    for (int x = 0; x < width(); x += 8) {
-        const int brightness = 25 + ((x / 8) % 5) * 6;
-        painter.fillRect(QRect(x, 0, 4, height()), QColor(brightness, brightness + 2, brightness + 4));
-    }
+ for (int x = 0; x < width(); x += 8) {
+ const int brightness = 25 + ((x / 8) % 5) * 6;
+ painter.fillRect(QRect(x, 0, 4, height()), QColor(brightness, brightness + 2, brightness + 4));
+ }
 
-    const QList<QRectF> strips {
-        QRectF(width() * 0.05, 0, width() * 0.18, height()),
-        QRectF(width() * 0.33, 0, width() * 0.14, height()),
-        QRectF(width() * 0.56, 0, width() * 0.17, height()),
-        QRectF(width() * 0.84, 0, width() * 0.10, height())
-    };
-    for (int i = 0; i < strips.size(); ++i) {
-        QLinearGradient grad(strips[i].topLeft(), strips[i].topRight());
-        const int base = 180 + i * 12;
-        grad.setColorAt(0.0, QColor(base - 20, base - 20, base - 15));
-        grad.setColorAt(0.5, QColor(base, base, base - 5));
-        grad.setColorAt(1.0, QColor(base - 28, base - 28, base - 24));
-        painter.fillRect(strips[i], grad);
-    }
+ const QList<QRectF> strips {
+ QRectF(width() * 0.05, 0, width() * 0.18, height()),
+ QRectF(width() * 0.33, 0, width() * 0.14, height()),
+ QRectF(width() * 0.56, 0, width() * 0.17, height()),
+ QRectF(width() * 0.84, 0, width() * 0.10, height())
+ };
+ for (int i = 0; i < strips.size(); ++i) {
+ QLinearGradient grad(strips[i].topLeft(), strips[i].topRight());
+ const int base = 180 + i * 12;
+ grad.setColorAt(0.0, QColor(base - 20, base - 20, base - 15));
+ grad.setColorAt(0.5, QColor(base, base, base - 5));
+ grad.setColorAt(1.0, QColor(base - 28, base - 28, base - 24));
+ painter.fillRect(strips[i], grad);
+ }
 
-    painter.setPen(QPen(QColor(110, 170, 255, 180), 1, Qt::DashLine));
-    painter.setBrush(QColor(110, 170, 255, 30));
-    painter.drawRect(QRectF(width() * 0.32, height() * 0.15, width() * 0.16, height() * 0.7));
+ painter.setPen(QPen(QColor(110, 170, 255, 180), 1, Qt::DashLine));
+ painter.setBrush(QColor(110, 170, 255, 30));
+ painter.drawRect(QRectF(width() * 0.32, height() * 0.15, width() * 0.16, height() * 0.7));
 
-    if (m_measuring) {
-        const int offset = (QDateTime::currentMSecsSinceEpoch() / 8) % qMax(1, height());
-        const QRect scanRect(0, offset - 18, width(), 36);
-        QLinearGradient scan(scanRect.topLeft(), scanRect.bottomLeft());
-        scan.setColorAt(0.0, QColor(120, 255, 180, 0));
-        scan.setColorAt(0.5, QColor(120, 255, 180, 80));
-        scan.setColorAt(1.0, QColor(120, 255, 180, 0));
-        painter.fillRect(scanRect, scan);
-    }
+ if (m_measuring) {
+ const int offset = (QDateTime::currentMSecsSinceEpoch() / 8) % qMax(1, height());
+ const QRect scanRect(0, offset - 18, width(), 36);
+ QLinearGradient scan(scanRect.topLeft(), scanRect.bottomLeft());
+ scan.setColorAt(0.0, QColor(120, 255, 180, 0));
+ scan.setColorAt(0.5, QColor(120, 255, 180, 80));
+ scan.setColorAt(1.0, QColor(120, 255, 180, 0));
+ painter.fillRect(scanRect, scan);
+ }
 
-    const QPoint center(static_cast<int>(m_crosshair.x() * width()), static_cast<int>(m_crosshair.y() * height()));
-    painter.setPen(QPen(QColor(110, 255, 180), 1));
-    painter.drawLine(center.x(), 0, center.x(), height());
-    painter.drawLine(0, center.y(), width(), center.y());
-painter.drawEllipse(center, 9, 9);
+ const QPoint center(static_cast<int>(m_crosshair.x() * width()), static_cast<int>(m_crosshair.y() * height()));
+ painter.setPen(QPen(QColor(110, 255, 180), 1));
+ painter.drawLine(center.x(), 0, center.x(), height());
+ painter.drawLine(0, center.y(), width(), center.y());
+ painter.drawEllipse(center, 9, 9);
 
-painter.setPen(Qt::NoPen);
-painter.setBrush(QColor(6, 12, 22, 180));
-painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
-painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
-painter.setPen(Qt::white);
-painter.setBrush(QColor(80, 200, 120));
-painter.drawEllipse(QPointF(24, 22), 4, 4);
-painter.setBrush(Qt::NoBrush);
-painter.drawText(QRect(32, 10, 238, 24), Qt::AlignVCenter | Qt::AlignLeft,
-                     QStringLiteral("CAM-01 · %1 · %2 FPS · 2560x1590")
-                         .arg(m_paused ? QStringLiteral("PAUSED") : QStringLiteral("LIVE"))
-                         .arg(QString::number(m_frameRate, 'f', 2)));
-    painter.drawText(QRect(width() - 208, 10, 194, 24), Qt::AlignVCenter | Qt::AlignLeft,
-                     QStringLiteral("STN-%1 · EXP %2ms · GAIN %3x")
-                         .arg(m_station, 2, 10, QLatin1Char('0'))
-                         .arg(QString::number(m_exposureMs, 'f', 1))
-                         .arg(QString::number(m_gain, 'f', 1)));
+ const QFont monoFont(QStringLiteral("Consolas"), 11);
+ const QFont sansFont(QStringLiteral("Segoe UI"), 11);
+ const QFont monoSmall(QStringLiteral("Consolas"), 10);
 
-    painter.setBrush(QColor(6, 12, 22, 180));
-    painter.setPen(QColor(200, 247, 212));
-    painter.drawRoundedRect(QRect(center.x() + 8, center.y() + 8, 88, 22), 3, 3);
-    painter.drawText(QRect(center.x() + 14, center.y() + 8, 80, 22), Qt::AlignVCenter | Qt::AlignLeft,
-                     QStringLiteral("%1, %2").arg(center.x()).arg(center.y()));
+ painter.setPen(Qt::NoPen);
+ painter.setBrush(QColor(6, 12, 22, 180));
+ painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
+ painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
+ painter.setPen(Qt::white);
+ painter.setBrush(QColor(80, 200, 120));
+ painter.drawEllipse(QPointF(24, 22), 4, 4);
+ painter.setBrush(Qt::NoBrush);
+ painter.setFont(sansFont);
+ painter.drawText(QRect(32, 10, 238, 24), Qt::AlignVCenter | Qt::AlignLeft,
+ QStringLiteral("CAM-01 · %1 · ").arg(m_paused ? QStringLiteral("PAUSED") : QStringLiteral("LIVE")));
+ painter.setFont(monoFont);
+ painter.drawText(QRect(170, 10, 100, 24), Qt::AlignVCenter | Qt::AlignLeft,
+ QStringLiteral("%1 FPS").arg(QString::number(m_frameRate, 'f', 2)));
 
-    painter.setPen(QColor(150, 190, 255));
-    painter.drawText(QRect(static_cast<int>(width() * 0.32), static_cast<int>(height() * 0.15) - 14, 44, 12), Qt::AlignLeft | Qt::AlignVCenter,
-                     QStringLiteral("ROI 1"));
+ painter.setFont(sansFont);
+ painter.drawText(QRect(width() - 208, 10, 80, 24), Qt::AlignVCenter | Qt::AlignLeft,
+ QStringLiteral("STN-%1 · ").arg(m_station, 2, 10, QLatin1Char('0')));
+ painter.setFont(monoFont);
+ painter.drawText(QRect(width() - 140, 10, 130, 24), Qt::AlignVCenter | Qt::AlignLeft,
+ QStringLiteral("EXP %1ms · GAIN %2x")
+ .arg(QString::number(m_exposureMs, 'f', 1))
+ .arg(QString::number(m_gain, 'f', 1)));
+
+ painter.setBrush(QColor(6, 12, 22, 180));
+ painter.setPen(QColor(200, 247, 212));
+ painter.drawRoundedRect(QRect(center.x() + 8, center.y() + 8, 88, 22), 3, 3);
+ painter.setFont(monoSmall);
+ painter.drawText(QRect(center.x() + 14, center.y() + 8, 80, 22), Qt::AlignVCenter | Qt::AlignLeft,
+ QStringLiteral("%1, %2").arg(center.x()).arg(center.y()));
+
+ painter.setPen(QColor(150, 190, 255));
+ painter.setFont(sansFont);
+ painter.drawText(QRect(static_cast<int>(width() * 0.32), static_cast<int>(height() * 0.15) - 14, 44, 12), Qt::AlignLeft | Qt::AlignVCenter,
+ QStringLiteral("ROI 1"));
+
+ if (m_paused) {
+ painter.fillRect(rect(), QColor(0, 0, 0, 70));
+ }
 }
 
 void CameraViewWidget::mousePressEvent(QMouseEvent *event)
