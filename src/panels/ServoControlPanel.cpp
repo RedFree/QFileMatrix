@@ -52,10 +52,32 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     body->addLayout(stepRow);
     connect(m_stepSpin, &QSpinBox::valueChanged, this, &ServoControlPanel::stepChanged);
 
-    m_jogHintLabel = new QLabel(QStringLiteral("↑ ↓ ← → JOG H HOME"));
-    m_jogHintLabel->setObjectName(QStringLiteral("servoJogHintLabel"));
-    m_jogHintLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name()));
-    body->addWidget(m_jogHintLabel);
+m_jogHintLabel = nullptr;
+auto *hintRow = new QHBoxLayout;
+hintRow->setContentsMargins(0, 0, 0, 0);
+hintRow->setSpacing(4);
+const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid #C9D0DA;border-bottom:2px solid #C9D0DA;border-radius:4px;background:%1;color:%2;font:500 10px Consolas;qproperty-alignment:AlignCenter;padding:0 4px;}")
+.arg(Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
+const auto hintSpanStyle = QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
+for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
+auto *kbd = new QLabel(key);
+kbd->setStyleSheet(kbdStyle);
+kbd->setFixedHeight(18);
+hintRow->addWidget(kbd);
+}
+auto *jogSpan = new QLabel(QStringLiteral("JOG"));
+jogSpan->setStyleSheet(hintSpanStyle);
+hintRow->addWidget(jogSpan);
+hintRow->addStretch();
+auto *hKbd = new QLabel(QStringLiteral("H"));
+hKbd->setStyleSheet(kbdStyle);
+hKbd->setFixedHeight(18);
+hintRow->addWidget(hKbd);
+auto *homeSpan = new QLabel(QStringLiteral("HOME"));
+homeSpan->setObjectName(QStringLiteral("servoJogHintLabel"));
+homeSpan->setStyleSheet(hintSpanStyle);
+hintRow->addWidget(homeSpan);
+body->addLayout(hintRow);
 
     auto *gotoWrap = new QWidget;
     auto *gotoLayout = new QGridLayout(gotoWrap);
@@ -77,7 +99,7 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     m_ySpin->setValue(10000);
     m_xSpin->setFixedHeight(26);
     m_ySpin->setFixedHeight(26);
-    auto *moveButton = new QPushButton(QStringLiteral("移动到坐标"));
+    auto *moveButton = new QPushButton(QStringLiteral("移动"));
     moveButton->setObjectName(QStringLiteral("servoMoveButton"));
     moveButton->setProperty("role", QStringLiteral("primary"));
     moveButton->setFixedHeight(24);
