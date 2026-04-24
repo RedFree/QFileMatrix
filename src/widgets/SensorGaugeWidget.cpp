@@ -82,9 +82,11 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
     gradient.setColorAt(1.0, QColor(106, 139, 230));
     painter.fillRect(fillRect, gradient);
 
-    painter.setPen(Theme::palette().textMuted);
-    painter.setFont(QFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold));
-    painter.drawText(QRect(44, 12, width() - 56, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
+ painter.setPen(Theme::palette().textMuted);
+ QFont labelFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold);
+ labelFont.setLetterSpacing(QFont::AbsoluteSpacing, 1);
+ painter.setFont(labelFont);
+ painter.drawText(QRect(44, 12, width() - 56, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label.toUpper());
 painter.setPen(Theme::palette().text);
 QFont valFont(QStringLiteral("Consolas"), 22, QFont::DemiBold);
 valFont.setLetterSpacing(QFont::AbsoluteSpacing, -1);
