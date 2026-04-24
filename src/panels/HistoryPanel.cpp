@@ -221,11 +221,11 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->verticalHeader()->setDefaultSectionSize(28);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setAlternatingRowColors(true);
-  m_table->setStyleSheet(QStringLiteral("QTableView{border:1px solid %1;border-radius:8px;background:white;alternate-background-color:%2;gridline-color:%3;}"
-    "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:11px;font-weight:600;}"
-    "QTableView::item:selected{background:%6;color:%5;}")
-    .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgRail.name(), Theme::palette().text.name(),
-      Theme::palette().brandWeak.name()));
+ m_table->setStyleSheet(QStringLiteral("QTableView{border:1px solid %1;border-radius:8px;background:white;alternate-background-color:%2;gridline-color:%3;}"
+ "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.02em;}"
+ "QTableView::item:selected{background:%6;color:%5;}")
+ .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgSunken.name(), Theme::palette().textMuted.name(),
+ Theme::palette().brandWeak.name()));
 
 auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
 verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));

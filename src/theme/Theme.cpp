@@ -13,8 +13,10 @@ const Palette &palette()
     QColor("#E2E6EC"),
     QColor("#C9D0DA"),
     QColor("#EEF0F4"),
-    QColor("#0B1220"),
-    QColor("#5B6573"),
+ QColor("#0B1220"),
+ QColor("#2A3240"),
+ QColor("#5B6573"),
+ QColor("#8A93A1"),
     QColor("#007ACB"),
     QColor("#005AAF"),
     QColor("#D9F2FF"),
@@ -45,18 +47,18 @@ QString titleStyle()
 QString fieldStyle()
 {
     const auto &p = palette();
-  return QStringLiteral("QLineEdit,QSpinBox,QDoubleSpinBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;}"
-    "QSpinBox::up-button,QSpinBox::down-button{width:18px;border:none;background:transparent;}")
-    .arg(p.bgPanel.name(), p.borderStrong.name(), p.text.name());
+ return QStringLiteral("QLineEdit,QSpinBox,QDoubleSpinBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;}"
+ "QSpinBox::up-button,QSpinBox::down-button{width:18px;border:none;background:transparent;}")
+ .arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name());
 }
 
 QString buttonStyle()
 {
     const auto &p = palette();
-  return QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:6px 10px;color:%3;}"
-    "QPushButton:hover{background:%4;}"
-    "QPushButton#primaryButton{background:%5;color:white;border-color:%6;}")
-    .arg(p.bgPanel.name(), p.borderStrong.name(), p.text.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name());
+ return QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:6px 10px;color:%3;}"
+ "QPushButton:hover{background:%4;}"
+ "QPushButton#primaryButton{background:%5;color:white;border-color:%6;}")
+ .arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name());
 }
 
 QString railButtonStyle(bool active)

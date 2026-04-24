@@ -560,14 +560,14 @@ QWidget *MainWindow::createProfilePanel()
         .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
     auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
     hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
-    hint->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+    hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));
     header->rightLayout()->addWidget(scaleCombo);
     header->rightLayout()->addWidget(hint);
     layout->addWidget(header);
 
-    auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
-    m_profileChart = new ProfileChartWidget;
+ auto *body = new QVBoxLayout;
+ body->setContentsMargins(4, 8, 8, 0);
+ m_profileChart = new ProfileChartWidget;
     m_profileChart->setObjectName(QStringLiteral("profileChart"));
     body->addWidget(m_profileChart, 1);
     layout->addLayout(body);
@@ -625,8 +625,11 @@ m_rightCard->setSmall(true);
 m_rightCard->setLabel(QStringLiteral("右高度"));
 m_rightCard->setUnit(QStringLiteral("μm"));
 
-    layout->addWidget(m_thicknessCard, 0, 0, 2, 1);
-    layout->addWidget(m_maxCard, 0, 1);
+ layout->addWidget(m_thicknessCard, 0, 0, 2, 1);
+ layout->setColumnStretch(0, 13);
+ layout->setColumnStretch(1, 10);
+ layout->setColumnStretch(2, 10);
+ layout->addWidget(m_maxCard, 0, 1);
     layout->addWidget(m_minCard, 1, 1);
     layout->addWidget(m_deltaCard, 0, 2);
     layout->addWidget(m_rightCard, 1, 2);

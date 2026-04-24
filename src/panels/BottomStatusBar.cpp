@@ -63,7 +63,7 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_connectionLabel->setObjectName(QStringLiteral("bottomConnectionLabel"));
     m_measureStateLabel->setObjectName(QStringLiteral("bottomMeasureStateLabel"));
 
-    const auto monoStyle = QStringLiteral("font-size:11px;font-family:Consolas;color:%1;").arg(Theme::palette().text.name());
+    const auto monoStyle = QStringLiteral("font-size:11px;font-family:Consolas;color:%1;").arg(Theme::palette().textMuted.name());
     const auto monoMutedStyle = QStringLiteral("font-size:11px;font-family:Consolas;color:%1;").arg(Theme::palette().textMuted.name());
     m_probeLabel->setStyleSheet(monoStyle);
     m_xLabel->setStyleSheet(monoStyle);
@@ -144,23 +144,27 @@ layout->addSpacing(8);
 
 void BottomStatusBar::setPosition(const MachinePosition &position)
 {
-    m_xLabel->setText(QStringLiteral("X: <b>%1</b>").arg(QLocale().toString(position.x)));
-    m_yLabel->setText(QStringLiteral("Y: <b>%1</b>").arg(QLocale().toString(position.y)));
+ const auto tc = Theme::palette().text1.name();
+ m_xLabel->setText(QString("X: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QLocale().toString(position.x)));
+ m_yLabel->setText(QString("Y: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QLocale().toString(position.y)));
 }
 
 void BottomStatusBar::setProbeValue(double probeValue)
 {
-    m_probeLabel->setText(QStringLiteral("探针: <b>%1</b>").arg(QString::number(probeValue, 'f', 3)));
+ const auto tc = Theme::palette().text1.name();
+ m_probeLabel->setText(QString("探针: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QString::number(probeValue, 'f', 3)));
 }
 
 void BottomStatusBar::setSampleProgress(int current, int total)
 {
-    m_sampleLabel->setText(QStringLiteral("采样: <b>%1</b> / %2").arg(current).arg(total));
+ const auto tc = Theme::palette().text1.name();
+ m_sampleLabel->setText(QString("采样: <span style=\"color:%1\"><b>%2</b></span> / %3").arg(tc).arg(current).arg(total));
 }
 
 void BottomStatusBar::setFrameRate(double fps)
 {
-    m_fpsLabel->setText(QStringLiteral("FPS: <b>%1</b>").arg(QString::number(fps, 'f', 2)));
+ const auto tc = Theme::palette().text1.name();
+ m_fpsLabel->setText(QString("FPS: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QString::number(fps, 'f', 2)));
 }
 
 void BottomStatusBar::setConnected(bool connected)

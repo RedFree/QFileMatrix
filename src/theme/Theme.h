@@ -14,8 +14,10 @@ struct Palette {
   QColor border;
   QColor borderStrong;
   QColor divider;
-  QColor text;
-  QColor textMuted;
+ QColor text;
+ QColor text1;
+ QColor textMuted;
+ QColor text3;
   QColor brand;
   QColor brandStrong;
   QColor brandWeak;

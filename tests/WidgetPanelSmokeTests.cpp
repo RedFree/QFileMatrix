@@ -198,9 +198,9 @@ void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()
     QVERIFY(xLabel != nullptr);
     QVERIFY(probeLabel != nullptr);
     QVERIFY(sampleLabel != nullptr);
-    QCOMPARE(xLabel->text(), QStringLiteral("X: <b>456</b>"));
-    QCOMPARE(probeLabel->text(), QStringLiteral("探针: <b>-58.790</b>"));
-    QCOMPARE(sampleLabel->text(), QStringLiteral("采样: <b>5</b> / 24"));
+ QCOMPARE(xLabel->text(), QString("X: <span style=\"color:#2a3240\"><b>456</b></span>"));
+ QCOMPARE(probeLabel->text(), QString("探针: <span style=\"color:#2a3240\"><b>-58.790</b></span>"));
+ QCOMPARE(sampleLabel->text(), QString("采样: <span style=\"color:#2a3240\"><b>5</b></span> / 24"));
 }
 
 void WidgetPanelSmokeTests::bottomStatusBarUsesPrototypeMetaStrip()
