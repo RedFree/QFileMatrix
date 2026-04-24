@@ -143,8 +143,18 @@ public:
         painter->setPen(border);
         painter->setBrush(bg);
         painter->drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
+
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(fg);
+        const qreal dotR = 3.0;
+        const qreal dotX = pillRect.left() + pillRect.height() / 2.0;
+        const qreal dotY = pillRect.center().y();
+        painter->drawEllipse(QPointF(dotX, dotY), dotR, dotR);
+
         painter->setPen(fg);
-        painter->drawText(pillRect, Qt::AlignCenter, text);
+        painter->setBrush(Qt::NoBrush);
+        const QRect textRect = pillRect.adjusted(qRound(pillRect.height() / 2.0), 0, 0, 0);
+        painter->drawText(textRect, Qt::AlignCenter, text);
         painter->restore();
     }
 };
