@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPushButton>
 #include <QSizePolicy>
 
@@ -11,18 +12,101 @@
 namespace {
 QPushButton *makeNavButton(const QString &name, const QString &text, bool active = false)
 {
-  auto *button = new QPushButton(text);
-  button->setObjectName(name);
-  button->setFlat(true);
-  button->setCursor(Qt::PointingHandCursor);
-  button->setFixedHeight(32);
-  button->setStyleSheet(active
-    ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:#FFFFFF;border-bottom:2px solid %1;}"
-      "QPushButton:hover{color:#FFFFFF;}").arg(Theme::palette().brand.name())
-    : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:#98A2B3;border-bottom:2px solid transparent;}"
-      "QPushButton:hover{color:#D3DAE6;}"));
-  return button;
+    auto *button = new QPushButton(text);
+    button->setObjectName(name);
+    button->setFlat(true);
+    button->setCursor(Qt::PointingHandCursor);
+    button->setFixedHeight(32);
+    button->setStyleSheet(active
+        ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:#FFFFFF;border-bottom:2px solid %1;}"
+                         "QPushButton:hover{color:#FFFFFF;}").arg(Theme::palette().brand.name())
+        : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:#98A2B3;border-bottom:2px solid transparent;}"
+                         "QPushButton:hover{color:#D3DAE6;}"));
+    return button;
 }
+
+class SearchButton : public QPushButton
+{
+public:
+    explicit SearchButton(QWidget *parent = nullptr)
+        : QPushButton(parent)
+    {
+        setObjectName(QStringLiteral("searchButton"));
+        setCursor(Qt::PointingHandCursor);
+        setFixedHeight(26);
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    }
+
+    QSize sizeHint() const override { return QSize(78, 26); }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPushButton::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const QColor color = underMouse() ? QColor(0xED, 0xF1, 0xF7) : QColor(0xB8, 0xC1, 0xD0);
+        QPen pen(color);
+        pen.setWidthF(1.6);
+        pen.setCapStyle(Qt::RoundCap);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+
+        const qreal cx = 13, cy = height() / 2.0;
+        painter.drawEllipse(QPointF(cx - 1.5, cy), 5.0, 5.0);
+        painter.drawLine(QPointF(cx + 3, cy + 3), QPointF(cx + 6.5, cy + 6.5));
+
+        painter.setFont(QFont(QStringLiteral("Segoe UI"), 9));
+        painter.drawText(QRectF(24, 0, width() - 24, height()), Qt::AlignVCenter | Qt::AlignLeft, QStringLiteral("搜索 ⌘K"));
+    }
+};
+
+class AlarmButton : public QPushButton
+{
+public:
+    explicit AlarmButton(QWidget *parent = nullptr)
+        : QPushButton(parent)
+    {
+        setObjectName(QStringLiteral("alarmButton"));
+        setCursor(Qt::PointingHandCursor);
+        setFixedSize(30, 26);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPushButton::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const QColor color = underMouse() ? QColor(0xED, 0xF1, 0xF7) : QColor(0xB8, 0xC1, 0xD0);
+        QPen pen(color);
+        pen.setWidthF(1.6);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+
+        const qreal cx = width() / 2.0, cy = height() / 2.0 - 1;
+        const qreal w = 14, h = 10;
+        const QRectF bellRect(cx - w / 2, cy - h / 2, w, h);
+        QPainterPath bell;
+        bell.moveTo(bellRect.left(), bellRect.bottom());
+        bell.lineTo(bellRect.left(), bellRect.top() + h * 0.35);
+        bell.quadTo(bellRect.left(), bellRect.top(), bellRect.center().x(), bellRect.top());
+        bell.quadTo(bellRect.right(), bellRect.top(), bellRect.right(), bellRect.top() + h * 0.35);
+        bell.lineTo(bellRect.right(), bellRect.bottom());
+        bell.closeSubpath();
+        painter.drawPath(bell);
+        painter.drawLine(QPointF(bellRect.left() - 2, bellRect.bottom()), QPointF(bellRect.right() + 2, bellRect.bottom()));
+        painter.drawEllipse(QPointF(cx, bellRect.bottom() + 2.5), 2.0, 2.0);
+
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(Theme::palette().err);
+        painter.drawEllipse(QPointF(width() - 5, 5), 3.5, 3.5);
+    }
+};
 }
 
 TopTitleBar::TopTitleBar(QWidget *parent)
@@ -101,21 +185,13 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     actionLayout->setContentsMargins(0, 0, 0, 0);
     actionLayout->setSpacing(12);
 
-    auto *searchButton = new QPushButton(QStringLiteral("🔍 搜索  ⌘K"), actionWrap);
-    searchButton->setObjectName(QStringLiteral("searchButton"));
-    searchButton->setCursor(Qt::PointingHandCursor);
-    searchButton->setFlat(true);
-    searchButton->setFixedHeight(26);
-    searchButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px;color:#B8C1D0;font-size:11px;}"
-                                               "QPushButton:hover{background:rgba(255,255,255,0.06);color:#EDF1F7;}"));
+        auto *searchButton = new SearchButton(actionWrap);
+        searchButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;}"
+            "QPushButton:hover{background:rgba(255,255,255,0.06);}"));
 
-    auto *alarmButton = new QPushButton(QStringLiteral("🔔 告警"), actionWrap);
-    alarmButton->setObjectName(QStringLiteral("alarmButton"));
-    alarmButton->setCursor(Qt::PointingHandCursor);
-    alarmButton->setFlat(true);
-    alarmButton->setFixedHeight(26);
-    alarmButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px;color:#B8C1D0;font-size:11px;}"
-                                              "QPushButton:hover{background:rgba(255,255,255,0.06);color:#EDF1F7;}"));
+        auto *alarmButton = new AlarmButton(actionWrap);
+        alarmButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;}"
+            "QPushButton:hover{background:rgba(255,255,255,0.06);}"));
 
     auto *divider = new QLabel(actionWrap);
     divider->setAttribute(Qt::WA_TranslucentBackground);
