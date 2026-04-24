@@ -137,6 +137,63 @@ private:
     IconKind m_kind;
 };
 
+class SmallIconButton : public QPushButton
+{
+public:
+  enum class Icon { Play, Pause, Expand };
+
+  explicit SmallIconButton(Icon icon, const QString &text, QWidget *parent = nullptr)
+    : QPushButton(text, parent), m_icon(icon)
+  {
+    setFixedHeight(24);
+    setCursor(Qt::PointingHandCursor);
+    setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px 0 22px;color:%1;font-size:11px;}"
+      "QPushButton:hover{background:%2;}")
+      .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name()));
+  }
+
+  void setIconType(Icon icon) { m_icon = icon; update(); }
+
+protected:
+  void paintEvent(QPaintEvent *event) override
+  {
+    QPushButton::paintEvent(event);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    QPen pen(Theme::palette().textMuted);
+    pen.setWidthF(1.4);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    painter.setPen(pen);
+    painter.setBrush(Qt::NoBrush);
+    const qreal cx = 10, cy = height() / 2.0;
+    switch (m_icon) {
+    case Icon::Play:
+      painter.setBrush(Theme::palette().textMuted);
+      painter.drawPolygon(QPolygonF({QPointF(cx - 3, cy - 4), QPointF(cx - 3, cy + 4), QPointF(cx + 4, cy)}));
+      break;
+    case Icon::Pause:
+      painter.setBrush(Theme::palette().textMuted);
+      painter.drawRect(QRectF(cx - 4, cy - 3.5, 2.8, 7));
+      painter.drawRect(QRectF(cx + 1.2, cy - 3.5, 2.8, 7));
+      break;
+    case Icon::Expand:
+      painter.drawLine(QPointF(cx - 4, cy - 4), QPointF(cx - 1, cy - 4));
+      painter.drawLine(QPointF(cx - 4, cy - 4), QPointF(cx - 4, cy - 1));
+      painter.drawLine(QPointF(cx + 4, cy - 4), QPointF(cx + 1, cy - 4));
+      painter.drawLine(QPointF(cx + 4, cy - 4), QPointF(cx + 4, cy - 1));
+      painter.drawLine(QPointF(cx - 4, cy + 4), QPointF(cx - 1, cy + 4));
+      painter.drawLine(QPointF(cx - 4, cy + 4), QPointF(cx - 4, cy + 1));
+      painter.drawLine(QPointF(cx + 4, cy + 4), QPointF(cx + 1, cy + 4));
+      painter.drawLine(QPointF(cx + 4, cy + 4), QPointF(cx + 4, cy + 1));
+      break;
+    }
+  }
+
+private:
+  Icon m_icon;
+};
+
 QFrame *makePanel(const QString &title, QWidget *content)
 {
     auto *frame = new QFrame;
@@ -354,9 +411,12 @@ void MainWindow::updateFromController()
     m_cameraView->setGain(1.4);
     m_profileChart->setMeasuring(state.measuring);
     m_profileChart->setProfile(m_controller->currentProfile());
-    if (auto *pauseButton = findChild<QPushButton*>(QStringLiteral("cameraPauseButton"))) {
-        pauseButton->setText(state.paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
-    }
+ if (auto *pauseButton = findChild<QPushButton*>(QStringLiteral("cameraPauseButton"))) {
+ pauseButton->setText(state.paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
+ if (auto *sb = dynamic_cast<SmallIconButton*>(pauseButton)) {
+ sb->setIconType(state.paused ? SmallIconButton::Icon::Play : SmallIconButton::Icon::Pause);
+ }
+ }
     applyRecordToSummary(record);
 }
 
@@ -449,24 +509,19 @@ QWidget *MainWindow::createCameraPanel()
     batchInput->setObjectName(QStringLiteral("cameraBatchInput"));
     batchInput->setFixedWidth(30);
     batchInput->setFixedHeight(24);
-    auto *pauseButton = new QPushButton(QStringLiteral("暂停"));
-    pauseButton->setObjectName(QStringLiteral("cameraPauseButton"));
-    pauseButton->setFixedHeight(24);
-    auto *expandButton = new QPushButton(QStringLiteral("展开"));
-    expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
-    expandButton->setFixedHeight(24);
-    const auto fieldStyle = QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
-    programInput->setStyleSheet(fieldStyle);
-    batchInput->setStyleSheet(fieldStyle);
-    const auto buttonStyle = QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-        "QPushButton:hover{background:%4;}")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().bgSunken.name());
-    pauseButton->setStyleSheet(buttonStyle);
-    expandButton->setStyleSheet(buttonStyle);
-    connect(pauseButton, &QPushButton::clicked, this, [this] {
-        m_controller->setPaused(!m_controller->state().paused);
-    });
+ auto *pauseButton = new SmallIconButton(SmallIconButton::Icon::Pause, QStringLiteral("暂停"));
+ pauseButton->setObjectName(QStringLiteral("cameraPauseButton"));
+ auto *expandButton = new SmallIconButton(SmallIconButton::Icon::Expand, QStringLiteral("展开"));
+ expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
+ const auto fieldStyle = QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
+ .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
+ programInput->setStyleSheet(fieldStyle);
+ batchInput->setStyleSheet(fieldStyle);
+ connect(pauseButton, &QPushButton::clicked, this, [this, pauseButton] {
+ m_controller->setPaused(!m_controller->state().paused);
+ pauseButton->setText(m_controller->state().paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
+ pauseButton->setIconType(m_controller->state().paused ? SmallIconButton::Icon::Play : SmallIconButton::Icon::Pause);
+ });
     header->rightLayout()->addWidget(programLabel);
     header->rightLayout()->addWidget(programInput);
     header->rightLayout()->addWidget(batchLabel);
