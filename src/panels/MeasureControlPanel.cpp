@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QCheckBox>
 #include <QLabel>
+#include <QPainter>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QSignalBlocker>
@@ -11,6 +12,61 @@
 
 #include "theme/Theme.h"
 #include "widgets/PanelHeaderWidget.h"
+
+namespace {
+class MeasureIconButton : public QPushButton
+{
+public:
+ enum class Icon { Play, Hand, Stop };
+
+ explicit MeasureIconButton(Icon icon, const QString &text, QWidget *parent = nullptr)
+ : QPushButton(text, parent), m_icon(icon)
+ {
+ setFixedHeight(28);
+ setCursor(Qt::PointingHandCursor);
+ }
+
+protected:
+ void paintEvent(QPaintEvent *event) override
+ {
+ QPushButton::paintEvent(event);
+ QPainter painter(this);
+ painter.setRenderHint(QPainter::Antialiasing);
+ const QColor iconColor = property("role").toString() == QStringLiteral("primary")
+ ? Qt::white
+ : (property("role").toString() == QStringLiteral("danger")
+ ? Theme::palette().err
+ : Theme::palette().textMuted);
+ QPen pen(iconColor);
+ pen.setWidthF(1.3);
+ pen.setCapStyle(Qt::RoundCap);
+ pen.setJoinStyle(Qt::RoundJoin);
+ painter.setPen(pen);
+ painter.setBrush(Qt::NoBrush);
+ const qreal cx = 12, cy = height() / 2.0;
+ switch (m_icon) {
+ case Icon::Play:
+ painter.setBrush(iconColor);
+ painter.drawPolygon(QPolygonF({QPointF(cx - 3, cy - 4), QPointF(cx - 3, cy + 4), QPointF(cx + 4, cy)}));
+ break;
+ case Icon::Hand:
+ painter.drawLine(QPointF(cx - 1, cy + 4), QPointF(cx - 1, cy - 2));
+ painter.drawLine(QPointF(cx + 1, cy + 4), QPointF(cx + 1, cy - 3));
+ painter.drawLine(QPointF(cx + 3, cy + 4), QPointF(cx + 3, cy - 3.5));
+ painter.drawLine(QPointF(cx + 5, cy + 3), QPointF(cx + 5, cy - 1));
+ painter.drawArc(QRectF(cx - 3, cy - 1, 10, 8), 30 * 16, 120 * 16);
+ break;
+ case Icon::Stop:
+ painter.setBrush(iconColor);
+ painter.drawRect(QRectF(cx - 3.5, cy - 3.5, 7, 7));
+ break;
+ }
+ }
+
+private:
+ Icon m_icon;
+};
+}
 
 MeasureControlPanel::MeasureControlPanel(QWidget *parent)
     : QWidget(parent)
@@ -89,40 +145,37 @@ if (active) {
     body->addLayout(sampleRow);
     connect(m_sampleCount, &QSpinBox::valueChanged, this, &MeasureControlPanel::sampleCountChanged);
 
-    auto *buttons = new QGridLayout;
-    buttons->setHorizontalSpacing(6);
-    buttons->setVerticalSpacing(6);
-    auto *startButton = new QPushButton(QStringLiteral("开始测量"));
-    startButton->setObjectName(QStringLiteral("startButton"));
-    startButton->setProperty("role", QStringLiteral("primary"));
-    startButton->setFixedHeight(28);
-    auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
-    manualButton->setObjectName(QStringLiteral("manualButton"));
-    manualButton->setFixedHeight(28);
-    auto *stopButton = new QPushButton(QStringLiteral("停止测量"));
-    stopButton->setObjectName(QStringLiteral("stopButton"));
-    stopButton->setProperty("role", QStringLiteral("danger"));
-    stopButton->setFixedHeight(28);
-    buttons->addWidget(startButton, 0, 0);
-    buttons->addWidget(manualButton, 0, 1);
-    buttons->addWidget(stopButton, 1, 0, 1, 2);
-    body->addLayout(buttons);
+ auto *buttons = new QGridLayout;
+ buttons->setHorizontalSpacing(6);
+ buttons->setVerticalSpacing(6);
+ auto *startButton = new MeasureIconButton(MeasureIconButton::Icon::Play, QStringLiteral("开始测量"));
+ startButton->setObjectName(QStringLiteral("startButton"));
+ startButton->setProperty("role", QStringLiteral("primary"));
+ auto *manualButton = new MeasureIconButton(MeasureIconButton::Icon::Hand, QStringLiteral("手动采样"));
+ manualButton->setObjectName(QStringLiteral("manualButton"));
+ auto *stopButton = new MeasureIconButton(MeasureIconButton::Icon::Stop, QStringLiteral("停止测量"));
+ stopButton->setObjectName(QStringLiteral("stopButton"));
+ stopButton->setProperty("role", QStringLiteral("danger"));
+ buttons->addWidget(startButton, 0, 0);
+ buttons->addWidget(manualButton, 0, 1);
+ buttons->addWidget(stopButton, 1, 0, 1, 2);
+ body->addLayout(buttons);
 
-    connect(startButton, &QPushButton::clicked, this, &MeasureControlPanel::startRequested);
-    connect(manualButton, &QPushButton::clicked, this, &MeasureControlPanel::manualRequested);
-    connect(stopButton, &QPushButton::clicked, this, &MeasureControlPanel::stopRequested);
+ connect(startButton, &QPushButton::clicked, this, &MeasureControlPanel::startRequested);
+ connect(manualButton, &QPushButton::clicked, this, &MeasureControlPanel::manualRequested);
+ connect(stopButton, &QPushButton::clicked, this, &MeasureControlPanel::stopRequested);
 
     layout->addLayout(body);
 
-    setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-        "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
-        "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
-  "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
-  "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
-  "QProgressBar::chunk{background:%4;border-radius:4px;}"
-  )
-  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
-    Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
+ setStyleSheet(Theme::fieldStyle() + QStringLiteral(
+ "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px 0 22px;color:%3;font-size:11px;}"
+ "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
+ "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
+ "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
+ "QProgressBar::chunk{background:%4;border-radius:4px;}"
+ )
+ .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
+ Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)
