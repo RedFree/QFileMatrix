@@ -2,8 +2,10 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QTimer>
 
 #include "theme/Theme.h"
 #include "widgets/LedIndicatorWidget.h"
@@ -19,6 +21,74 @@ LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const 
     indicator->setCompact(true);
     return indicator;
 }
+
+class StatusPillWidget : public QWidget
+{
+public:
+    explicit StatusPillWidget(QWidget *parent = nullptr)
+        : QWidget(parent)
+        , m_blinkTimer(new QTimer(this))
+    {
+        setFixedHeight(20);
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        setProperty("measuring", false);
+        setProperty("dotVisible", true);
+        m_blinkTimer->setObjectName(QStringLiteral("statusBlinkTimer"));
+        m_blinkTimer->setInterval(500);
+        connect(m_blinkTimer, &QTimer::timeout, this, [this] {
+            setProperty("dotVisible", !property("dotVisible").toBool());
+            update();
+        });
+    }
+
+    QSize sizeHint() const override { return QSize(60, 20); }
+
+protected:
+    void paintEvent(QPaintEvent *) override
+    {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const bool measuring = property("measuring").toBool();
+        QColor bg = Theme::palette().bgSunken;
+        QColor border = Theme::palette().border;
+        QColor fg = Theme::palette().textMuted;
+        QString text = QStringLiteral("待机");
+
+        if (measuring) {
+            bg = Theme::palette().brandWeak;
+            border = Theme::palette().brandWeak.darker(115);
+            fg = Theme::palette().brandStrong;
+            text = QStringLiteral("测量中");
+        }
+
+        const QRect pillRect = rect().adjusted(0, 1, 0, -1);
+        painter.setPen(border);
+        painter.setBrush(bg);
+        painter.drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
+
+        const qreal dotR = 3.0;
+        const qreal dotX = pillRect.left() + pillRect.height() / 2.0;
+        const qreal dotY = pillRect.center().y();
+
+        if (!measuring || property("dotVisible").toBool()) {
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(fg);
+            painter.drawEllipse(QPointF(dotX, dotY), dotR, dotR);
+        }
+
+        painter.setPen(fg);
+        painter.setBrush(Qt::NoBrush);
+        QFont font(QStringLiteral("Consolas"), 9);
+        font.setWeight(QFont::Bold);
+        painter.setFont(font);
+        const QRect textRect = pillRect.adjusted(qRound(pillRect.height() / 2.0) + 2, 0, -4, 0);
+        painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, text);
+    }
+
+private:
+    QTimer *m_blinkTimer;
+};
 }
 
 DeviceStatusBar::DeviceStatusBar(QWidget *parent)
@@ -56,10 +126,8 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     progressWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_progressTitleLabel = new QLabel(QStringLiteral("测量进度"));
     m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
-    m_stateLabel = new QLabel(QStringLiteral("待机"));
+    m_stateLabel = new StatusPillWidget;
     m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-    .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setValue(0);
@@ -123,20 +191,27 @@ void DeviceStatusBar::setProgress(double progress)
 
 void DeviceStatusBar::setMeasuring(bool measuring)
 {
- m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
- m_stateLabel->setStyleSheet(measuring
- ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
- .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
- : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
- .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
+    m_stateLabel->setProperty("measuring", measuring);
+    m_stateLabel->update();
 
- if (m_startButton) m_startButton->setVisible(!measuring);
- if (m_manualButton) m_manualButton->setVisible(!measuring);
- if (m_stopButton) m_stopButton->setVisible(measuring);
+    auto *timer = m_stateLabel->findChild<QTimer*>(QStringLiteral("statusBlinkTimer"));
+    if (timer) {
+        if (measuring) {
+            timer->start();
+        } else {
+            timer->stop();
+            m_stateLabel->setProperty("dotVisible", true);
+            m_stateLabel->update();
+        }
+    }
 
- m_progressBar->setStyleSheet(measuring
- ? QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
- .arg(Theme::palette().bgSunken.name(), Theme::palette().brand.name())
- : QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
- .arg(Theme::palette().bgSunken.name(), Theme::palette().ok.name()));
+    if (m_startButton) m_startButton->setVisible(!measuring);
+    if (m_manualButton) m_manualButton->setVisible(!measuring);
+    if (m_stopButton) m_stopButton->setVisible(measuring);
+
+    m_progressBar->setStyleSheet(measuring
+        ? QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
+            .arg(Theme::palette().bgSunken.name(), Theme::palette().brand.name())
+        : QStringLiteral("QProgressBar{background:%1;border:none;border-radius:3px;height:6px;}QProgressBar::chunk{background:%2;border-radius:3px;}")
+            .arg(Theme::palette().bgSunken.name(), Theme::palette().ok.name()));
 }
