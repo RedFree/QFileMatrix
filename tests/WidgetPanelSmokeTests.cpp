@@ -42,6 +42,7 @@ private slots:
     void servoPanelExposesPrototypeControls();
     void servoPanelUsesCompactPrototypeLayout();
     void historyPanelUsesPrototypeSearchAndDelegates();
+    void historyPanelUsesPaletteDrivenColors();
     void sensorTabsMoveActiveStateWhenClicked();
     void measureModeTabsMoveActiveStateWhenClicked();
     void ledIndicatorDrawsGlowRingPerState();
@@ -323,6 +324,24 @@ void WidgetPanelSmokeTests::historyPanelUsesPrototypeSearchAndDelegates()
     QVERIFY(table->itemDelegateForColumn(6) != nullptr);
 QVERIFY(table->itemDelegateForColumn(5)->objectName() == QStringLiteral("historyVerdictDelegate"));
 QVERIFY(table->itemDelegateForColumn(6)->objectName() == QStringLiteral("historyThickDelegate"));
+}
+
+void WidgetPanelSmokeTests::historyPanelUsesPaletteDrivenColors()
+{
+    HistoryPanel panel;
+
+    auto *search = panel.findChild<QLineEdit*>(QStringLiteral("historySearchInput"));
+    auto *table = panel.findChild<QTableView*>(QStringLiteral("historyTable"));
+    auto *filterButton = panel.findChild<QPushButton*>(QStringLiteral("historyFilterButton"));
+    QVERIFY(search != nullptr);
+    QVERIFY(table != nullptr);
+    QVERIFY(filterButton != nullptr);
+
+    QVERIFY(search->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
+    QVERIFY(search->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+    QVERIFY(table->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
+    QVERIFY(!table->styleSheet().contains(QStringLiteral("background:white"), Qt::CaseInsensitive));
+    QVERIFY(filterButton->styleSheet().contains(Theme::palette().textMuted.name(), Qt::CaseInsensitive));
 }
 
 void WidgetPanelSmokeTests::sensorTabsMoveActiveStateWhenClicked()

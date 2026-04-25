@@ -14,7 +14,6 @@
 
 #include "models/MeasurementTableModel.h"
 #include "theme/Theme.h"
-#include "theme/Theme.h"
 #include "widgets/PanelHeaderWidget.h"
 
 namespace {
@@ -197,6 +196,8 @@ option->palette.setColor(QPalette::Text, p.err);
 HistoryPanel::HistoryPanel(QWidget *parent)
     : QWidget(parent)
 {
+    const auto &p = Theme::palette();
+
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -205,24 +206,26 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_titleLabel = header->titleLabel();
     m_titleLabel->setObjectName(QStringLiteral("historyTitleLabel"));
 
- auto *search = new SearchLineEdit;
- search->setObjectName(QStringLiteral("historySearchInput"));
- search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
- search->setFixedWidth(140);
- search->setFixedHeight(24);
- search->setStyleSheet(QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
- .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
- header->rightLayout()->addWidget(search);
+    auto *search = new SearchLineEdit;
+    search->setObjectName(QStringLiteral("historySearchInput"));
+    search->setPlaceholderText(QStringLiteral("搜索序号 / 日期..."));
+    search->setFixedWidth(140);
+    search->setFixedHeight(24);
+    search->setStyleSheet(QStringLiteral(
+        "QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
+        "QLineEdit:focus{border-color:%4;}"
+    ).arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.brand.name()));
+    header->rightLayout()->addWidget(search);
 
- const auto makeToolButton = [](HeaderToolButton::Icon icon, const QString &name, const QString &text) {
- auto *button = new HeaderToolButton(icon, text);
- button->setObjectName(name);
- return button;
- };
- header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Filter, QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
- header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Stats, QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
- header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Export, QStringLiteral("historyExportButton"), QStringLiteral("导出")));
- header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Trash, QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
+    const auto makeToolButton = [](HeaderToolButton::Icon icon, const QString &name, const QString &text) {
+        auto *button = new HeaderToolButton(icon, text);
+        button->setObjectName(name);
+        return button;
+    };
+    header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Filter, QStringLiteral("historyFilterButton"), QStringLiteral("筛选")));
+    header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Stats, QStringLiteral("historyStatsButton"), QStringLiteral("统计")));
+    header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Export, QStringLiteral("historyExportButton"), QStringLiteral("导出")));
+    header->rightLayout()->addWidget(makeToolButton(HeaderToolButton::Icon::Trash, QStringLiteral("historyDeleteButton"), QStringLiteral("删除")));
     layout->addWidget(header);
 
     m_table = new QTableView;
@@ -232,23 +235,24 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->verticalHeader()->setDefaultSectionSize(28);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setAlternatingRowColors(true);
- m_table->setStyleSheet(QStringLiteral("QTableView{border:1px solid %1;border-radius:8px;background:white;alternate-background-color:%2;gridline-color:%3;}"
- "QHeaderView::section{background:%4;border:none;border-bottom:1px solid %3;padding:6px;color:%5;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.02em;}"
- "QTableView::item:selected{background:%6;color:%5;}")
- .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().divider.name(), Theme::palette().bgSunken.name(), Theme::palette().textMuted.name(),
- Theme::palette().brandWeak.name()));
+    m_table->setStyleSheet(QStringLiteral(
+        "QTableView{border:1px solid %1;border-radius:8px;background:%2;alternate-background-color:%3;gridline-color:%4;color:%5;}"
+        "QHeaderView::section{background:%3;border:none;border-bottom:1px solid %4;padding:6px;color:%6;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.02em;}"
+        "QTableCornerButton::section{background:%3;border:none;border-bottom:1px solid %4;border-right:1px solid %4;}"
+        "QTableView::item:selected{background:%7;color:%5;}"
+    ).arg(p.border.name(), p.bgPanel.name(), p.bgSunken.name(), p.divider.name(), p.text.name(), p.textMuted.name(), p.brandWeak.name()));
 
-auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
-verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
-m_table->setItemDelegateForColumn(5, verdictDelegate);
+    auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
+    verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
+    m_table->setItemDelegateForColumn(5, verdictDelegate);
 
-auto *thickDelegate = new HistoryThickDelegate(m_table);
-thickDelegate->setObjectName(QStringLiteral("historyThickDelegate"));
-m_table->setItemDelegateForColumn(6, thickDelegate);
+    auto *thickDelegate = new HistoryThickDelegate(m_table);
+    thickDelegate->setObjectName(QStringLiteral("historyThickDelegate"));
+    m_table->setItemDelegateForColumn(6, thickDelegate);
 
-auto *numericDelegate = new HistoryNumericDelegate(m_table);
-numericDelegate->setObjectName(QStringLiteral("historyNumericDelegate"));
-for (int column : {7, 8, 9, 10, 12, 13}) {
+    auto *numericDelegate = new HistoryNumericDelegate(m_table);
+    numericDelegate->setObjectName(QStringLiteral("historyNumericDelegate"));
+    for (int column : {7, 8, 9, 10, 12, 13}) {
         m_table->setItemDelegateForColumn(column, numericDelegate);
     }
 
