@@ -14,10 +14,10 @@ struct Palette {
   QColor border;
   QColor borderStrong;
   QColor divider;
- QColor text;
- QColor text1;
- QColor textMuted;
- QColor text3;
+  QColor text;
+  QColor text1;
+  QColor textMuted;
+  QColor text3;
   QColor brand;
   QColor brandStrong;
   QColor brandWeak;
@@ -27,8 +27,11 @@ struct Palette {
   QColor warnWeak;
   QColor err;
   QColor errWeak;
+  QColor accentTrace;
+  QColor accentRef;
 };
 
+QColor oklch(qreal l, qreal c, qreal h);
 const Palette &palette();
 QString frameStyle();
 QString titleStyle();

@@ -3,6 +3,8 @@
 #include <QBrush>
 #include <QStringList>
 
+#include "theme/Theme.h"
+
 namespace {
 constexpr int kColumnCount = 14;
 
@@ -89,14 +91,15 @@ QVariant foregroundValue(const MeasurementRecord &record, int column)
         return {};
     }
 
+    const auto &p = Theme::palette();
     if (record.verdict == QStringLiteral("ok")) {
-        return QBrush(QColor(0x14, 0x8A, 0x52));
+        return QBrush(p.ok);
     }
     if (record.verdict == QStringLiteral("warn")) {
-        return QBrush(QColor(0xB0, 0x73, 0x00));
+        return QBrush(p.warn);
     }
     if (record.verdict == QStringLiteral("err")) {
-        return QBrush(QColor(0xC2, 0x41, 0x0C));
+        return QBrush(p.err);
     }
 
     return {};

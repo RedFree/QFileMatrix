@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QTimer>
 
+#include "theme/Theme.h"
+
 CameraViewWidget::CameraViewWidget(QWidget *parent)
     : QWidget(parent)
     , m_refreshTimer(new QTimer(this))
@@ -108,6 +110,7 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
 {
  Q_UNUSED(event)
 
+ const auto &p = Theme::palette();
  QPainter painter(this);
  painter.setRenderHint(QPainter::Antialiasing);
  painter.fillRect(rect(), QColor("#0E1218"));
@@ -132,22 +135,25 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.fillRect(strips[i], grad);
  }
 
- painter.setPen(QPen(QColor(110, 170, 255, 180), 1, Qt::DashLine));
- painter.setBrush(QColor(110, 170, 255, 30));
+ const QColor roiStroke = p.accentRef;
+ painter.setPen(QPen(roiStroke, 1, Qt::DashLine));
+ painter.setBrush(QColor(roiStroke.red(), roiStroke.green(), roiStroke.blue(), 30));
  painter.drawRect(QRectF(width() * 0.32, height() * 0.15, width() * 0.16, height() * 0.7));
 
  if (m_measuring) {
  const int offset = (QDateTime::currentMSecsSinceEpoch() / 8) % qMax(1, height());
  const QRect scanRect(0, offset - 18, width(), 36);
  QLinearGradient scan(scanRect.topLeft(), scanRect.bottomLeft());
- scan.setColorAt(0.0, QColor(120, 255, 180, 0));
- scan.setColorAt(0.5, QColor(120, 255, 180, 80));
- scan.setColorAt(1.0, QColor(120, 255, 180, 0));
+ const QColor scanColor = p.ok;
+ scan.setColorAt(0.0, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 0));
+ scan.setColorAt(0.5, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 80));
+ scan.setColorAt(1.0, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 0));
  painter.fillRect(scanRect, scan);
  }
 
  const QPoint center(static_cast<int>(m_crosshair.x() * width()), static_cast<int>(m_crosshair.y() * height()));
- painter.setPen(QPen(QColor(110, 255, 180), 1));
+ const QColor crosshairColor = p.brand;
+ painter.setPen(QPen(crosshairColor, 1));
  painter.drawLine(center.x(), 0, center.x(), height());
  painter.drawLine(0, center.y(), width(), center.y());
  painter.drawEllipse(center, 9, 9);
@@ -161,7 +167,7 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
  painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
  painter.setPen(Qt::white);
- painter.setBrush(QColor(80, 200, 120));
+ painter.setBrush(p.ok);
  painter.drawEllipse(QPointF(24, 22), 4, 4);
  painter.setBrush(Qt::NoBrush);
  painter.setFont(sansFont);
@@ -181,13 +187,13 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  .arg(QString::number(m_gain, 'f', 1)));
 
  painter.setBrush(QColor(6, 12, 22, 180));
- painter.setPen(QColor(200, 247, 212));
+ painter.setPen(p.ok);
  painter.drawRoundedRect(QRect(center.x() + 8, center.y() + 8, 88, 22), 3, 3);
  painter.setFont(monoSmall);
  painter.drawText(QRect(center.x() + 14, center.y() + 8, 80, 22), Qt::AlignVCenter | Qt::AlignLeft,
  QStringLiteral("%1, %2").arg(center.x()).arg(center.y()));
 
- painter.setPen(QColor(150, 190, 255));
+ painter.setPen(roiStroke);
  painter.setFont(sansFont);
  painter.drawText(QRect(static_cast<int>(width() * 0.32), static_cast<int>(height() * 0.15) - 14, 44, 12), Qt::AlignLeft | Qt::AlignVCenter,
  QStringLiteral("ROI 1"));

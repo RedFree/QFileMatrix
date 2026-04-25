@@ -12,10 +12,11 @@ ProfileChartWidget::ProfileChartWidget(QWidget *parent)
 {
     setMinimumSize(420, 260);
     setMouseTracking(true);
+    const auto &p = Theme::palette();
     m_bands = {
-        {250.0, 80.0, QStringLiteral("起始"), QColor(84, 122, 255, 40), QColor(84, 122, 255, 180)},
-        {600.0, 120.0, QStringLiteral("数据"), QColor(84, 214, 160, 30), QColor(84, 214, 160, 180)},
-        {900.0, 90.0, QStringLiteral("结束"), QColor(84, 122, 255, 40), QColor(84, 122, 255, 180)}
+        {250.0, 80.0, QStringLiteral("起始"), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 40), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 180)},
+        {600.0, 120.0, QStringLiteral("数据"), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 30), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 180)},
+        {900.0, 90.0, QStringLiteral("结束"), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 40), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 180)}
     };
 }
 
@@ -100,6 +101,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
     painter.drawText(QRectF(plot.right() - 72, targetY - 10, 68, 14), Qt::AlignRight | Qt::AlignVCenter, QStringLiteral("TARGET 11.5"));
 
     if (!m_profile.isEmpty()) {
+        const auto &p = Theme::palette();
         QPainterPath path;
         path.moveTo(xToPixel(m_profile.first().x), yToPixel(m_profile.first().y));
         for (int i = 1; i < m_profile.size(); ++i) {
@@ -110,27 +112,29 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         fillPath.lineTo(xToPixel(m_profile.last().x), plot.bottom());
         fillPath.lineTo(xToPixel(m_profile.first().x), plot.bottom());
         fillPath.closeSubpath();
-        painter.fillPath(fillPath, QColor(196, 74, 56, 15));
+        painter.fillPath(fillPath, QColor(p.accentTrace.red(), p.accentTrace.green(), p.accentTrace.blue(), 15));
 
-        painter.setPen(QPen(QColor("#C44A38"), 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter.setPen(QPen(p.accentTrace, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter.drawPath(path);
     }
 
-    painter.setPen(Theme::palette().border);
-    painter.setBrush(Theme::palette().bgPanel);
-    painter.drawRoundedRect(QRectF(plot.left() + 6, plot.top() + 4, 74, 18), 3, 3);
-    painter.setPen(Theme::palette().textMuted);
-    painter.setFont(QFont(QStringLiteral("Consolas"), 9));
-    painter.drawText(QRectF(plot.left() + 10, plot.top() + 4, 66, 18), Qt::AlignVCenter | Qt::AlignHCenter, QStringLiteral("μm vs px"));
+    painter.setPen(QPen(Theme::palette().border));
+        painter.setBrush(Theme::palette().bgPanel);
+        painter.drawRoundedRect(QRectF(plot.left() + 6, plot.top() + 4, 74, 18), 3, 3);
+        painter.setPen(Theme::palette().textMuted);
+        painter.setFont(QFont(QStringLiteral("Consolas"), 9));
+        painter.drawText(QRectF(plot.left() + 10, plot.top() + 4, 66, 18), Qt::AlignVCenter | Qt::AlignHCenter, QStringLiteral("μm vs px"));
 
-    if (m_measuring) {
-        painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), QColor(84, 214, 160, 20));
-    }
+        if (m_measuring) {
+        const auto &p = Theme::palette();
+        painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 20));
+        }
 
-    if (m_hovering) {
-        painter.setPen(QPen(Theme::palette().brand, 1, Qt::DashLine));
+        if (m_hovering) {
+        const auto &p = Theme::palette();
+        painter.setPen(QPen(p.brand, 1, Qt::DashLine));
         painter.drawLine(QPointF(xToPixel(m_hoverPoint.x()), plot.top()), QPointF(xToPixel(m_hoverPoint.x()), plot.bottom()));
-        painter.setBrush(Theme::palette().brand);
+        painter.setBrush(p.brand);
         painter.drawEllipse(QPointF(xToPixel(m_hoverPoint.x()), yToPixel(m_hoverPoint.y())), 3, 3);
         painter.setBrush(QColor("#FFFFFF"));
         painter.setPen(Theme::palette().border);
@@ -141,10 +145,10 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
             QStringLiteral("X: %1 px  Y: ").arg(QString::number(m_hoverPoint.x(), 'f', 0)));
         const auto xPartWidth = painter.fontMetrics().horizontalAdvance(
             QStringLiteral("X: %1 px  Y: ").arg(QString::number(m_hoverPoint.x(), 'f', 0)));
-        painter.setPen(QColor("#C44A38"));
+        painter.setPen(p.accentTrace);
         painter.drawText(QRectF(width() - 174 + xPartWidth, 10, 164 - xPartWidth, 22), Qt::AlignVCenter | Qt::AlignLeft,
             QStringLiteral("%1 μm").arg(QString::number(m_hoverPoint.y(), 'f', 3)));
-    }
+        }
 }
 
 void ProfileChartWidget::mousePressEvent(QMouseEvent *event)

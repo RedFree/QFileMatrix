@@ -182,12 +182,13 @@ QStyledItemDelegate::initStyleOption(option, index);
 option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
 const auto verdictIdx = index.sibling(index.row(), 5);
 const QString verdict = verdictIdx.data(Qt::DisplayRole).toString();
+const auto &p = Theme::palette();
 if (verdict == QStringLiteral("ok")) {
-option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#357A4D")));
+option->palette.setColor(QPalette::Text, p.ok);
 } else if (verdict == QStringLiteral("warn")) {
-option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#9A6B00")));
+option->palette.setColor(QPalette::Text, p.warn);
 } else if (verdict == QStringLiteral("err")) {
-option->palette.setColor(QPalette::Text, QColor(QStringLiteral("#A54E2F")));
+option->palette.setColor(QPalette::Text, p.err);
 }
 }
 };
