@@ -50,6 +50,9 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_probeLabel = new QLabel;
     m_xLabel = new QLabel;
     m_yLabel = new QLabel;
+    m_targetPointsLabel = new QLabel;
+    m_collectedPointsLabel = new QLabel;
+    m_triggerFramesLabel = new QLabel;
     m_sampleLabel = new QLabel;
     m_fpsLabel = new QLabel;
     m_connectionLabel = new QLabel;
@@ -58,6 +61,9 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_probeLabel->setObjectName(QStringLiteral("bottomProbeLabel"));
     m_xLabel->setObjectName(QStringLiteral("bottomXLabel"));
     m_yLabel->setObjectName(QStringLiteral("bottomYLabel"));
+    m_targetPointsLabel->setObjectName(QStringLiteral("bottomTargetPointsLabel"));
+    m_collectedPointsLabel->setObjectName(QStringLiteral("bottomCollectedPointsLabel"));
+    m_triggerFramesLabel->setObjectName(QStringLiteral("bottomTriggerFramesLabel"));
     m_sampleLabel->setObjectName(QStringLiteral("bottomSampleLabel"));
     m_fpsLabel->setObjectName(QStringLiteral("bottomFpsLabel"));
     m_connectionLabel->setObjectName(QStringLiteral("bottomConnectionLabel"));
@@ -68,6 +74,9 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_probeLabel->setStyleSheet(monoStyle);
     m_xLabel->setStyleSheet(monoStyle);
     m_yLabel->setStyleSheet(monoStyle);
+    m_targetPointsLabel->setStyleSheet(monoStyle);
+    m_collectedPointsLabel->setStyleSheet(monoStyle);
+    m_triggerFramesLabel->setStyleSheet(monoStyle);
     m_sampleLabel->setStyleSheet(monoStyle);
     m_fpsLabel->setStyleSheet(monoStyle);
   m_connectionLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:9px;padding:1px 8px;color:%3;font-size:10px;font-weight:600;font-family:Consolas;}")
@@ -78,6 +87,9 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     m_probeLabel->setTextFormat(Qt::RichText);
     m_xLabel->setTextFormat(Qt::RichText);
     m_yLabel->setTextFormat(Qt::RichText);
+    m_targetPointsLabel->setTextFormat(Qt::RichText);
+    m_collectedPointsLabel->setTextFormat(Qt::RichText);
+    m_triggerFramesLabel->setTextFormat(Qt::RichText);
     m_sampleLabel->setTextFormat(Qt::RichText);
     m_fpsLabel->setTextFormat(Qt::RichText);
 
@@ -87,9 +99,15 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     layout->addSpacing(16);
     layout->addWidget(m_yLabel);
     layout->addSpacing(16);
+    layout->addWidget(m_targetPointsLabel);
+    layout->addSpacing(16);
+    layout->addWidget(m_collectedPointsLabel);
+    layout->addSpacing(16);
+    layout->addWidget(m_triggerFramesLabel);
+    layout->addSpacing(16);
     layout->addWidget(m_sampleLabel);
     layout->addSpacing(16);
-layout->addWidget(m_fpsLabel);
+    layout->addWidget(m_fpsLabel);
 layout->addSpacing(16);
   auto *led = new LedBulb(Theme::palette().ok);
 m_connectionLed = led;
@@ -136,6 +154,9 @@ layout->addSpacing(8);
 
     setPosition(MachinePosition{});
     setProbeValue(-58.79);
+    setTargetPoints(0);
+    setCollectedPoints(1365);
+    setTriggerFrames(0);
     setSampleProgress(5, 24);
     setFrameRate(22.0);
     setConnected(true);
@@ -163,8 +184,26 @@ void BottomStatusBar::setSampleProgress(int current, int total)
 
 void BottomStatusBar::setFrameRate(double fps)
 {
- const auto tc = Theme::palette().text1.name();
- m_fpsLabel->setText(QString("FPS: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QString::number(fps, 'f', 2)));
+    const auto tc = Theme::palette().text1.name();
+    m_fpsLabel->setText(QString("FPS: <span style=\"color:%1\"><b>%2</b></span>").arg(tc, QString::number(fps, 'f', 2)));
+}
+
+void BottomStatusBar::setTargetPoints(int points)
+{
+    const auto tc = Theme::palette().text1.name();
+    m_targetPointsLabel->setText(QString("目标点数: <span style=\"color:%1\"><b>%2</b></span>").arg(tc).arg(points));
+}
+
+void BottomStatusBar::setCollectedPoints(int points)
+{
+    const auto tc = Theme::palette().text1.name();
+    m_collectedPointsLabel->setText(QString("采集点数: <span style=\"color:%1\"><b>%2</b></span>").arg(tc).arg(points));
+}
+
+void BottomStatusBar::setTriggerFrames(int frames)
+{
+    const auto tc = Theme::palette().text1.name();
+    m_triggerFramesLabel->setText(QString("触发帧: <span style=\"color:%1\"><b>%2</b></span>").arg(tc).arg(frames));
 }
 
 void BottomStatusBar::setConnected(bool connected)
