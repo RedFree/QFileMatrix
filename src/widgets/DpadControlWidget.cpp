@@ -3,19 +3,78 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QLocale>
+#include <QPainter>
 #include <QPushButton>
 #include <QVBoxLayout>
 
 #include "theme/Theme.h"
 
 namespace {
-QPushButton *makeButton(const QString &name, const QString &text)
+class ArrowButton : public QPushButton
 {
-auto *button = new QPushButton(text);
-button->setObjectName(name);
-button->setFixedSize(32, 32);
-return button;
-}
+public:
+    enum class Direction { Up, Down, Left, Right, Home };
+
+    explicit ArrowButton(Direction dir, QWidget *parent = nullptr)
+        : QPushButton(parent), m_dir(dir)
+    {
+        setCursor(Qt::PointingHandCursor);
+    }
+
+    QSize sizeHint() const override { return QSize(32, 32); }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPushButton::paintEvent(event);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const QColor color = isDown() ? Theme::palette().brand : Theme::palette().text;
+        QPen pen(color);
+        pen.setWidthF(1.8);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter.setPen(pen);
+        painter.setBrush(Qt::NoBrush);
+
+        const qreal cx = width() / 2.0;
+        const qreal cy = height() / 2.0;
+        const qreal s = 6.0;
+
+        switch (m_dir) {
+        case Direction::Up:
+            painter.drawLine(QPointF(cx, cy - s), QPointF(cx, cy + s));
+            painter.drawLine(QPointF(cx - s, cy - s * 0.5), QPointF(cx, cy - s));
+            painter.drawLine(QPointF(cx + s, cy - s * 0.5), QPointF(cx, cy - s));
+            break;
+        case Direction::Down:
+            painter.drawLine(QPointF(cx, cy - s), QPointF(cx, cy + s));
+            painter.drawLine(QPointF(cx - s, cy + s * 0.5), QPointF(cx, cy + s));
+            painter.drawLine(QPointF(cx + s, cy + s * 0.5), QPointF(cx, cy + s));
+            break;
+        case Direction::Left:
+            painter.drawLine(QPointF(cx - s, cy), QPointF(cx + s, cy));
+            painter.drawLine(QPointF(cx - s * 0.5, cy - s), QPointF(cx - s, cy));
+            painter.drawLine(QPointF(cx - s * 0.5, cy + s), QPointF(cx - s, cy));
+            break;
+        case Direction::Right:
+            painter.drawLine(QPointF(cx - s, cy), QPointF(cx + s, cy));
+            painter.drawLine(QPointF(cx + s * 0.5, cy - s), QPointF(cx + s, cy));
+            painter.drawLine(QPointF(cx + s * 0.5, cy + s), QPointF(cx + s, cy));
+            break;
+        case Direction::Home:
+            painter.setPen(QPen(color, 1.5));
+            painter.drawRect(QRectF(cx - 4, cy + 1, 8, 6));
+            painter.drawLine(QPointF(cx, cy - 2), QPointF(cx, cy - 5));
+            painter.drawLine(QPointF(cx - 3, cy - 5), QPointF(cx + 3, cy - 5));
+            break;
+        }
+    }
+
+private:
+    Direction m_dir;
+};
 }
 
 DpadControlWidget::DpadControlWidget(QWidget *parent)
@@ -28,11 +87,16 @@ DpadControlWidget::DpadControlWidget(QWidget *parent)
     auto *grid = new QGridLayout;
     grid->setSpacing(4);
 
-    auto *up = makeButton(QStringLiteral("upButton"), QStringLiteral("↑"));
-    auto *down = makeButton(QStringLiteral("downButton"), QStringLiteral("↓"));
-    auto *left = makeButton(QStringLiteral("leftButton"), QStringLiteral("←"));
-    auto *right = makeButton(QStringLiteral("rightButton"), QStringLiteral("→"));
-    auto *home = makeButton(QStringLiteral("homeButton"), QStringLiteral("HOME"));
+    auto *up = new ArrowButton(ArrowButton::Direction::Up);
+    up->setObjectName(QStringLiteral("upButton"));
+    auto *down = new ArrowButton(ArrowButton::Direction::Down);
+    down->setObjectName(QStringLiteral("downButton"));
+    auto *left = new ArrowButton(ArrowButton::Direction::Left);
+    left->setObjectName(QStringLiteral("leftButton"));
+    auto *right = new ArrowButton(ArrowButton::Direction::Right);
+    right->setObjectName(QStringLiteral("rightButton"));
+    auto *home = new ArrowButton(ArrowButton::Direction::Home);
+    home->setObjectName(QStringLiteral("homeButton"));
 
     connect(up, &QPushButton::clicked, this, [this] { emit jogRequested(0, 1); });
     connect(down, &QPushButton::clicked, this, [this] { emit jogRequested(0, -1); });
