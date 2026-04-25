@@ -113,7 +113,7 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  const auto &p = Theme::palette();
  QPainter painter(this);
  painter.setRenderHint(QPainter::Antialiasing);
- painter.fillRect(rect(), QColor("#0E1218"));
+  painter.fillRect(rect(), p.cameraBg);
 
  for (int x = 0; x < width(); x += 8) {
  const int brightness = 25 + ((x / 8) % 5) * 6;
@@ -163,11 +163,11 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  const QFont monoSmall(QStringLiteral("Consolas"), 10);
 
  painter.setPen(Qt::NoPen);
- painter.setBrush(QColor(6, 12, 22, 180));
- painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
- painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
- painter.setPen(Qt::white);
- painter.setBrush(p.ok);
+  painter.setBrush(p.cameraHud);
+  painter.drawRoundedRect(QRect(10, 10, 264, 24), 4, 4);
+  painter.drawRoundedRect(QRect(width() - 214, 10, 204, 24), 4, 4);
+  painter.setPen(p.headerText);
+  painter.setBrush(p.ok);
  painter.drawEllipse(QPointF(24, 22), 4, 4);
  painter.setBrush(Qt::NoBrush);
  painter.setFont(sansFont);
@@ -186,8 +186,8 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  .arg(QString::number(m_exposureMs, 'f', 1))
  .arg(QString::number(m_gain, 'f', 1)));
 
- painter.setBrush(QColor(6, 12, 22, 180));
- painter.setPen(p.ok);
+  painter.setBrush(p.cameraHud);
+  painter.setPen(p.ok);
  painter.drawRoundedRect(QRect(center.x() + 8, center.y() + 8, 88, 22), 3, 3);
  painter.setFont(monoSmall);
  painter.drawText(QRect(center.x() + 14, center.y() + 8, 80, 22), Qt::AlignVCenter | Qt::AlignLeft,

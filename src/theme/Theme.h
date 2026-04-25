@@ -11,6 +11,13 @@ struct Palette {
   QColor bgRail;
   QColor bgSunken;
   QColor bgHeader;
+  QColor headerText;
+  QColor headerTextMuted;
+  QColor headerTextSubtle;
+  QColor headerDivider;
+  QColor headerHover;
+  QColor cameraBg;
+  QColor cameraHud;
   QColor border;
   QColor borderStrong;
   QColor divider;
@@ -21,6 +28,7 @@ struct Palette {
   QColor brand;
   QColor brandStrong;
   QColor brandWeak;
+  QColor brandAccent;
   QColor ok;
   QColor okWeak;
   QColor warn;
@@ -31,7 +39,6 @@ struct Palette {
   QColor accentRef;
 };
 
-QColor oklch(qreal l, qreal c, qreal h);
 const Palette &palette();
 QString frameStyle();
 QString titleStyle();

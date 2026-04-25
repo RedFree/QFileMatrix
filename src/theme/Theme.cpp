@@ -1,23 +1,6 @@
 #include "theme/Theme.h"
 
-#include <cmath>
-
 namespace Theme {
-
-QColor oklch(qreal l, qreal c, qreal h)
-{
-    qreal hRad = h * 3.14159265358979323846 / 180.0;
-    qreal C = c * l;
-    qreal a = C * std::cos(hRad);
-    qreal b = C * std::sin(hRad);
-    qreal r_ = l + 0.396337777 * a + 0.215485757 * b;
-    qreal g_ = l + 0.100561486 * a + 0.854903528 * b;
-    qreal b_ = l + 0.470504760 * a + 0.185030621 * b;
-    r_ = std::fmax(0.0, std::fmin(1.0, r_));
-    g_ = std::fmax(0.0, std::fmin(1.0, g_));
-    b_ = std::fmax(0.0, std::fmin(1.0, b_));
-    return QColor(static_cast<int>(r_ * 255), static_cast<int>(g_ * 255), static_cast<int>(b_ * 255));
-}
 
 const Palette &palette()
 {
@@ -27,6 +10,13 @@ const Palette &palette()
         QColor("#FAFBFC"),
         QColor("#EEF1F5"),
         QColor("#0F1B2D"),
+        QColor("#EDF1F7"),
+        QColor("#B8C1D0"),
+        QColor("#D3DAE6"),
+        QColor(255, 255, 255, 31),
+        QColor(255, 255, 255, 15),
+        QColor("#0E1218"),
+        QColor(6, 12, 22, 180),
         QColor("#E2E6EC"),
         QColor("#C9D0DA"),
         QColor("#EEF0F4"),
@@ -34,17 +24,18 @@ const Palette &palette()
         QColor("#2A3240"),
         QColor("#5B6573"),
         QColor("#8A93A1"),
-        oklch(0.56, 0.16, 245),
-        oklch(0.46, 0.17, 245),
-        oklch(0.95, 0.04, 245),
-        oklch(0.64, 0.17, 150),
-        oklch(0.95, 0.06, 150),
-        oklch(0.76, 0.17, 85),
-        oklch(0.96, 0.08, 85),
-        oklch(0.60, 0.22, 25),
-        oklch(0.96, 0.07, 25),
-        oklch(0.58, 0.22, 15),
-        oklch(0.55, 0.19, 260)
+        QColor("#4F6BFF"),
+        QColor("#334DCC"),
+        QColor("#EEF2FF"),
+        QColor("#36CFC9"),
+        QColor("#357A4D"),
+        QColor("#EAF6EE"),
+        QColor("#B88311"),
+        QColor("#FFF4D8"),
+        QColor("#C44A38"),
+        QColor("#FCE9E5"),
+        QColor("#C44A38"),
+        QColor("#547AFF")
     };
     return paletteValue;
 }

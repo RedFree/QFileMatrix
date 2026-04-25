@@ -1,6 +1,7 @@
 #include <QtTest/QTest>
 
 #include "domain/MeasurementSimulator.h"
+#include "theme/Theme.h"
 #include "widgets/CameraViewWidget.h"
 #include "widgets/ProfileChartWidget.h"
 
@@ -11,6 +12,8 @@ class VisualizationWidgetTests : public QObject
 private slots:
     void cameraViewTracksCrosshairPosition();
     void cameraViewStoresPrototypeHudTelemetry();
+    void themeUsesStablePrototypeSemanticColors();
+    void themeExposesStableHeaderAndCameraColors();
     void profileChartStoresProfileData();
     void profileChartHasAxisLabelMargins();
 };
@@ -37,6 +40,32 @@ void VisualizationWidgetTests::cameraViewStoresPrototypeHudTelemetry()
     QCOMPARE(widget.frameRate(), 22.0);
     QCOMPARE(widget.exposureMs(), 3.2);
     QCOMPARE(widget.gain(), 1.4);
+}
+
+void VisualizationWidgetTests::themeUsesStablePrototypeSemanticColors()
+{
+    const auto &p = Theme::palette();
+
+    QCOMPARE(p.brand.name(QColor::HexRgb), QStringLiteral("#4f6bff"));
+    QCOMPARE(p.brandStrong.name(QColor::HexRgb), QStringLiteral("#334dcc"));
+    QCOMPARE(p.brandWeak.name(QColor::HexRgb), QStringLiteral("#eef2ff"));
+    QCOMPARE(p.ok.name(QColor::HexRgb), QStringLiteral("#357a4d"));
+    QCOMPARE(p.warn.name(QColor::HexRgb), QStringLiteral("#b88311"));
+    QCOMPARE(p.err.name(QColor::HexRgb), QStringLiteral("#c44a38"));
+    QCOMPARE(p.accentTrace.name(QColor::HexRgb), QStringLiteral("#c44a38"));
+    QCOMPARE(p.accentRef.name(QColor::HexRgb), QStringLiteral("#547aff"));
+}
+
+void VisualizationWidgetTests::themeExposesStableHeaderAndCameraColors()
+{
+    const auto &p = Theme::palette();
+
+    QCOMPARE(p.headerText.name(QColor::HexRgb), QStringLiteral("#edf1f7"));
+    QCOMPARE(p.headerTextMuted.name(QColor::HexRgb), QStringLiteral("#b8c1d0"));
+    QCOMPARE(p.headerTextSubtle.name(QColor::HexRgb), QStringLiteral("#d3dae6"));
+    QCOMPARE(p.brandAccent.name(QColor::HexRgb), QStringLiteral("#36cfc9"));
+    QCOMPARE(p.cameraBg.name(QColor::HexRgb), QStringLiteral("#0e1218"));
+    QCOMPARE(p.cameraHud.name(QColor::HexArgb), QStringLiteral("#b4060c16"));
 }
 
 void VisualizationWidgetTests::profileChartStoresProfileData()

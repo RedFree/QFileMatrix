@@ -136,7 +136,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.drawLine(QPointF(xToPixel(m_hoverPoint.x()), plot.top()), QPointF(xToPixel(m_hoverPoint.x()), plot.bottom()));
         painter.setBrush(p.brand);
         painter.drawEllipse(QPointF(xToPixel(m_hoverPoint.x()), yToPixel(m_hoverPoint.y())), 3, 3);
-        painter.setBrush(QColor("#FFFFFF"));
+        painter.setBrush(Theme::palette().bgPanel);
         painter.setPen(Theme::palette().border);
         painter.drawRoundedRect(QRectF(width() - 180, 10, 170, 22), 4, 4);
         painter.setPen(Theme::palette().textMuted);

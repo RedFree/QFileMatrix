@@ -3,6 +3,7 @@
 #include <QBrush>
 
 #include "models/MeasurementTableModel.h"
+#include "theme/Theme.h"
 
 class MeasurementTableModelTests : public QObject
 {
@@ -51,7 +52,7 @@ void MeasurementTableModelTests::providesForegroundAndAlignmentRoles()
     QVERIFY(alignment.isValid());
     QVERIFY(foreground.isValid());
     QCOMPARE(alignment.toInt(), static_cast<int>(Qt::AlignRight | Qt::AlignVCenter));
-    QCOMPARE(foreground.value<QBrush>().color(), QColor(0xC2, 0x41, 0x0C));
+    QCOMPARE(foreground.value<QBrush>().color(), Theme::palette().err);
 }
 
 QTEST_APPLESS_MAIN(MeasurementTableModelTests)

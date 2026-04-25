@@ -12,16 +12,17 @@
 namespace {
 QPushButton *makeNavButton(const QString &name, const QString &text, bool active = false)
 {
+    const auto &p = Theme::palette();
     auto *button = new QPushButton(text);
     button->setObjectName(name);
     button->setFlat(true);
     button->setCursor(Qt::PointingHandCursor);
     button->setFixedHeight(32);
     button->setStyleSheet(active
-        ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:#FFFFFF;border-bottom:2px solid %1;}"
-                         "QPushButton:hover{color:#FFFFFF;}").arg(Theme::palette().brand.name())
-        : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:#98A2B3;border-bottom:2px solid transparent;}"
-                         "QPushButton:hover{color:#D3DAE6;}"));
+        ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:%1;border-bottom:2px solid %2;}"
+                         "QPushButton:hover{color:%1;}").arg(p.headerText.name(), p.brand.name())
+        : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:%1;border-bottom:2px solid transparent;}"
+                         "QPushButton:hover{color:%2;}").arg(p.headerTextMuted.name(), p.headerTextSubtle.name()));
     return button;
 }
 
@@ -46,7 +47,8 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        const QColor color = underMouse() ? QColor(0xED, 0xF1, 0xF7) : QColor(0xB8, 0xC1, 0xD0);
+        const auto &p = Theme::palette();
+        const QColor color = underMouse() ? p.headerText : p.headerTextMuted;
         QPen pen(color);
         pen.setWidthF(1.6);
         pen.setCapStyle(Qt::RoundCap);
@@ -80,7 +82,8 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        const QColor color = underMouse() ? QColor(0xED, 0xF1, 0xF7) : QColor(0xB8, 0xC1, 0xD0);
+        const auto &p = Theme::palette();
+        const QColor color = underMouse() ? p.headerText : p.headerTextMuted;
         QPen pen(color);
         pen.setWidthF(1.6);
         pen.setCapStyle(Qt::RoundCap);
@@ -131,29 +134,30 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     brandTile->setObjectName(QStringLiteral("brandTileLabel"));
     brandTile->setAlignment(Qt::AlignCenter);
     brandTile->setFixedSize(22, 22);
-    brandTile->setStyleSheet(QStringLiteral("background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 %1,stop:1 #00C3D1);color:#FFFFFF;border-radius:4px;font-size:11px;font-weight:700;").arg(Theme::palette().brand.name()));
+    brandTile->setStyleSheet(QStringLiteral("background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 %1,stop:1 %2);color:%3;border-radius:4px;font-size:11px;font-weight:700;")
+        .arg(Theme::palette().brand.name(), Theme::palette().brandAccent.name(), Theme::palette().bgPanel.name()));
 
     auto *title = new QLabel(QStringLiteral("FilmMetrix"), brandWrap);
     title->setObjectName(QStringLiteral("brandTitleLabel"));
     title->setAttribute(Qt::WA_TranslucentBackground);
-    title->setStyleSheet(QStringLiteral("background:transparent;color:#EDF1F7;font-size:13px;font-weight:600;letter-spacing:0.01em;"));
+    title->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:13px;font-weight:600;letter-spacing:0.01em;").arg(Theme::palette().headerText.name()));
 
     auto *version = new QLabel(QStringLiteral("v1.0.1"), brandWrap);
     version->setAttribute(Qt::WA_TranslucentBackground);
-    version->setStyleSheet(QStringLiteral("background:transparent;color:#8A93A1;font-size:11px;font-family:Consolas,'JetBrains Mono',monospace;"));
+    version->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;font-family:Consolas,'JetBrains Mono',monospace;").arg(Theme::palette().text3.name()));
 
     auto *slash = new QLabel(QStringLiteral("/"), brandWrap);
     slash->setAttribute(Qt::WA_TranslucentBackground);
-    slash->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;").arg(Theme::palette().textMuted.name()));
+    slash->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;").arg(Theme::palette().headerTextMuted.name()));
 
     auto *subtitle = new QLabel(QStringLiteral("全自动膜厚测试系统"), brandWrap);
     subtitle->setObjectName(QStringLiteral("brandSubtitleLabel"));
     subtitle->setAttribute(Qt::WA_TranslucentBackground);
-    subtitle->setStyleSheet(QStringLiteral("background:transparent;color:#D3DAE6;font-size:12px;"));
+    subtitle->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:12px;").arg(Theme::palette().headerTextSubtle.name()));
 
     m_userLabel = new QLabel(QStringLiteral("HXS · 操作员"), this);
     m_userLabel->setAttribute(Qt::WA_TranslucentBackground);
-    m_userLabel->setStyleSheet(QStringLiteral("background:transparent;color:#B8C1D0;font-size:12px;"));
+    m_userLabel->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:12px;").arg(Theme::palette().headerTextMuted.name()));
 
     brandLayout->addWidget(brandTile);
     brandLayout->addWidget(title);
@@ -187,23 +191,23 @@ TopTitleBar::TopTitleBar(QWidget *parent)
 
         auto *searchButton = new SearchButton(actionWrap);
         searchButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;}"
-            "QPushButton:hover{background:rgba(255,255,255,0.06);}"));
+            "QPushButton:hover{background:%1;}" ).arg(Theme::palette().headerHover.name(QColor::HexArgb)));
 
         auto *alarmButton = new AlarmButton(actionWrap);
         alarmButton->setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;}"
-            "QPushButton:hover{background:rgba(255,255,255,0.06);}"));
+            "QPushButton:hover{background:%1;}" ).arg(Theme::palette().headerHover.name(QColor::HexArgb)));
 
     auto *divider = new QLabel(actionWrap);
     divider->setAttribute(Qt::WA_TranslucentBackground);
     divider->setFixedSize(1, 18);
-    divider->setStyleSheet(QStringLiteral("background:rgba(255,255,255,0.12);"));
+    divider->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().headerDivider.name(QColor::HexArgb)));
 
     auto *userChip = new QLabel(QStringLiteral("HX"), actionWrap);
     userChip->setObjectName(QStringLiteral("userChipLabel"));
     userChip->setAttribute(Qt::WA_TranslucentBackground);
     userChip->setAlignment(Qt::AlignCenter);
     userChip->setFixedSize(22, 22);
-    userChip->setStyleSheet(QStringLiteral("background:%1;color:#FFFFFF;border-radius:11px;font-size:10px;font-weight:700;").arg(Theme::palette().brand.name()));
+    userChip->setStyleSheet(QStringLiteral("background:%1;color:%2;border-radius:11px;font-size:10px;font-weight:700;").arg(Theme::palette().brand.name(), Theme::palette().bgPanel.name()));
 
     actionLayout->addWidget(searchButton);
     actionLayout->addWidget(alarmButton);
@@ -235,5 +239,5 @@ void TopTitleBar::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
     painter.fillRect(rect(), Theme::palette().bgHeader);
-    painter.fillRect(QRect(0, height() - 1, width(), 1), QColor(255, 255, 255, 15));
+    painter.fillRect(QRect(0, height() - 1, width(), 1), Theme::palette().headerHover);
 }
