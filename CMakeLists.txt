@@ -30,7 +30,7 @@ add_library(qfilematrix_models
 
 target_include_directories(qfilematrix_models PUBLIC src)
 
-target_link_libraries(qfilematrix_models PUBLIC Qt6::Core Qt6::Gui qfilematrix_core)
+target_link_libraries(qfilematrix_models PUBLIC Qt6::Core Qt6::Gui qfilematrix_core qfilematrix_widgets)
 
 add_library(qfilematrix_app
     src/app/AppController.cpp
