@@ -115,10 +115,9 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.setRenderHint(QPainter::Antialiasing);
   painter.fillRect(rect(), p.cameraBg);
 
- for (int x = 0; x < width(); x += 8) {
- const int brightness = 25 + ((x / 8) % 5) * 6;
- painter.fillRect(QRect(x, 0, 4, height()), QColor(brightness, brightness + 2, brightness + 4));
- }
+  for (int x = 0; x < width(); x += 8) {
+  painter.fillRect(QRect(x, 0, 4, height()), p.cameraStripe);
+  }
 
  const QList<QRectF> strips {
  QRectF(width() * 0.05, 0, width() * 0.18, height()),
@@ -126,14 +125,14 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  QRectF(width() * 0.56, 0, width() * 0.17, height()),
  QRectF(width() * 0.84, 0, width() * 0.10, height())
  };
- for (int i = 0; i < strips.size(); ++i) {
- QLinearGradient grad(strips[i].topLeft(), strips[i].topRight());
- const int base = 180 + i * 12;
- grad.setColorAt(0.0, QColor(base - 20, base - 20, base - 15));
- grad.setColorAt(0.5, QColor(base, base, base - 5));
- grad.setColorAt(1.0, QColor(base - 28, base - 28, base - 24));
- painter.fillRect(strips[i], grad);
- }
+  for (int i = 0; i < strips.size(); ++i) {
+  QLinearGradient grad(strips[i].topLeft(), strips[i].topRight());
+  const QColor stripBase = i % 2 == 0 ? p.cameraStrip.lighter(100 + i * 4) : p.cameraStrip.darker(100 + i * 3);
+  grad.setColorAt(0.0, stripBase.darker(112));
+  grad.setColorAt(0.5, stripBase);
+  grad.setColorAt(1.0, stripBase.darker(118));
+  painter.fillRect(strips[i], grad);
+  }
 
  const QColor roiStroke = p.accentRef;
  painter.setPen(QPen(roiStroke, 1, Qt::DashLine));
@@ -198,9 +197,9 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.drawText(QRect(static_cast<int>(width() * 0.32), static_cast<int>(height() * 0.15) - 14, 44, 12), Qt::AlignLeft | Qt::AlignVCenter,
  QStringLiteral("ROI 1"));
 
- if (m_paused) {
- painter.fillRect(rect(), QColor(0, 0, 0, 70));
- }
+  if (m_paused) {
+  painter.fillRect(rect(), p.cameraPauseOverlay);
+  }
 }
 
 void CameraViewWidget::mousePressEvent(QMouseEvent *event)

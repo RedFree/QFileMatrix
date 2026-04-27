@@ -35,6 +35,7 @@ private slots:
     void leftRailUsesPrototypeDenseButtons();
     void leftRailButtonsHaveToolTipsAndPointerCursor();
     void shellUsesCompactHeaderControlSizing();
+    void shellUsesPaletteDrivenControlStyles();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
     void mainWindowStartsMaximized();
@@ -42,7 +43,9 @@ private slots:
     void thicknessCardShowsTargetAndTrend();
     void rightColumnPanelsUseFlushStack();
     void manualSampleDialogShowsPositionAndConfirm();
+    void manualSampleDialogUsesThemeStyles();
     void alarmCenterDialogShowsAlarmEntries();
+    void alarmCenterDialogUsesThemeStyles();
 };
 
 void MainWindowTests::mainWindowBuildsPrimaryRegions()
@@ -244,6 +247,28 @@ void MainWindowTests::shellUsesCompactHeaderControlSizing()
     QCOMPARE(filterButton->height(), 24);
 }
 
+void MainWindowTests::shellUsesPaletteDrivenControlStyles()
+{
+    MainWindow window;
+    auto *programInput = window.findChild<QLineEdit*>(QStringLiteral("cameraProgramInput"));
+    auto *batchInput = window.findChild<QLineEdit*>(QStringLiteral("cameraBatchInput"));
+    auto *pauseButton = window.findChild<QPushButton*>(QStringLiteral("cameraPauseButton"));
+    auto *scaleCombo = window.findChild<QComboBox*>(QStringLiteral("profileScaleCombo"));
+    auto *rightColumn = window.findChild<QWidget*>(QStringLiteral("rightControlColumn"));
+    QVERIFY(programInput != nullptr);
+    QVERIFY(batchInput != nullptr);
+    QVERIFY(pauseButton != nullptr);
+    QVERIFY(scaleCombo != nullptr);
+    QVERIFY(rightColumn != nullptr);
+
+    QVERIFY(programInput->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+    QVERIFY(batchInput->styleSheet().contains(Theme::palette().text1.name(), Qt::CaseInsensitive));
+    QVERIFY(scaleCombo->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+    QVERIFY(scaleCombo->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
+    QVERIFY(pauseButton->styleSheet().contains(Theme::palette().text1.name(), Qt::CaseInsensitive));
+    QVERIFY(rightColumn->styleSheet().contains(Theme::palette().bgRail.name(), Qt::CaseInsensitive));
+}
+
 void MainWindowTests::historyTableUsesDenseRowSizing()
 {
     MainWindow window;
@@ -328,12 +353,47 @@ void MainWindowTests::manualSampleDialogShowsPositionAndConfirm()
     QVERIFY(dialog.batch() == QStringLiteral("3"));
 }
 
+void MainWindowTests::manualSampleDialogUsesThemeStyles()
+{
+    ManualSampleDialog dialog;
+
+    auto *closeButton = dialog.findChild<QPushButton*>(QStringLiteral("manualSampleCloseButton"));
+    auto *confirmButton = dialog.findChild<QPushButton*>(QStringLiteral("manualSampleConfirmButton"));
+    auto *cancelButton = dialog.findChild<QPushButton*>(QStringLiteral("manualSampleCancelButton"));
+    QVERIFY(closeButton != nullptr);
+    QVERIFY(confirmButton != nullptr);
+    QVERIFY(cancelButton != nullptr);
+
+    QVERIFY(closeButton->styleSheet().contains(Theme::palette().headerTextMuted.name(), Qt::CaseInsensitive));
+    QVERIFY(closeButton->styleSheet().contains(Theme::palette().headerText.name(), Qt::CaseInsensitive));
+    QVERIFY(dialog.styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+    QVERIFY(dialog.styleSheet().contains(Theme::palette().brandStrong.name(), Qt::CaseInsensitive));
+    QCOMPARE(confirmButton->property("role").toString(), QStringLiteral("primary"));
+    QVERIFY(cancelButton->styleSheet().isEmpty());
+}
+
 void MainWindowTests::alarmCenterDialogShowsAlarmEntries()
 {
     AlarmCenterDialog dialog;
     QCOMPARE(dialog.alarms().size(), 3);
     QCOMPARE(dialog.alarms()[0].type, QStringLiteral("warn"));
     QCOMPARE(dialog.alarms()[1].type, QStringLiteral("err"));
+}
+
+void MainWindowTests::alarmCenterDialogUsesThemeStyles()
+{
+    AlarmCenterDialog dialog;
+
+    auto *closeButton = dialog.findChild<QPushButton*>(QStringLiteral("alarmCenterCloseButton"));
+    auto *scrollArea = dialog.findChild<QScrollArea*>();
+    QVERIFY(closeButton != nullptr);
+    QVERIFY(scrollArea != nullptr);
+
+    QVERIFY(closeButton->styleSheet().contains(Theme::palette().headerTextMuted.name(), Qt::CaseInsensitive));
+    QVERIFY(closeButton->styleSheet().contains(Theme::palette().headerText.name(), Qt::CaseInsensitive));
+    QVERIFY(dialog.styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+    QVERIFY(dialog.styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
+    QVERIFY(scrollArea->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
 }
 
 QTEST_MAIN(MainWindowTests)

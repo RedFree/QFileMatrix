@@ -12,6 +12,8 @@
 ManualSampleDialog::ManualSampleDialog(QWidget *parent)
 : QDialog(parent)
 {
+    const auto &p = Theme::palette();
+
     setWindowTitle(QStringLiteral("手动采样"));
     setMinimumWidth(460);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -23,14 +25,16 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
     auto *headerLayout = new QHBoxLayout;
     headerLayout->setContentsMargins(12, 10, 12, 10);
     auto *titleLabel = new QLabel(QStringLiteral("手动采样"));
-    titleLabel->setStyleSheet(QStringLiteral("font-size:13px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
+    titleLabel->setStyleSheet(QStringLiteral("font-size:13px;font-weight:600;color:%1;").arg(p.text1.name()));
     auto *closeButton = new QPushButton(QStringLiteral("✕"));
     closeButton->setObjectName(QStringLiteral("manualSampleCloseButton"));
     closeButton->setFlat(true);
     closeButton->setFixedSize(24, 24);
     closeButton->setCursor(Qt::PointingHandCursor);
-    closeButton->setStyleSheet(QStringLiteral("QPushButton{border:none;color:%1;font-size:14px;}QPushButton:hover{color:%2;}")
-        .arg(Theme::palette().textMuted.name(), Theme::palette().text.name()));
+    closeButton->setStyleSheet(QStringLiteral(
+        "QPushButton{border:none;border-radius:6px;background:transparent;color:%1;font-size:14px;}"
+        "QPushButton:hover{background:%2;color:%3;}"
+    ).arg(p.headerTextMuted.name(), p.bgSunken.name(), p.headerText.name()));
     connect(closeButton, &QPushButton::clicked, this, &QDialog::reject);
     headerLayout->addWidget(titleLabel);
     headerLayout->addStretch();
@@ -39,7 +43,7 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
 
     auto *divider = new QWidget;
     divider->setFixedHeight(1);
-    divider->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().border.name()));
+    divider->setStyleSheet(QStringLiteral("background:%1;").arg(p.borderStrong.name()));
     mainLayout->addWidget(divider);
 
     auto *bodyLayout = new QVBoxLayout;
@@ -48,14 +52,14 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
 
     auto *descLabel = new QLabel(QStringLiteral("将执行一次手动采样，采样完成后数据自动入表。请确认十字准线已定位目标区域。"));
     descLabel->setWordWrap(true);
-    descLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().textMuted.name()));
+    descLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(p.textMuted.name()));
     bodyLayout->addWidget(descLabel);
 
     auto *grid = new QGridLayout;
     grid->setHorizontalSpacing(10);
     grid->setVerticalSpacing(6);
-    const auto keyStyle = QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().textMuted.name());
-    const auto valStyle = QStringLiteral("font-size:12px;color:%1;font-family:Consolas;").arg(Theme::palette().text.name());
+    const auto keyStyle = QStringLiteral("font-size:12px;color:%1;").arg(p.textMuted.name());
+    const auto valStyle = QStringLiteral("font-size:12px;color:%1;font-family:Consolas;").arg(p.text1.name());
 
     auto *posKey = new QLabel(QStringLiteral("当前位置"));
     posKey->setStyleSheet(keyStyle);
@@ -99,10 +103,9 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
         "QDialog{background:%1;border:1px solid %2;border-radius:8px;}"
         "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 16px;color:%3;font-size:12px;}"
         "QPushButton:hover{background:%4;}"
-        "QPushButton[role='primary']{background:%5;border-color:%5;color:white;}"
-    ).arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(),
-          Theme::palette().text.name(), Theme::palette().bgSunken.name(),
-          Theme::palette().brand.name()));
+        "QPushButton[role='primary']{background:%5;border-color:%6;color:white;}"
+        "QPushButton[role='primary']:hover{background:%6;}"
+    ).arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name()));
 }
 
 void ManualSampleDialog::setPosition(const QString &x, const QString &y)

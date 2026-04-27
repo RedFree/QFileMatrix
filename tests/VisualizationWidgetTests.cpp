@@ -66,6 +66,11 @@ void VisualizationWidgetTests::themeExposesStableHeaderAndCameraColors()
     QCOMPARE(p.brandAccent.name(QColor::HexRgb), QStringLiteral("#36cfc9"));
     QCOMPARE(p.cameraBg.name(QColor::HexRgb), QStringLiteral("#0e1218"));
     QCOMPARE(p.cameraHud.name(QColor::HexArgb), QStringLiteral("#b4060c16"));
+    QCOMPARE(p.cameraStripe.name(QColor::HexArgb), QStringLiteral("#48242a34"));
+    QCOMPARE(p.cameraStrip.name(QColor::HexRgb), QStringLiteral("#c3c7cf"));
+    QCOMPARE(p.cameraPauseOverlay.name(QColor::HexArgb), QStringLiteral("#5c070a10"));
+    QCOMPARE(p.gaugeHighlight.name(QColor::HexRgb), QStringLiteral("#6a8be6"));
+    QCOMPARE(p.indicatorOutline.name(QColor::HexArgb), QStringLiteral("#19000000"));
 }
 
 void VisualizationWidgetTests::profileChartStoresProfileData()

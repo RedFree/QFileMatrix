@@ -107,7 +107,7 @@ void LedIndicatorWidget::paintEvent(QPaintEvent *event)
         painter.setBrush(bulbColor());
         painter.drawEllipse(bulbRect);
 
-        painter.setPen(QPen(QColor(0, 0, 0, 25), 1.0));
+        painter.setPen(QPen(Theme::palette().indicatorOutline, 1.0));
         painter.setBrush(Qt::NoBrush);
         painter.drawEllipse(bulbRect.adjusted(0.5, 0.5, -0.5, -0.5));
     }

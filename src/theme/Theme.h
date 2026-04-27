@@ -18,6 +18,11 @@ struct Palette {
   QColor headerHover;
   QColor cameraBg;
   QColor cameraHud;
+  QColor cameraStripe;
+  QColor cameraStrip;
+  QColor cameraPauseOverlay;
+  QColor gaugeHighlight;
+  QColor indicatorOutline;
   QColor border;
   QColor borderStrong;
   QColor divider;

@@ -79,7 +79,7 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
     const QRect fillRect(barRect.left() + 2, barRect.bottom() - fillHeight - 1, barRect.width() - 4, fillHeight);
     QLinearGradient gradient(fillRect.bottomLeft(), fillRect.topLeft());
     gradient.setColorAt(0.0, Theme::palette().brand);
-    gradient.setColorAt(1.0, QColor(106, 139, 230));
+    gradient.setColorAt(1.0, Theme::palette().gaugeHighlight);
     painter.fillRect(fillRect, gradient);
 
  painter.setPen(Theme::palette().textMuted);

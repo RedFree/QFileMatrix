@@ -19,6 +19,7 @@ LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const 
     indicator->setSubLabel(sub);
     indicator->setState(state);
     indicator->setCompact(true);
+    indicator->setMaximumWidth(120);
     return indicator;
 }
 
@@ -98,12 +99,12 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
 
     auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(14, 0, 14, 0);
-    layout->setSpacing(18);
+    layout->setSpacing(6);
 
     auto *leftWrap = new QWidget;
     auto *leftLayout = new QHBoxLayout(leftWrap);
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(10);
+    leftLayout->setSpacing(4);
     leftLayout->addWidget(makeStatus(QStringLiteral("commStatus"), QStringLiteral("通讯"), QStringLiteral("TCP 192.168.1.10"), LedIndicatorWidget::State::Ok));
     leftLayout->addWidget(makeStatus(QStringLiteral("xAxisStatus"), QStringLiteral("X 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
     leftLayout->addWidget(makeStatus(QStringLiteral("yAxisStatus"), QStringLiteral("Y 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));

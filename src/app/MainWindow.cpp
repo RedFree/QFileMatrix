@@ -145,11 +145,13 @@ public:
   explicit SmallIconButton(Icon icon, const QString &text, QWidget *parent = nullptr)
     : QPushButton(text, parent), m_icon(icon)
   {
+    const auto &p = Theme::palette();
     setFixedHeight(24);
     setCursor(Qt::PointingHandCursor);
-    setStyleSheet(QStringLiteral("QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px 0 22px;color:%1;font-size:11px;}"
-      "QPushButton:hover{background:%2;}")
-      .arg(Theme::palette().textMuted.name(), Theme::palette().bgSunken.name()));
+    setStyleSheet(QStringLiteral(
+      "QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px 0 22px;color:%1;font-size:11px;}"
+      "QPushButton:hover{background:%2;color:%3;}"
+    ).arg(p.textMuted.name(), p.bgSunken.name(), p.text1.name()));
   }
 
   void setIconType(Icon icon) { m_icon = icon; update(); }
@@ -158,9 +160,11 @@ protected:
   void paintEvent(QPaintEvent *event) override
   {
     QPushButton::paintEvent(event);
+    const auto &p = Theme::palette();
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    QPen pen(Theme::palette().textMuted);
+    const QColor iconColor = underMouse() ? p.text1 : p.textMuted;
+    QPen pen(iconColor);
     pen.setWidthF(1.4);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
@@ -169,11 +173,11 @@ protected:
     const qreal cx = 10, cy = height() / 2.0;
     switch (m_icon) {
     case Icon::Play:
-      painter.setBrush(Theme::palette().textMuted);
+      painter.setBrush(iconColor);
       painter.drawPolygon(QPolygonF({QPointF(cx - 3, cy - 4), QPointF(cx - 3, cy + 4), QPointF(cx + 4, cy)}));
       break;
     case Icon::Pause:
-      painter.setBrush(Theme::palette().textMuted);
+      painter.setBrush(iconColor);
       painter.drawRect(QRectF(cx - 4, cy - 3.5, 2.8, 7));
       painter.drawRect(QRectF(cx + 1.2, cy - 3.5, 2.8, 7));
       break;
@@ -349,7 +353,7 @@ void MainWindow::buildUi()
     auto *rightPanel = new QWidget;
     rightPanel->setObjectName(QStringLiteral("rightControlColumn"));
     rightPanel->setStyleSheet(QStringLiteral("background:%1;border-left:1px solid %2;")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
+        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     auto *rightLayout = new QVBoxLayout(rightPanel);
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
@@ -578,10 +582,8 @@ QWidget *MainWindow::createCameraPanel()
  pauseButton->setObjectName(QStringLiteral("cameraPauseButton"));
  auto *expandButton = new SmallIconButton(SmallIconButton::Icon::Expand, QStringLiteral("展开"));
  expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
- const auto fieldStyle = QStringLiteral("QLineEdit{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}")
- .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name());
- programInput->setStyleSheet(fieldStyle);
- batchInput->setStyleSheet(fieldStyle);
+  programInput->setStyleSheet(Theme::fieldStyle());
+  batchInput->setStyleSheet(Theme::fieldStyle());
  connect(pauseButton, &QPushButton::clicked, this, [this, pauseButton] {
  m_controller->setPaused(!m_controller->state().paused);
  pauseButton->setText(m_controller->state().paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
@@ -622,9 +624,11 @@ QWidget *MainWindow::createProfilePanel()
  scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
  scaleCombo->setFixedWidth(68);
  scaleCombo->setFixedHeight(24);
- scaleCombo->setStyleSheet(QStringLiteral("QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
- "QComboBox::drop-down{border:none;width:18px;}")
- .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name()));
+  scaleCombo->setStyleSheet(QStringLiteral(
+      "QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
+      "QComboBox:hover{background:%4;}"
+      "QComboBox::drop-down{border:none;width:18px;background:transparent;}"
+  ).arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name(), Theme::palette().text1.name(), Theme::palette().bgSunken.name()));
  auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
  hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
  hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));

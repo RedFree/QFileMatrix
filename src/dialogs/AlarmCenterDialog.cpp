@@ -11,6 +11,8 @@
 AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
     : QWidget(parent, Qt::Popup)
 {
+    const auto &p = Theme::palette();
+
     setWindowTitle(QStringLiteral("告警中心"));
     setFixedWidth(380);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -22,14 +24,16 @@ AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
     auto *headerLayout = new QHBoxLayout;
     headerLayout->setContentsMargins(10, 8, 10, 8);
     m_countLabel = new QLabel(QStringLiteral("告警中心 · 0 条未处理"));
-    m_countLabel->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(Theme::palette().text.name()));
+    m_countLabel->setStyleSheet(QStringLiteral("font-size:12px;font-weight:600;color:%1;").arg(p.text1.name()));
     auto *closeButton = new QPushButton(QStringLiteral("✕"));
     closeButton->setObjectName(QStringLiteral("alarmCenterCloseButton"));
     closeButton->setFlat(true);
     closeButton->setFixedSize(24, 24);
     closeButton->setCursor(Qt::PointingHandCursor);
-    closeButton->setStyleSheet(QStringLiteral("QPushButton{border:none;color:%1;font-size:14px;}QPushButton:hover{color:%2;}")
-        .arg(Theme::palette().textMuted.name(), Theme::palette().text.name()));
+    closeButton->setStyleSheet(QStringLiteral(
+        "QPushButton{border:none;border-radius:6px;background:transparent;color:%1;font-size:14px;}"
+        "QPushButton:hover{background:%2;color:%3;}"
+    ).arg(p.headerTextMuted.name(), p.bgSunken.name(), p.headerText.name()));
     connect(closeButton, &QPushButton::clicked, this, &QWidget::close);
     headerLayout->addWidget(m_countLabel);
     headerLayout->addStretch();
@@ -38,18 +42,18 @@ AlarmCenterDialog::AlarmCenterDialog(QWidget *parent)
 
     auto *divider = new QWidget;
     divider->setFixedHeight(1);
-    divider->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().border.name()));
+    divider->setStyleSheet(QStringLiteral("background:%1;").arg(p.borderStrong.name()));
     mainLayout->addWidget(divider);
 
     m_scrollArea = new QScrollArea;
     m_scrollArea->setWidgetResizable(true);
     m_scrollArea->setMaximumHeight(320);
-    m_scrollArea->setStyleSheet(QStringLiteral("QScrollArea{border:none;background:transparent;}"));
+    m_scrollArea->setStyleSheet(QStringLiteral("QScrollArea{border:none;background:%1;}QWidget{background:transparent;}" ).arg(p.bgPanel.name()));
     mainLayout->addWidget(m_scrollArea);
 
     setStyleSheet(QStringLiteral(
         "QWidget#alarmCenterPopup{background:%1;border:1px solid %2;border-radius:8px;}"
-    ).arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
+    ).arg(p.bgPanel.name(), p.borderStrong.name()));
     setObjectName(QStringLiteral("alarmCenterPopup"));
 
     setAlarms({
