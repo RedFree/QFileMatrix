@@ -49,6 +49,7 @@ QColor withAlpha(const QColor &color, int alpha);
 QString frameStyle();
 QString titleStyle();
 QString fieldStyle();
+QString comboBoxStyle();
 QString buttonStyle();
 QString railButtonStyle(bool active);
 

@@ -624,11 +624,7 @@ QWidget *MainWindow::createProfilePanel()
  scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
  scaleCombo->setFixedWidth(68);
  scaleCombo->setFixedHeight(24);
-  scaleCombo->setStyleSheet(QStringLiteral(
-      "QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;color:%3;font-size:11px;}"
-      "QComboBox:hover{background:%4;}"
-      "QComboBox::drop-down{border:none;width:18px;background:transparent;}"
-  ).arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name(), Theme::palette().text1.name(), Theme::palette().bgSunken.name()));
+  scaleCombo->setStyleSheet(Theme::comboBoxStyle());
  auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
  hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
  hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));

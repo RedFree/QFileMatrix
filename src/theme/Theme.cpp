@@ -74,6 +74,23 @@ QString fieldStyle()
         .arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name());
 }
 
+QString comboBoxStyle()
+{
+    const auto &p = palette();
+    return QStringLiteral(
+        "QComboBox{background:%1;border:1px solid %2;border-radius:6px;padding:4px 8px;padding-right:22px;color:%3;font-size:11px;}"
+        "QComboBox:hover{background:%4;border-color:%5;}"
+        "QComboBox:focus{border-color:%5;}"
+        "QComboBox::drop-down{border:none;width:20px;background:transparent;}"
+        "QComboBox::down-arrow{image:none;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid %6;width:0;height:0;}"
+        "QComboBox::down-arrow:on{border-top:none;border-bottom:5px solid %6;}"
+        "QComboBox QAbstractItemView{border:1px solid %2;border-radius:6px;background:%1;outline:none;padding:4px;}"
+        "QComboBox QAbstractItemView::item{border-radius:4px;padding:4px 8px;color:%3;}"
+        "QComboBox QAbstractItemView::item:hover{background:%4;color:%3;}"
+        "QComboBox QAbstractItemView::item:selected{background:%7;color:%8;}"
+    ).arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.textMuted.name(), p.brandWeak.name(), p.brandStrong.name());
+}
+
 QString buttonStyle()
 {
     const auto &p = palette();
