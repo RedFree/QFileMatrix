@@ -79,8 +79,8 @@ QString buttonStyle()
     const auto &p = palette();
     return QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:6px 10px;color:%3;}"
         "QPushButton:hover{background:%4;}"
-        "QPushButton#primaryButton{background:%5;color:white;border-color:%6;}")
-        .arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name());
+        "QPushButton#primaryButton{background:%5;color:%7;border-color:%6;}")
+        .arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name(), p.bgPanel.name());
 }
 
 QString railButtonStyle(bool active)

@@ -169,13 +169,13 @@ if (active) {
 
  setStyleSheet(Theme::fieldStyle() + QStringLiteral(
  "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px 0 22px;color:%3;font-size:11px;}"
- "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
+  "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
  "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
  "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
  "QProgressBar::chunk{background:%4;border-radius:4px;}"
  )
- .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
- Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
+  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
+  Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)

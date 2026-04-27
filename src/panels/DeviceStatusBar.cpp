@@ -177,11 +177,11 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
  setStyleSheet(QStringLiteral(
  "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 8px;min-height:22px;max-height:22px;color:%3;font-size:11px;}"
  "QPushButton:hover{background:%4;}"
- "QPushButton[role='primary']{background:%5;border-color:%5;color:white;}"
- "QPushButton#statusStopButton{background:%6;border-color:%7;color:%8;}"
- )
- .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text1.name(), Theme::palette().bgSunken.name(), Theme::palette().brand.name(),
- Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name()));
+  "QPushButton[role='primary']{background:%5;border-color:%5;color:%9;}"
+  "QPushButton#statusStopButton{background:%6;border-color:%7;color:%8;}"
+  )
+  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text1.name(), Theme::palette().bgSunken.name(), Theme::palette().brand.name(),
+  Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name()));
 }
 
 void DeviceStatusBar::setProgress(double progress)

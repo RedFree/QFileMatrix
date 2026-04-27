@@ -160,9 +160,9 @@ body->addLayout(hintRow);
         "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
         "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px 0 18px;}"
         "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
-        "QPushButton[role='primary'] {background:%4;border-color:%4;color:white;}"
+        "QPushButton[role='primary'] {background:%4;border-color:%4;color:%6;}"
         )
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name()));
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(), Theme::palette().bgPanel.name()));
 }
 
 void ServoControlPanel::setPosition(const MachinePosition &position)

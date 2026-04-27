@@ -103,9 +103,9 @@ ManualSampleDialog::ManualSampleDialog(QWidget *parent)
         "QDialog{background:%1;border:1px solid %2;border-radius:8px;}"
         "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 16px;color:%3;font-size:12px;}"
         "QPushButton:hover{background:%4;}"
-        "QPushButton[role='primary']{background:%5;border-color:%6;color:white;}"
+        "QPushButton[role='primary']{background:%5;border-color:%6;color:%7;}"
         "QPushButton[role='primary']:hover{background:%6;}"
-    ).arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name()));
+    ).arg(p.bgPanel.name(), p.borderStrong.name(), p.text1.name(), p.bgSunken.name(), p.brand.name(), p.brandStrong.name(), p.bgPanel.name()));
 }
 
 void ManualSampleDialog::setPosition(const QString &x, const QString &y)
