@@ -2,6 +2,13 @@
 
 namespace Theme {
 
+QColor withAlpha(const QColor &color, int alpha)
+{
+    QColor c(color);
+    c.setAlpha(alpha);
+    return c;
+}
+
 const Palette &palette()
 {
     static const Palette paletteValue{

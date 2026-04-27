@@ -45,6 +45,7 @@ struct Palette {
 };
 
 const Palette &palette();
+QColor withAlpha(const QColor &color, int alpha);
 QString frameStyle();
 QString titleStyle();
 QString fieldStyle();

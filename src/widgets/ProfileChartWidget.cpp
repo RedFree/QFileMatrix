@@ -14,9 +14,9 @@ ProfileChartWidget::ProfileChartWidget(QWidget *parent)
     setMouseTracking(true);
     const auto &p = Theme::palette();
     m_bands = {
-        {250.0, 80.0, QStringLiteral("起始"), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 40), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 180)},
-        {600.0, 120.0, QStringLiteral("数据"), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 30), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 180)},
-        {900.0, 90.0, QStringLiteral("结束"), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 40), QColor(p.accentRef.red(), p.accentRef.green(), p.accentRef.blue(), 180)}
+        {250.0, 80.0, QStringLiteral("起始"), Theme::withAlpha(p.accentRef, 40), Theme::withAlpha(p.accentRef, 180)},
+        {600.0, 120.0, QStringLiteral("数据"), Theme::withAlpha(p.ok, 30), Theme::withAlpha(p.ok, 180)},
+        {900.0, 90.0, QStringLiteral("结束"), Theme::withAlpha(p.accentRef, 40), Theme::withAlpha(p.accentRef, 180)}
     };
 }
 
@@ -112,7 +112,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         fillPath.lineTo(xToPixel(m_profile.last().x), plot.bottom());
         fillPath.lineTo(xToPixel(m_profile.first().x), plot.bottom());
         fillPath.closeSubpath();
-        painter.fillPath(fillPath, QColor(p.accentTrace.red(), p.accentTrace.green(), p.accentTrace.blue(), 15));
+        painter.fillPath(fillPath, Theme::withAlpha(p.accentTrace, 15));
 
         painter.setPen(QPen(p.accentTrace, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter.drawPath(path);
@@ -127,7 +127,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
 
         if (m_measuring) {
         const auto &p = Theme::palette();
-        painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), QColor(p.ok.red(), p.ok.green(), p.ok.blue(), 20));
+        painter.fillRect(QRectF(plot.left(), plot.top(), plot.width() * 0.25, plot.height()), Theme::withAlpha(p.ok, 20));
         }
 
         if (m_hovering) {

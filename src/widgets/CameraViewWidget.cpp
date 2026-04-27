@@ -136,7 +136,7 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
 
  const QColor roiStroke = p.accentRef;
  painter.setPen(QPen(roiStroke, 1, Qt::DashLine));
- painter.setBrush(QColor(roiStroke.red(), roiStroke.green(), roiStroke.blue(), 30));
+  painter.setBrush(Theme::withAlpha(roiStroke, 30));
  painter.drawRect(QRectF(width() * 0.32, height() * 0.15, width() * 0.16, height() * 0.7));
 
  if (m_measuring) {
@@ -144,9 +144,9 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  const QRect scanRect(0, offset - 18, width(), 36);
  QLinearGradient scan(scanRect.topLeft(), scanRect.bottomLeft());
  const QColor scanColor = p.ok;
- scan.setColorAt(0.0, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 0));
- scan.setColorAt(0.5, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 80));
- scan.setColorAt(1.0, QColor(scanColor.red(), scanColor.green(), scanColor.blue(), 0));
+  scan.setColorAt(0.0, Theme::withAlpha(scanColor, 0));
+  scan.setColorAt(0.5, Theme::withAlpha(scanColor, 80));
+  scan.setColorAt(1.0, Theme::withAlpha(scanColor, 0));
  painter.fillRect(scanRect, scan);
  }
 
