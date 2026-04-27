@@ -32,11 +32,11 @@ protected:
  QPushButton::paintEvent(event);
  QPainter painter(this);
  painter.setRenderHint(QPainter::Antialiasing);
- const QColor iconColor = property("role").toString() == QStringLiteral("primary")
- ? Qt::white
- : (property("role").toString() == QStringLiteral("danger")
- ? Theme::palette().err
- : Theme::palette().textMuted);
+  const QColor iconColor = property("role").toString() == QStringLiteral("primary")
+  ? Theme::palette().bgPanel
+  : (property("role").toString() == QStringLiteral("danger")
+  ? Theme::palette().err
+  : Theme::palette().textMuted);
  QPen pen(iconColor);
  pen.setWidthF(1.3);
  pen.setCapStyle(Qt::RoundCap);
