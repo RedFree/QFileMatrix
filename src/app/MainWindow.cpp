@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSplitter>
+#include <QStyleFactory>
 #include <QVBoxLayout>
 
 #include "app/AppController.h"
@@ -621,6 +622,7 @@ QWidget *MainWindow::createProfilePanel()
  scaleLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
  auto *scaleCombo = new QComboBox;
  scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
+ scaleCombo->setStyle(QStyleFactory::create("Fusion"));
  scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
  scaleCombo->setFixedWidth(68);
  scaleCombo->setFixedHeight(24);
