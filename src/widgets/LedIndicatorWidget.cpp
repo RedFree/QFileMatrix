@@ -87,7 +87,7 @@ void LedIndicatorWidget::paintEvent(QPaintEvent *event)
 
     if (m_state == State::Err && !m_blinkOn) {
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(bulbColor().red(), bulbColor().green(), bulbColor().blue(), 89));
+        painter.setBrush(Theme::withAlpha(bulbColor(), 89));
         painter.drawEllipse(bulbRect);
     } else if (m_state == State::Off) {
         painter.setPen(Qt::NoPen);
