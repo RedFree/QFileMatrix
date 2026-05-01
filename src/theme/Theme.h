@@ -11,6 +11,7 @@ struct Palette {
   QColor bgRail;
   QColor bgSunken;
   QColor bgHeader;
+  QColor headerBg;
   QColor headerText;
   QColor headerTextMuted;
   QColor headerTextSubtle;

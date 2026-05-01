@@ -16,33 +16,34 @@ const Palette &palette()
         QColor("#FFFFFF"),
         QColor("#FAFBFC"),
         QColor("#EEF1F5"),
-        QColor("#0F1B2D"),
+        QColor("#1B2330"),
+        QColor("#1B2330"),
         QColor("#EDF1F7"),
         QColor("#B8C1D0"),
         QColor("#D3DAE6"),
         QColor(255, 255, 255, 31),
         QColor(255, 255, 255, 15),
-        QColor("#0E1218"),
+        QColor("#1B1E25"),
         QColor(6, 12, 22, 180),
         QColor(36, 42, 52, 72),
         QColor("#C3C7CF"),
         QColor(7, 10, 16, 92),
         QColor("#6A8BE6"),
         QColor(0, 0, 0, 25),
-        QColor("#E2E6EC"),
-        QColor("#C9D0DA"),
-        QColor("#EEF0F4"),
+        QColor("#E5E9F0"),
+        QColor("#D8DEE7"),
+        QColor("#E5E9F0"),
         QColor("#0B1220"),
         QColor("#2A3240"),
         QColor("#5B6573"),
         QColor("#8A93A1"),
-        QColor("#4F6BFF"),
-        QColor("#334DCC"),
-        QColor("#EEF2FF"),
-        QColor("#36CFC9"),
+        QColor("#3375E0"),
+        QColor("#2C65C3"),
+        QColor("#EEF4FF"),
+        QColor("#37B26C"),
         QColor("#357A4D"),
         QColor("#EAF6EE"),
-        QColor("#B88311"),
+        QColor("#E0A21A"),
         QColor("#FFF4D8"),
         QColor("#C44A38"),
         QColor("#FCE9E5"),
@@ -55,7 +56,7 @@ const Palette &palette()
 QString frameStyle()
 {
     const auto &p = palette();
-    return QStringLiteral("background:%1;border:1px solid %2;border-radius:10px;")
+    return QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;")
         .arg(p.bgPanel.name(), p.border.name());
 }
 
