@@ -27,6 +27,7 @@ private slots:
     void currentGroupPanelUsesCompactStatCards();
     void currentGroupPanelUsesCompactVerdictPill();
     void currentGroupPanelUsesVerdictDrivenAccent();
+    void currentGroupPanelUsesCurrentLabelAndStatusDots();
     void cameraPanelShowsPrototypeHeaderControls();
     void profilePanelShowsPrototypeHeaderControls();
     void historyPanelShowsPrototypeToolbar();
@@ -137,6 +138,23 @@ void MainWindowTests::currentGroupPanelUsesVerdictDrivenAccent()
                                 ? Theme::palette().ok
                                 : (verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err);
     QCOMPARE(thicknessCard->accentColor(), expected);
+}
+
+void MainWindowTests::currentGroupPanelUsesCurrentLabelAndStatusDots()
+{
+    MainWindow window;
+    auto *thicknessCard = window.findChild<StatCardWidget*>(QStringLiteral("thicknessCard"));
+    auto *statusRow = window.findChild<QWidget*>(QStringLiteral("currentGroupStatusRow"));
+    auto *ok1 = window.findChild<QWidget*>(QStringLiteral("currentGroupStatusOk1"));
+    auto *warn = window.findChild<QWidget*>(QStringLiteral("currentGroupStatusWarn"));
+    QVERIFY(thicknessCard != nullptr);
+    QVERIFY(statusRow != nullptr);
+    QVERIFY(ok1 != nullptr);
+    QVERIFY(warn != nullptr);
+
+    QCOMPARE(thicknessCard->label(), QStringLiteral("CURRENT"));
+    QCOMPARE(ok1->size(), QSize(10, 10));
+    QCOMPARE(warn->size(), QSize(10, 10));
 }
 
 void MainWindowTests::cameraPanelShowsPrototypeHeaderControls()

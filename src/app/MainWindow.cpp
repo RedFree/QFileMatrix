@@ -668,17 +668,37 @@ QWidget *MainWindow::createStatsPanel()
  header->rightLayout()->addWidget(verdict);
     outer->addWidget(header);
 
-    auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
+ auto *body = new QVBoxLayout;
+ body->setContentsMargins(10, 10, 10, 10);
+ body->setSpacing(8);
 
-    auto *layout = new QGridLayout;
+ auto *statusRow = new QWidget;
+ statusRow->setObjectName(QStringLiteral("currentGroupStatusRow"));
+ auto *statusLayout = new QHBoxLayout(statusRow);
+ statusLayout->setContentsMargins(0, 0, 0, 0);
+ statusLayout->setSpacing(12);
+ const auto addStatusDot = [&](const QString &name, const QColor &color) {
+     auto *dot = new QFrame(statusRow);
+     dot->setObjectName(name);
+     dot->setFixedSize(10, 10);
+     dot->setStyleSheet(QStringLiteral("background:%1;border-radius:5px;").arg(color.name()));
+     statusLayout->addWidget(dot);
+ };
+ addStatusDot(QStringLiteral("currentGroupStatusOk1"), Theme::palette().ok);
+ addStatusDot(QStringLiteral("currentGroupStatusOk2"), Theme::palette().ok);
+ addStatusDot(QStringLiteral("currentGroupStatusOk3"), Theme::palette().ok);
+ addStatusDot(QStringLiteral("currentGroupStatusWarn"), Theme::palette().warn);
+ statusLayout->addStretch();
+ body->addWidget(statusRow);
+
+     auto *layout = new QGridLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setHorizontalSpacing(8);
     layout->setVerticalSpacing(8);
 
     m_thicknessCard = new StatCardWidget;
     m_thicknessCard->setObjectName(QStringLiteral("thicknessCard"));
-    m_thicknessCard->setLabel(QStringLiteral("厚度 THK"));
+    m_thicknessCard->setLabel(QStringLiteral("CURRENT"));
     m_thicknessCard->setUnit(QStringLiteral("μm"));
     m_thicknessCard->setTarget(QStringLiteral("11.500"));
 m_maxCard = new StatCardWidget;
