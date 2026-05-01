@@ -2,7 +2,6 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPainter>
 
 #include "theme/Theme.h"
 
@@ -10,7 +9,7 @@ PanelHeaderWidget::PanelHeaderWidget(const QString &title, QWidget *parent)
     : QWidget(parent)
 {
     setFixedHeight(32);
-    setStyleSheet(QStringLiteral("background:%1;border-bottom:1px solid %2;").arg(Theme::palette().bgRail.name(), Theme::palette().divider.name()));
+    setStyleSheet(QStringLiteral("background:%1;border-bottom:1px solid %2;").arg(Theme::palette().bgPanel.name(), Theme::palette().border.name()));
 
     auto *layout = new QHBoxLayout(this);
     layout->setContentsMargins(12, 0, 12, 0);
@@ -36,15 +35,4 @@ QHBoxLayout *PanelHeaderWidget::rightLayout() const
 QLabel *PanelHeaderWidget::titleLabel() const
 {
     return m_titleLabel;
-}
-
-void PanelHeaderWidget::paintEvent(QPaintEvent *event)
-{
-    QWidget::paintEvent(event);
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Theme::palette().brand);
-    painter.drawRoundedRect(QRect(4, 10, 3, 12), 1, 1);
 }

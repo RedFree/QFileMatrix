@@ -36,6 +36,7 @@ private slots:
     void leftRailButtonsHaveToolTipsAndPointerCursor();
     void shellUsesCompactHeaderControlSizing();
     void shellUsesPaletteDrivenControlStyles();
+    void shellUsesPrototypeOuterFrame();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
     void mainWindowStartsMaximized();
@@ -267,6 +268,16 @@ void MainWindowTests::shellUsesPaletteDrivenControlStyles()
     QVERIFY(scaleCombo->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
     QVERIFY(pauseButton->styleSheet().contains(Theme::palette().text1.name(), Qt::CaseInsensitive));
     QVERIFY(rightColumn->styleSheet().contains(Theme::palette().bgRail.name(), Qt::CaseInsensitive));
+}
+
+void MainWindowTests::shellUsesPrototypeOuterFrame()
+{
+    MainWindow window;
+    auto *shell = window.findChild<QFrame*>(QStringLiteral("mainShellFrame"));
+    QVERIFY(shell != nullptr);
+
+    QVERIFY(shell->styleSheet().contains(QStringLiteral("border-radius:16px"), Qt::CaseInsensitive));
+    QVERIFY(shell->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
 }
 
 void MainWindowTests::historyTableUsesDenseRowSizing()

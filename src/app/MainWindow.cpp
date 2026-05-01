@@ -313,14 +313,22 @@ void MainWindow::buildUi()
     auto *central = new QWidget;
     central->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().bgApp.name()));
     auto *root = new QVBoxLayout(central);
-    root->setContentsMargins(0, 0, 0, 0);
+    root->setContentsMargins(16, 16, 16, 16);
     root->setSpacing(0);
+
+    auto *shell = new QFrame;
+    shell->setObjectName(QStringLiteral("mainShellFrame"));
+    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border:1px solid %2;border-radius:16px;}")
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name()));
+    auto *shellLayout = new QVBoxLayout(shell);
+    shellLayout->setContentsMargins(0, 0, 0, 0);
+    shellLayout->setSpacing(0);
 
     m_topTitleBar = new TopTitleBar;
     m_deviceStatusBar = new DeviceStatusBar;
     m_bottomStatusBar = new BottomStatusBar;
-    root->addWidget(m_topTitleBar);
-    root->addWidget(m_deviceStatusBar);
+    shellLayout->addWidget(m_topTitleBar);
+    shellLayout->addWidget(m_deviceStatusBar);
 
     auto *bodySplitter = new QSplitter(Qt::Horizontal);
     bodySplitter->setChildrenCollapsible(false);
@@ -389,8 +397,9 @@ void MainWindow::buildUi()
     bodySplitter->setStretchFactor(2, 0);
     bodySplitter->setSizes({52, 1080, 320});
 
-    root->addWidget(bodySplitter, 1);
-    root->addWidget(m_bottomStatusBar);
+    shellLayout->addWidget(bodySplitter, 1);
+    shellLayout->addWidget(m_bottomStatusBar);
+    root->addWidget(shell, 1);
 
     setCentralWidget(central);
 }
