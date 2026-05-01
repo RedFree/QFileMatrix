@@ -129,10 +129,10 @@ void WidgetPanelSmokeTests::topTitleBarUsesPrototypeDarkStyle()
     QPixmap pixmap(bar.size());
     bar.render(&pixmap);
 
-    QCOMPARE(pixmap.toImage().pixelColor(10, 10), QColor(QStringLiteral("#0F1B2D")));
+    QCOMPARE(pixmap.toImage().pixelColor(10, 10), QColor(QStringLiteral("#1B2330")));
     QVERIFY(title->styleSheet().contains(Theme::palette().headerText.name(), Qt::CaseInsensitive));
     QVERIFY(tile->styleSheet().contains(Theme::palette().brand.name(), Qt::CaseInsensitive));
-    QVERIFY(tile->styleSheet().contains(Theme::palette().brandAccent.name(), Qt::CaseInsensitive));
+    QVERIFY(!tile->styleSheet().contains(QStringLiteral("qlineargradient"), Qt::CaseInsensitive));
 }
 
 void WidgetPanelSmokeTests::topTitleBarUsesCompactLeftAlignedNavigation()

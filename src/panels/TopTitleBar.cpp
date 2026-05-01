@@ -134,8 +134,8 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     brandTile->setObjectName(QStringLiteral("brandTileLabel"));
     brandTile->setAlignment(Qt::AlignCenter);
     brandTile->setFixedSize(22, 22);
-    brandTile->setStyleSheet(QStringLiteral("background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 %1,stop:1 %2);color:%3;border-radius:4px;font-size:11px;font-weight:700;")
-        .arg(Theme::palette().brand.name(), Theme::palette().brandAccent.name(), Theme::palette().bgPanel.name()));
+    brandTile->setStyleSheet(QStringLiteral("background:%1;color:%2;border-radius:4px;font-size:11px;font-weight:700;")
+        .arg(Theme::palette().brand.name(), Theme::palette().bgPanel.name()));
 
     auto *title = new QLabel(QStringLiteral("FilmMetrix"), brandWrap);
     title->setObjectName(QStringLiteral("brandTitleLabel"));
@@ -238,6 +238,15 @@ void TopTitleBar::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    painter.fillRect(rect(), Theme::palette().bgHeader);
+    painter.setRenderHint(QPainter::Antialiasing);
+    QPainterPath path;
+    path.moveTo(0, height());
+    path.lineTo(0, 16);
+    path.quadTo(0, 0, 16, 0);
+    path.lineTo(width() - 16, 0);
+    path.quadTo(width(), 0, width(), 16);
+    path.lineTo(width(), height());
+    path.closeSubpath();
+    painter.fillPath(path, Theme::palette().headerBg);
     painter.fillRect(QRect(0, height() - 1, width(), 1), Theme::palette().headerHover);
 }
