@@ -172,14 +172,24 @@ void WidgetPanelSmokeTests::deviceStatusBarUsesCompactPrototypeLayout()
     QCoreApplication::processEvents();
 
     auto *divider = bar.findChild<QWidget*>(QStringLiteral("statusDivider"));
+    auto *commStatus = bar.findChild<QWidget*>(QStringLiteral("commStatus"));
+    auto *xAxisStatus = bar.findChild<QWidget*>(QStringLiteral("xAxisStatus"));
+    auto *yAxisStatus = bar.findChild<QWidget*>(QStringLiteral("yAxisStatus"));
+    auto *lightStatus = bar.findChild<QWidget*>(QStringLiteral("lightStatus"));
     auto *startButton = bar.findChild<QPushButton*>(QStringLiteral("statusStartButton"));
     auto *manualButton = bar.findChild<QPushButton*>(QStringLiteral("statusManualButton"));
     auto *stopButton = bar.findChild<QPushButton*>(QStringLiteral("statusStopButton"));
     QVERIFY(divider != nullptr);
+    QVERIFY(commStatus != nullptr);
+    QVERIFY(xAxisStatus != nullptr);
+    QVERIFY(yAxisStatus != nullptr);
+    QVERIFY(lightStatus != nullptr);
     QVERIFY(startButton != nullptr);
     QVERIFY(manualButton != nullptr);
     QVERIFY(stopButton != nullptr);
 
+    QCOMPARE(commStatus->size(), QSize(10, 10));
+    QCOMPARE(lightStatus->size(), QSize(10, 10));
     QVERIFY2(startButton->height() <= 24, qPrintable(QStringLiteral("startButton height=%1").arg(startButton->height())));
     QVERIFY(manualButton->height() <= 24);
     QVERIFY(stopButton->height() <= 24);
@@ -316,10 +326,13 @@ void WidgetPanelSmokeTests::historyPanelUsesPrototypeSearchAndDelegates()
 
     auto *search = panel.findChild<QLineEdit*>(QStringLiteral("historySearchInput"));
     auto *table = panel.findChild<QTableView*>(QStringLiteral("historyTable"));
+    auto *title = panel.findChild<QLabel*>(QStringLiteral("historyTitleLabel"));
     QVERIFY(search != nullptr);
     QVERIFY(table != nullptr);
+    QVERIFY(title != nullptr);
 
     QCOMPARE(search->width(), 140);
+    QVERIFY(title->text().startsWith(QStringLiteral("历史记录")));
     QVERIFY(table->itemDelegateForColumn(5) != nullptr);
     QVERIFY(table->itemDelegateForColumn(6) != nullptr);
 QVERIFY(table->itemDelegateForColumn(5)->objectName() == QStringLiteral("historyVerdictDelegate"));
@@ -340,7 +353,7 @@ void WidgetPanelSmokeTests::historyPanelUsesPaletteDrivenColors()
     QVERIFY(search->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
     QVERIFY(search->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
     QVERIFY(table->styleSheet().contains(Theme::palette().bgPanel.name(), Qt::CaseInsensitive));
-    QVERIFY(!table->styleSheet().contains(QStringLiteral("background:white"), Qt::CaseInsensitive));
+    QVERIFY(table->styleSheet().contains(QStringLiteral("border-radius:6px"), Qt::CaseInsensitive));
     QVERIFY(filterButton->styleSheet().contains(Theme::palette().textMuted.name(), Qt::CaseInsensitive));
 }
 

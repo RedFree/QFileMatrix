@@ -1,6 +1,7 @@
 #include "panels/DeviceStatusBar.h"
 
 #include <QHBoxLayout>
+#include <QFrame>
 #include <QLabel>
 #include <QPainter>
 #include <QProgressBar>
@@ -8,19 +9,15 @@
 #include <QTimer>
 
 #include "theme/Theme.h"
-#include "widgets/LedIndicatorWidget.h"
 
 namespace {
-LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const QString &sub, LedIndicatorWidget::State state)
+QWidget *makeStatusDot(const QString &name, const QColor &color)
 {
-    auto *indicator = new LedIndicatorWidget;
-    indicator->setObjectName(name);
-    indicator->setLabel(label);
-    indicator->setSubLabel(sub);
-    indicator->setState(state);
-    indicator->setCompact(true);
-    indicator->setMaximumWidth(120);
-    return indicator;
+    auto *dot = new QFrame;
+    dot->setObjectName(name);
+    dot->setFixedSize(10, 10);
+    dot->setStyleSheet(QStringLiteral("background:%1;border-radius:5px;").arg(color.name()));
+    return dot;
 }
 
 class StatusPillWidget : public QWidget
@@ -104,14 +101,11 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     auto *leftWrap = new QWidget;
     auto *leftLayout = new QHBoxLayout(leftWrap);
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(4);
-    leftLayout->addWidget(makeStatus(QStringLiteral("commStatus"), QStringLiteral("通讯"), QStringLiteral("TCP 192.168.1.10"), LedIndicatorWidget::State::Ok));
-    leftLayout->addWidget(makeStatus(QStringLiteral("xAxisStatus"), QStringLiteral("X 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
-    leftLayout->addWidget(makeStatus(QStringLiteral("yAxisStatus"), QStringLiteral("Y 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
-    leftLayout->addWidget(makeStatus(QStringLiteral("zAxisStatus"), QStringLiteral("Z 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
-    leftLayout->addWidget(makeStatus(QStringLiteral("airStatus"), QStringLiteral("气压"), QStringLiteral("0.62 MPa"), LedIndicatorWidget::State::Ok));
-    leftLayout->addWidget(makeStatus(QStringLiteral("lightStatus"), QStringLiteral("光源"), QStringLiteral("Aging 78%"), LedIndicatorWidget::State::Warn));
-    leftLayout->addWidget(makeStatus(QStringLiteral("emergencyStatus"), QStringLiteral("急停"), QStringLiteral("Released"), LedIndicatorWidget::State::Off));
+    leftLayout->setSpacing(12);
+    leftLayout->addWidget(makeStatusDot(QStringLiteral("commStatus"), Theme::palette().ok));
+    leftLayout->addWidget(makeStatusDot(QStringLiteral("xAxisStatus"), Theme::palette().ok));
+    leftLayout->addWidget(makeStatusDot(QStringLiteral("yAxisStatus"), Theme::palette().ok));
+    leftLayout->addWidget(makeStatusDot(QStringLiteral("lightStatus"), Theme::palette().warn));
     layout->addWidget(leftWrap);
 
     auto *divider = new QWidget;
@@ -127,7 +121,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     progressWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     m_progressTitleLabel = new QLabel(QStringLiteral("测量进度"));
     m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
-    m_stateLabel = new StatusPillWidget;
+    m_stateLabel = new StatusPillWidget(progressWrap);
     m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);

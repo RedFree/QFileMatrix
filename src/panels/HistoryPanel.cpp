@@ -202,7 +202,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    auto *header = new PanelHeaderWidget(QStringLiteral("测量记录 · 0 条"));
+    auto *header = new PanelHeaderWidget(QStringLiteral("历史记录 · 0 条"));
     m_titleLabel = header->titleLabel();
     m_titleLabel->setObjectName(QStringLiteral("historyTitleLabel"));
 
@@ -236,11 +236,11 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setAlternatingRowColors(true);
     m_table->setStyleSheet(QStringLiteral(
-        "QTableView{border:1px solid %1;border-radius:8px;background:%2;alternate-background-color:%3;gridline-color:%4;color:%5;}"
-        "QHeaderView::section{background:%3;border:none;border-bottom:1px solid %4;padding:6px;color:%6;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.02em;}"
-        "QTableCornerButton::section{background:%3;border:none;border-bottom:1px solid %4;border-right:1px solid %4;}"
+        "QTableView{border:1px solid %1;border-radius:6px;background:%2;alternate-background-color:%2;gridline-color:%3;color:%4;}"
+        "QHeaderView::section{background:%2;border:none;border-bottom:1px solid %3;padding:6px 8px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;}"
+        "QTableCornerButton::section{background:%2;border:none;border-bottom:1px solid %3;border-right:1px solid %3;}"
         "QTableView::item:selected{background:%7;color:%5;}"
-    ).arg(p.border.name(), p.bgPanel.name(), p.bgSunken.name(), p.divider.name(), p.text.name(), p.textMuted.name(), p.brandWeak.name()));
+    ).arg(p.border.name(), p.bgPanel.name(), p.divider.name(), p.text.name(), p.textMuted.name(), QString(), p.brandWeak.name()));
 
     auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
     verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
@@ -314,5 +314,5 @@ void HistoryPanel::handleModelReset()
 void HistoryPanel::updateTitle()
 {
     const int rows = m_table->model() == nullptr ? 0 : m_table->model()->rowCount();
-    m_titleLabel->setText(QStringLiteral("测量记录 · %1 条").arg(rows));
+    m_titleLabel->setText(QStringLiteral("历史记录 · %1 条").arg(rows));
 }
