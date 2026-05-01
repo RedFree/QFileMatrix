@@ -115,23 +115,14 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.setRenderHint(QPainter::Antialiasing);
   painter.fillRect(rect(), p.cameraBg);
 
-  for (int x = 0; x < width(); x += 8) {
-  painter.fillRect(QRect(x, 0, 4, height()), p.cameraStripe);
-  }
-
- const QList<QRectF> strips {
- QRectF(width() * 0.05, 0, width() * 0.18, height()),
- QRectF(width() * 0.33, 0, width() * 0.14, height()),
- QRectF(width() * 0.56, 0, width() * 0.17, height()),
- QRectF(width() * 0.84, 0, width() * 0.10, height())
- };
-  for (int i = 0; i < strips.size(); ++i) {
-  QLinearGradient grad(strips[i].topLeft(), strips[i].topRight());
-  const QColor stripBase = i % 2 == 0 ? p.cameraStrip.lighter(100 + i * 4) : p.cameraStrip.darker(100 + i * 3);
-  grad.setColorAt(0.0, stripBase.darker(112));
-  grad.setColorAt(0.5, stripBase);
-  grad.setColorAt(1.0, stripBase.darker(118));
-  painter.fillRect(strips[i], grad);
+  const QList<QPair<QRectF, QColor>> strips {
+  { QRectF(width() * 0.07, height() * 0.08, width() * 0.125, height() * 0.84), QColor(QStringLiteral("#3A3F48")) },
+  { QRectF(width() * 0.26, height() * 0.08, width() * 0.10, height() * 0.84), QColor(QStringLiteral("#363B44")) },
+  { QRectF(width() * 0.42, height() * 0.08, width() * 0.125, height() * 0.84), QColor(QStringLiteral("#3A3F48")) },
+  { QRectF(width() * 0.61, height() * 0.08, width() * 0.078, height() * 0.84), QColor(QStringLiteral("#34394A")) }
+  };
+  for (const auto &strip : strips) {
+  painter.fillRect(strip.first, strip.second);
   }
 
  const QColor roiStroke = p.accentRef;

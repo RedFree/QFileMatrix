@@ -133,10 +133,11 @@ painter.setPen(Theme::palette().textMuted);
 painter.setFont(QFont(QStringLiteral("Segoe UI"), 10, QFont::DemiBold));
 painter.drawText(QRect(x0, vPad, width() - x0 - hPad, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
 
-int valueFontSize = m_small ? 20 : 28;
+int valueFontSize = m_small ? 20 : 32;
 int valueY = vPad + 18;
 
-painter.setPen(m_accentColor);
+const QColor valueColor = m_small ? m_accentColor : Theme::palette().bgHeader;
+painter.setPen(valueColor);
 QFont valueFont(QStringLiteral("Consolas"), valueFontSize, QFont::DemiBold);
 valueFont.setLetterSpacing(QFont::AbsoluteSpacing, -1);
 painter.setFont(valueFont);
