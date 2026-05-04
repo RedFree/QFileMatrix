@@ -32,6 +32,7 @@ private slots:
     void topTitleBarShowsRenamedSoftwareTitle();
     void topTitleBarUsesPrototypeDarkStyle();
     void topTitleBarUsesCompactLeftAlignedNavigation();
+    void deviceStatusBarKeepsLabeledStatusesWhileMeasuring();
     void deviceStatusBarExposesActionButtons();
     void deviceStatusBarUsesCompactPrototypeLayout();
     void bottomStatusBarUpdatesTelemetry();
@@ -155,6 +156,27 @@ void WidgetPanelSmokeTests::topTitleBarUsesCompactLeftAlignedNavigation()
     QVERIFY(navWrap->width() < 320);
 }
 
+void WidgetPanelSmokeTests::deviceStatusBarKeepsLabeledStatusesWhileMeasuring()
+{
+    DeviceStatusBar bar;
+    bar.setMeasuring(true);
+
+    auto *commStatus = bar.findChild<LedIndicatorWidget*>(QStringLiteral("commStatus"));
+    auto *xAxisStatus = bar.findChild<LedIndicatorWidget*>(QStringLiteral("xAxisStatus"));
+    auto *yAxisStatus = bar.findChild<LedIndicatorWidget*>(QStringLiteral("yAxisStatus"));
+    auto *lightStatus = bar.findChild<LedIndicatorWidget*>(QStringLiteral("lightStatus"));
+    QVERIFY(commStatus != nullptr);
+    QVERIFY(xAxisStatus != nullptr);
+    QVERIFY(yAxisStatus != nullptr);
+    QVERIFY(lightStatus != nullptr);
+
+    QCOMPARE(commStatus->label(), QStringLiteral("通讯"));
+    QCOMPARE(xAxisStatus->label(), QStringLiteral("X 轴"));
+    QCOMPARE(yAxisStatus->label(), QStringLiteral("Y 轴"));
+    QCOMPARE(lightStatus->label(), QStringLiteral("光源"));
+    QVERIFY(commStatus->compact());
+}
+
 void WidgetPanelSmokeTests::deviceStatusBarExposesActionButtons()
 {
     DeviceStatusBar bar;
@@ -188,8 +210,8 @@ void WidgetPanelSmokeTests::deviceStatusBarUsesCompactPrototypeLayout()
     QVERIFY(manualButton != nullptr);
     QVERIFY(stopButton != nullptr);
 
-    QCOMPARE(commStatus->size(), QSize(10, 10));
-    QCOMPARE(lightStatus->size(), QSize(10, 10));
+    QVERIFY(commStatus->width() <= 96);
+    QVERIFY(lightStatus->width() <= 96);
     QVERIFY2(startButton->height() <= 24, qPrintable(QStringLiteral("startButton height=%1").arg(startButton->height())));
     QVERIFY(manualButton->height() <= 24);
     QVERIFY(stopButton->height() <= 24);

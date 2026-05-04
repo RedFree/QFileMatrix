@@ -9,15 +9,19 @@
 #include <QTimer>
 
 #include "theme/Theme.h"
+#include "widgets/LedIndicatorWidget.h"
 
 namespace {
-QWidget *makeStatusDot(const QString &name, const QColor &color)
+LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const QString &sub, LedIndicatorWidget::State state)
 {
-    auto *dot = new QFrame;
-    dot->setObjectName(name);
-    dot->setFixedSize(10, 10);
-    dot->setStyleSheet(QStringLiteral("background:%1;border-radius:5px;").arg(color.name()));
-    return dot;
+    auto *indicator = new LedIndicatorWidget;
+    indicator->setObjectName(name);
+    indicator->setLabel(label);
+    indicator->setSubLabel(sub);
+    indicator->setState(state);
+    indicator->setCompact(true);
+    indicator->setMaximumWidth(96);
+    return indicator;
 }
 
 class StatusPillWidget : public QWidget
@@ -101,11 +105,11 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     auto *leftWrap = new QWidget;
     auto *leftLayout = new QHBoxLayout(leftWrap);
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(12);
-    leftLayout->addWidget(makeStatusDot(QStringLiteral("commStatus"), Theme::palette().ok));
-    leftLayout->addWidget(makeStatusDot(QStringLiteral("xAxisStatus"), Theme::palette().ok));
-    leftLayout->addWidget(makeStatusDot(QStringLiteral("yAxisStatus"), Theme::palette().ok));
-    leftLayout->addWidget(makeStatusDot(QStringLiteral("lightStatus"), Theme::palette().warn));
+    leftLayout->setSpacing(8);
+    leftLayout->addWidget(makeStatus(QStringLiteral("commStatus"), QStringLiteral("通讯"), QStringLiteral("TCP"), LedIndicatorWidget::State::Ok));
+    leftLayout->addWidget(makeStatus(QStringLiteral("xAxisStatus"), QStringLiteral("X 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
+    leftLayout->addWidget(makeStatus(QStringLiteral("yAxisStatus"), QStringLiteral("Y 轴"), QStringLiteral("Ready"), LedIndicatorWidget::State::Ok));
+    leftLayout->addWidget(makeStatus(QStringLiteral("lightStatus"), QStringLiteral("光源"), QStringLiteral("78%"), LedIndicatorWidget::State::Warn));
     layout->addWidget(leftWrap);
 
     auto *divider = new QWidget;
@@ -127,10 +131,12 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_progressBar->setRange(0, 100);
     m_progressBar->setValue(0);
     m_progressBar->setTextVisible(false);
-    m_progressBar->setFixedWidth(280);
+    m_progressBar->setMinimumWidth(160);
+    m_progressBar->setMaximumWidth(220);
+    m_progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     m_percentLabel = new QLabel(QStringLiteral("0%"));
     m_percentLabel->setObjectName(QStringLiteral("statusPercentLabel"));
-    m_percentLabel->setMinimumWidth(40);
+    m_percentLabel->setMinimumWidth(34);
     m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text1.name()));
 
     progressLayout->addWidget(m_progressTitleLabel);
