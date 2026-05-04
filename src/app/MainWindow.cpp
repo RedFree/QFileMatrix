@@ -319,7 +319,7 @@ void MainWindow::buildUi()
 
     auto *shell = new QFrame;
     shell->setObjectName(QStringLiteral("mainShellFrame"));
-    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border:1px solid %2;border-radius:16px;}")
+    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border:1px solid %2;border-radius:0px;}")
         .arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name()));
     auto *shellLayout = new QVBoxLayout(shell);
     shellLayout->setContentsMargins(0, 0, 0, 0);

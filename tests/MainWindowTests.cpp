@@ -295,7 +295,7 @@ void MainWindowTests::shellUsesPrototypeOuterFrame()
     auto *shell = window.findChild<QFrame*>(QStringLiteral("mainShellFrame"));
     QVERIFY(shell != nullptr);
 
-    QVERIFY(shell->styleSheet().contains(QStringLiteral("border-radius:16px"), Qt::CaseInsensitive));
+    QVERIFY(shell->styleSheet().contains(QStringLiteral("border-radius:0px"), Qt::CaseInsensitive));
     QVERIFY(shell->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
 }
 
