@@ -47,7 +47,7 @@ const Palette &palette()
         QColor("#FFF4D8"),
         QColor("#C44A38"),
         QColor("#FCE9E5"),
-        QColor("#C44A38"),
+        QColor("#3375E0"),
         QColor("#547AFF")
     };
     return paletteValue;

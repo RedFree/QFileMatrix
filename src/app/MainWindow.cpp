@@ -701,6 +701,7 @@ QWidget *MainWindow::createStatsPanel()
     m_thicknessCard->setLabel(QStringLiteral("CURRENT"));
     m_thicknessCard->setUnit(QStringLiteral("μm"));
     m_thicknessCard->setTarget(QStringLiteral("11.500"));
+    m_thicknessCard->setShowProgress(true);
 m_maxCard = new StatCardWidget;
 m_maxCard->setObjectName(QStringLiteral("maxCard"));
 m_maxCard->setSmall(true);
@@ -745,6 +746,8 @@ void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
     m_rightCard->setValue(QString::number(record.right, 'f', 3));
     m_thicknessCard->setTarget(QStringLiteral("11.500"));
     m_thicknessCard->setTrend(record.thick - 11.5);
+    const double deviation = qAbs(record.thick - 11.5);
+    m_thicknessCard->setProgress(qMax(0.0, 1.0 - deviation / 0.5));
     m_thicknessCard->setAccentColor(record.verdict == QStringLiteral("ok")
                                         ? Theme::palette().ok
                                         : (record.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));

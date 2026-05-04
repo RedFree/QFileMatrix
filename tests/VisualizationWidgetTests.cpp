@@ -52,7 +52,7 @@ void VisualizationWidgetTests::themeUsesStablePrototypeSemanticColors()
     QCOMPARE(p.ok.name(QColor::HexRgb), QStringLiteral("#357a4d"));
     QCOMPARE(p.warn.name(QColor::HexRgb), QStringLiteral("#e0a21a"));
     QCOMPARE(p.err.name(QColor::HexRgb), QStringLiteral("#c44a38"));
-    QCOMPARE(p.accentTrace.name(QColor::HexRgb), QStringLiteral("#c44a38"));
+    QCOMPARE(p.accentTrace.name(QColor::HexRgb), QStringLiteral("#3375e0"));
     QCOMPARE(p.accentRef.name(QColor::HexRgb), QStringLiteral("#547aff"));
 }
 

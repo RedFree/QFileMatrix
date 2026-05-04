@@ -93,9 +93,11 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
         painter.drawText(QRectF(bandRect.right() - 42, plot.bottom() - 16, 40, 14), Qt::AlignRight | Qt::AlignVCenter, QString::number(static_cast<int>(band.x + band.width)));
     }
 
-    painter.setPen(QPen(Theme::palette().ok, 1, Qt::DashLine));
     const double targetY = yToPixel(11.5);
+    painter.setPen(QPen(Theme::palette().ok, 1, Qt::DashLine));
+    painter.setOpacity(0.6);
     painter.drawLine(QPointF(plot.left(), targetY), QPointF(plot.right(), targetY));
+    painter.setOpacity(1.0);
     painter.setPen(Theme::palette().ok);
     painter.setFont(QFont(QStringLiteral("Consolas"), 8));
     painter.drawText(QRectF(plot.right() - 72, targetY - 10, 68, 14), Qt::AlignRight | Qt::AlignVCenter, QStringLiteral("TARGET 11.5"));
