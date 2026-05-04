@@ -25,7 +25,8 @@ private:
     QLabel *m_percentLabel = nullptr;
     QLabel *m_progressTitleLabel = nullptr;
     QProgressBar *m_progressBar = nullptr;
-    QWidget *m_stateLabel = nullptr;
+    QLabel *m_stateLabel = nullptr;
+    QWidget *m_stateLed = nullptr;
     QPushButton *m_startButton = nullptr;
     QPushButton *m_manualButton = nullptr;
     QPushButton *m_stopButton = nullptr;

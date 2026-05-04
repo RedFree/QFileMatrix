@@ -24,71 +24,49 @@ LedIndicatorWidget *makeStatus(const QString &name, const QString &label, const 
     return indicator;
 }
 
-class StatusPillWidget : public QWidget
+class StatusLedWidget : public QLabel
 {
 public:
-    explicit StatusPillWidget(QWidget *parent = nullptr)
-        : QWidget(parent)
+    explicit StatusLedWidget(QWidget *parent = nullptr)
+        : QLabel(parent)
         , m_blinkTimer(new QTimer(this))
     {
-        setFixedHeight(20);
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        setProperty("measuring", false);
-        setProperty("dotVisible", true);
-        m_blinkTimer->setObjectName(QStringLiteral("statusBlinkTimer"));
+        setFixedSize(8, 8);
+        setScaledContents(false);
         m_blinkTimer->setInterval(500);
         connect(m_blinkTimer, &QTimer::timeout, this, [this] {
-            setProperty("dotVisible", !property("dotVisible").toBool());
-            update();
+            m_visible = !m_visible;
+            updateColor();
         });
     }
 
-    QSize sizeHint() const override { return QSize(60, 20); }
-
-protected:
-    void paintEvent(QPaintEvent *) override
+    void setMeasuring(bool measuring)
     {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        const bool measuring = property("measuring").toBool();
-        QColor bg = Theme::palette().bgSunken;
-        QColor border = Theme::palette().border;
-        QColor fg = Theme::palette().textMuted;
-        QString text = QStringLiteral("待机");
-
-        if (measuring) {
-            bg = Theme::palette().brandWeak;
-            border = Theme::palette().brandWeak.darker(115);
-            fg = Theme::palette().brandStrong;
-            text = QStringLiteral("测量中");
+        m_measuring = measuring;
+        m_visible = true;
+        if (m_measuring) {
+            m_blinkTimer->start();
+        } else {
+            m_blinkTimer->stop();
         }
-
-        const QRect pillRect = rect().adjusted(0, 1, 0, -1);
-        painter.setPen(border);
-        painter.setBrush(bg);
-        painter.drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
-
-        const qreal dotR = 3.0;
-        const qreal dotX = pillRect.left() + pillRect.height() / 2.0;
-        const qreal dotY = pillRect.center().y();
-
-        if (!measuring || property("dotVisible").toBool()) {
-            painter.setPen(Qt::NoPen);
-            painter.setBrush(fg);
-            painter.drawEllipse(QPointF(dotX, dotY), dotR, dotR);
-        }
-
-        painter.setPen(fg);
-        painter.setBrush(Qt::NoBrush);
-        QFont font(QStringLiteral("Consolas"), 9);
-        font.setWeight(QFont::Bold);
-        painter.setFont(font);
-        const QRect textRect = pillRect.adjusted(qRound(pillRect.height() / 2.0) + 2, 0, -4, 0);
-        painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, text);
+        updateColor();
     }
 
 private:
+    void updateColor()
+    {
+        const auto &p = Theme::palette();
+        if (!m_measuring) {
+            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.textMuted.name()));
+        } else if (m_visible) {
+            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.brand.name()));
+        } else {
+            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.border.name()));
+        }
+    }
+
+    bool m_measuring = false;
+    bool m_visible = true;
     QTimer *m_blinkTimer;
 };
 }
@@ -147,12 +125,24 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_percentLabel->setMinimumWidth(34);
     m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text1.name()));
 
-    m_stateLabel = new StatusPillWidget(progressWrap);
+    m_stateLed = new StatusLedWidget(progressWrap);
+    m_stateLed->setObjectName(QStringLiteral("statusStateLed"));
+
+    m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
+    {
+        QFont stateFont(QStringLiteral("Consolas"), 9, QFont::Bold);
+        QFontMetrics fm(stateFont);
+        const int maxW = qMax(fm.horizontalAdvance(QStringLiteral("待机")),
+                              fm.horizontalAdvance(QStringLiteral("测量中")));
+        m_stateLabel->setFixedWidth(maxW + 2);
+        m_stateLabel->setStyleSheet(QStringLiteral("font-family:Consolas;font-size:9px;font-weight:bold;color:%1;").arg(Theme::palette().textMuted.name()));
+    }
 
     progressLayout->addWidget(m_progressTitleLabel);
     progressLayout->addWidget(m_progressBar);
     progressLayout->addWidget(m_percentLabel);
+    progressLayout->addWidget(m_stateLed);
     progressLayout->addWidget(m_stateLabel);
     layout->addWidget(progressWrap, 1);
 
@@ -209,18 +199,14 @@ void DeviceStatusBar::setProgress(double progress)
 
 void DeviceStatusBar::setMeasuring(bool measuring)
 {
-    m_stateLabel->setProperty("measuring", measuring);
-    m_stateLabel->update();
+    if (auto *led = dynamic_cast<StatusLedWidget*>(m_stateLed)) {
+        led->setMeasuring(measuring);
+    }
 
-    auto *timer = m_stateLabel->findChild<QTimer*>(QStringLiteral("statusBlinkTimer"));
-    if (timer) {
-        if (measuring) {
-            timer->start();
-        } else {
-            timer->stop();
-            m_stateLabel->setProperty("dotVisible", true);
-            m_stateLabel->update();
-        }
+    if (m_stateLabel) {
+        m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
+        m_stateLabel->setStyleSheet(QStringLiteral("font-family:Consolas;font-size:9px;font-weight:bold;color:%1;")
+            .arg(measuring ? Theme::palette().brand.name() : Theme::palette().textMuted.name()));
     }
 
     if (m_startButton) m_startButton->setVisible(!measuring);
