@@ -152,8 +152,8 @@ if (!m_showProgress) {
 painter.setPen(Theme::palette().border);
 painter.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 6, 6);
 
-int vPad = m_small ? 10 : 14;
-int hPad = m_small ? 12 : 16;
+  int vPad = m_small ? 8 : 10;
+  int hPad = m_small ? 10 : 14;
 int x0 = m_showProgress ? hPad : hPad + 3;
 
 painter.setPen(Theme::palette().textMuted);
@@ -162,7 +162,7 @@ painter.drawText(QRect(x0, vPad, width() - x0 - hPad, 16), Qt::AlignLeft | Qt::A
 
 if (m_showProgress) {
   int valueFontSize = 46;
-  int valueY = vPad + 22;
+  int valueY = vPad + 18;
 
   painter.setPen(Theme::palette().bgHeader);
   QFont valueFont(QStringLiteral("JetBrains Mono"), valueFontSize, QFont::DemiBold);
@@ -184,7 +184,7 @@ if (m_showProgress) {
   int barMaxW = qMin(120, width() - x0 - hPad);
   int barH = 6;
   int barX = x0;
-  int barY = height() - 20;
+  int barY = height() - 14;
   painter.setPen(Qt::NoPen);
   painter.setBrush(Theme::palette().divider);
   painter.drawRoundedRect(QRect(barX, barY, barMaxW, barH), 3, 3);
@@ -244,5 +244,5 @@ if (m_showProgress) {
 
 QSize StatCardWidget::sizeHint() const
 {
-return m_showProgress ? QSize(220, 140) : QSize(156, 80);
+return m_showProgress ? QSize(220, 120) : QSize(156, 72);
 }

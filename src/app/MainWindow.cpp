@@ -669,14 +669,14 @@ QWidget *MainWindow::createStatsPanel()
     outer->addWidget(header);
 
  auto *body = new QVBoxLayout;
- body->setContentsMargins(10, 10, 10, 10);
- body->setSpacing(8);
+ body->setContentsMargins(10, 6, 10, 6);
+ body->setSpacing(6);
 
  auto *statusRow = new QWidget;
  statusRow->setObjectName(QStringLiteral("currentGroupStatusRow"));
- auto *statusLayout = new QHBoxLayout(statusRow);
- statusLayout->setContentsMargins(0, 0, 0, 0);
- statusLayout->setSpacing(12);
+  auto *statusLayout = new QHBoxLayout(statusRow);
+  statusLayout->setContentsMargins(0, 0, 0, 0);
+  statusLayout->setSpacing(8);
  const auto addStatusDot = [&](const QString &name, const QColor &color) {
      auto *dot = new QFrame(statusRow);
      dot->setObjectName(name);
@@ -692,9 +692,9 @@ QWidget *MainWindow::createStatsPanel()
  body->addWidget(statusRow);
 
      auto *layout = new QGridLayout;
-    layout->setContentsMargins(0, 0, 0, 0);
+     layout->setContentsMargins(0, 0, 0, 0);
     layout->setHorizontalSpacing(8);
-    layout->setVerticalSpacing(8);
+    layout->setVerticalSpacing(6);
 
     m_thicknessCard = new StatCardWidget;
     m_thicknessCard->setObjectName(QStringLiteral("thicknessCard"));
