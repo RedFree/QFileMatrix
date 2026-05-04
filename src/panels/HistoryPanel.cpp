@@ -239,8 +239,8 @@ HistoryPanel::HistoryPanel(QWidget *parent)
         "QTableView{border:1px solid %1;border-radius:6px;background:%2;alternate-background-color:%2;gridline-color:%3;color:%4;}"
         "QHeaderView::section{background:%2;border:none;border-bottom:1px solid %3;padding:6px 8px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;}"
         "QTableCornerButton::section{background:%2;border:none;border-bottom:1px solid %3;border-right:1px solid %3;}"
-        "QTableView::item:selected{background:%7;color:%5;}"
-    ).arg(p.border.name(), p.bgPanel.name(), p.divider.name(), p.text.name(), p.textMuted.name(), QString(), p.brandWeak.name()));
+        "QTableView::item:selected{background:%6;color:%5;}"
+    ).arg(p.border.name(), p.bgPanel.name(), p.divider.name(), p.text.name(), p.textMuted.name(), p.brandWeak.name()));
 
     auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
     verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
