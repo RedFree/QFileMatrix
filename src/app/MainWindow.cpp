@@ -217,7 +217,8 @@ QFrame *makeBodyPanel(QWidget *content)
     auto *frame = new QFrame;
     frame->setStyleSheet(Theme::frameStyle());
     auto *layout = new QVBoxLayout(frame);
-    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
     layout->addWidget(content, 1);
     return frame;
 }
