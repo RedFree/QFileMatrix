@@ -238,15 +238,6 @@ void TopTitleBar::paintEvent(QPaintEvent *event)
     Q_UNUSED(event);
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    QPainterPath path;
-    path.moveTo(0, height());
-    path.lineTo(0, 16);
-    path.quadTo(0, 0, 16, 0);
-    path.lineTo(width() - 16, 0);
-    path.quadTo(width(), 0, width(), 16);
-    path.lineTo(width(), height());
-    path.closeSubpath();
-    painter.fillPath(path, Theme::palette().headerBg);
+    painter.fillRect(rect(), Theme::palette().headerBg);
     painter.fillRect(QRect(0, height() - 1, width(), 1), Theme::palette().headerHover);
 }

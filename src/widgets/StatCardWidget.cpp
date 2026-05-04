@@ -161,8 +161,8 @@ painter.setFont(QFont(QStringLiteral("Segoe UI"), m_showProgress ? 11 : 10, QFon
 painter.drawText(QRect(x0, vPad, width() - x0 - hPad, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label);
 
 if (m_showProgress) {
-  int valueFontSize = 40;
-  int valueY = vPad + 24;
+  int valueFontSize = 46;
+  int valueY = vPad + 22;
 
   painter.setPen(Theme::palette().bgHeader);
   QFont valueFont(QStringLiteral("JetBrains Mono"), valueFontSize, QFont::DemiBold);
@@ -174,11 +174,11 @@ if (m_showProgress) {
 
   if (!m_unit.isEmpty()) {
     painter.setPen(Theme::palette().textMuted);
-    QFont unitFont(QStringLiteral("Segoe UI"), 14);
+    QFont unitFont(QStringLiteral("Segoe UI"), 16);
     painter.setFont(unitFont);
     int unitX = x0 + valueWidth + 6;
-    int unitY = valueY + valueFontSize - 16;
-    painter.drawText(QRect(unitX, unitY, width() - unitX - hPad, 18), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
+    int unitY = valueY + valueFontSize - 18;
+    painter.drawText(QRect(unitX, unitY, width() - unitX - hPad, 20), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
   }
 
   int barMaxW = qMin(120, width() - x0 - hPad);
@@ -188,7 +188,7 @@ if (m_showProgress) {
   painter.setPen(Qt::NoPen);
   painter.setBrush(Theme::palette().divider);
   painter.drawRoundedRect(QRect(barX, barY, barMaxW, barH), 3, 3);
-  painter.setBrush(m_accentColor);
+  painter.setBrush(Theme::palette().ok);
   painter.drawRoundedRect(QRect(barX, barY, static_cast<int>(barMaxW * m_progress), barH), 3, 3);
 } else {
   int valueFontSize = m_small ? 20 : 32;
