@@ -141,12 +141,13 @@ void CameraViewWidget::paintEvent(QPaintEvent *event)
  painter.fillRect(scanRect, scan);
  }
 
- const QPoint center(static_cast<int>(m_crosshair.x() * width()), static_cast<int>(m_crosshair.y() * height()));
- const QColor crosshairColor = p.brand;
- painter.setPen(QPen(crosshairColor, 1));
- painter.drawLine(center.x(), 0, center.x(), height());
- painter.drawLine(0, center.y(), width(), center.y());
- painter.drawEllipse(center, 9, 9);
+  const QPoint center(static_cast<int>(m_crosshair.x() * width()), static_cast<int>(m_crosshair.y() * height()));
+  const QColor crosshairColor = p.brand;
+  painter.setPen(QPen(crosshairColor, 1, Qt::DashLine));
+  painter.drawLine(center.x(), 0, center.x(), height());
+  painter.drawLine(0, center.y(), width(), center.y());
+  painter.setPen(QPen(crosshairColor, 1, Qt::SolidLine));
+  painter.drawEllipse(center, 9, 9);
 
  const QFont monoFont(QStringLiteral("Consolas"), 11);
  const QFont sansFont(QStringLiteral("Segoe UI"), 11);

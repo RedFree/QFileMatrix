@@ -110,13 +110,7 @@ void ProfileChartWidget::paintEvent(QPaintEvent *event)
             path.lineTo(xToPixel(m_profile[i].x), yToPixel(m_profile[i].y));
         }
 
-        QPainterPath fillPath = path;
-        fillPath.lineTo(xToPixel(m_profile.last().x), plot.bottom());
-        fillPath.lineTo(xToPixel(m_profile.first().x), plot.bottom());
-        fillPath.closeSubpath();
-        painter.fillPath(fillPath, Theme::withAlpha(p.accentTrace, 15));
-
-        painter.setPen(QPen(p.accentTrace, 1.5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter.setPen(QPen(p.accentTrace, 2.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter.drawPath(path);
     }
 
