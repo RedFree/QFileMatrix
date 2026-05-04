@@ -356,7 +356,8 @@ void MainWindow::buildUi()
     m_historyPanel = new HistoryPanel;
     centerSplitter->addWidget(makeBodyPanel(m_historyPanel));
     centerSplitter->setStretchFactor(0, 2);
-    centerSplitter->setStretchFactor(1, 2);
+    centerSplitter->setStretchFactor(1, 3);
+    centerSplitter->setSizes({360, 560});
 
     bodySplitter->addWidget(centerSplitter);
 
