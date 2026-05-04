@@ -346,7 +346,7 @@ void MainWindow::buildUi()
     auto *rightTop = new QWidget;
     auto *rightTopLayout = new QVBoxLayout(rightTop);
     rightTopLayout->setContentsMargins(0, 0, 0, 0);
-    rightTopLayout->setSpacing(8);
+    rightTopLayout->setSpacing(4);
     rightTopLayout->addWidget(createStatsPanel());
     rightTopLayout->addWidget(createProfilePanel(), 1);
     topSplitter->addWidget(rightTop);
@@ -672,19 +672,19 @@ QWidget *MainWindow::createStatsPanel()
     outer->addWidget(header);
 
  auto *body = new QVBoxLayout;
- body->setContentsMargins(10, 4, 10, 4);
- body->setSpacing(4);
+ body->setContentsMargins(10, 2, 10, 2);
+ body->setSpacing(2);
 
  auto *statusRow = new QWidget;
  statusRow->setObjectName(QStringLiteral("currentGroupStatusRow"));
    auto *statusLayout = new QHBoxLayout(statusRow);
    statusLayout->setContentsMargins(0, 0, 0, 0);
-   statusLayout->setSpacing(6);
+   statusLayout->setSpacing(4);
   const auto addStatusDot = [&](const QString &name, const QColor &color) {
       auto *dot = new QFrame(statusRow);
       dot->setObjectName(name);
-      dot->setFixedSize(8, 8);
-      dot->setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(color.name()));
+      dot->setFixedSize(6, 6);
+      dot->setStyleSheet(QStringLiteral("background:%1;border-radius:3px;").arg(color.name()));
       statusLayout->addWidget(dot);
   };
  addStatusDot(QStringLiteral("currentGroupStatusOk1"), Theme::palette().ok);
@@ -696,8 +696,8 @@ QWidget *MainWindow::createStatsPanel()
 
      auto *layout = new QGridLayout;
      layout->setContentsMargins(0, 0, 0, 0);
-    layout->setHorizontalSpacing(6);
-    layout->setVerticalSpacing(4);
+    layout->setHorizontalSpacing(4);
+    layout->setVerticalSpacing(2);
 
     m_thicknessCard = new StatCardWidget;
     m_thicknessCard->setObjectName(QStringLiteral("thicknessCard"));
@@ -727,7 +727,7 @@ m_rightCard->setLabel(QStringLiteral("右高度"));
 m_rightCard->setUnit(QStringLiteral("μm"));
 
  layout->addWidget(m_thicknessCard, 0, 0, 2, 1);
- layout->setColumnStretch(0, 12);
+ layout->setColumnStretch(0, 11);
     layout->setColumnStretch(1, 10);
     layout->setColumnStretch(2, 10);
  layout->addWidget(m_maxCard, 0, 1);

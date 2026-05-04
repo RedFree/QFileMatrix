@@ -11,7 +11,7 @@ StatCardWidget::StatCardWidget(QWidget *parent)
 : QWidget(parent)
 , m_accentColor(Theme::palette().brand)
 {
-setMinimumHeight(80);
+setMinimumHeight(64);
 }
 
 void StatCardWidget::setLabel(const QString &label)
@@ -162,7 +162,7 @@ painter.drawText(QRect(x0, vPad, width() - x0 - hPad, 16), Qt::AlignLeft | Qt::A
 
 if (m_showProgress) {
   int valueFontSize = 46;
-  int valueY = vPad + 14;
+  int valueY = vPad + 12;
 
   painter.setPen(Theme::palette().bgHeader);
   QFont valueFont(QStringLiteral("JetBrains Mono"), valueFontSize, QFont::DemiBold);
@@ -184,15 +184,15 @@ if (m_showProgress) {
   int barMaxW = qMin(120, width() - x0 - hPad);
   int barH = 6;
   int barX = x0;
-  int barY = height() - 10;
+  int barY = height() - 8;
   painter.setPen(Qt::NoPen);
   painter.setBrush(Theme::palette().divider);
   painter.drawRoundedRect(QRect(barX, barY, barMaxW, barH), 3, 3);
   painter.setBrush(Theme::palette().ok);
   painter.drawRoundedRect(QRect(barX, barY, static_cast<int>(barMaxW * m_progress), barH), 3, 3);
 } else {
-  int valueFontSize = m_small ? 20 : 32;
-  int valueY = vPad + 18;
+  int valueFontSize = m_small ? 18 : 28;
+  int valueY = vPad + 12;
 
   const QColor valueColor = m_small ? m_accentColor : Theme::palette().bgHeader;
   painter.setPen(valueColor);
@@ -212,7 +212,7 @@ if (m_showProgress) {
     painter.drawText(QRect(unitX, unitY, width() - unitX - hPad, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
   }
 
-  int bottomY = height() - 16;
+  int bottomY = height() - 14;
   if (!m_target.isEmpty()) {
     painter.setFont(QFont(QStringLiteral("Consolas"), 9));
     const auto targetStr = QStringLiteral("TARGET %1").arg(m_target);
@@ -244,5 +244,5 @@ if (m_showProgress) {
 
 QSize StatCardWidget::sizeHint() const
 {
-return m_showProgress ? QSize(220, 110) : QSize(156, 68);
+return m_showProgress ? QSize(220, 100) : QSize(156, 60);
 }
