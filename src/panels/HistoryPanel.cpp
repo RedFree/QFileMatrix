@@ -158,38 +158,53 @@ public:
     }
 };
 
+class HistoryDefaultDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->palette.setColor(QPalette::Text, Theme::palette().text);
+    }
+};
+
 class HistoryNumericDelegate : public QStyledItemDelegate
 {
 public:
-using QStyledItemDelegate::QStyledItemDelegate;
+    using QStyledItemDelegate::QStyledItemDelegate;
 
-void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
-{
-QStyledItemDelegate::initStyleOption(option, index);
-option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
-}
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
+        option->palette.setColor(QPalette::Text, Theme::palette().text);
+    }
 };
 
 class HistoryThickDelegate : public QStyledItemDelegate
 {
 public:
-using QStyledItemDelegate::QStyledItemDelegate;
+    using QStyledItemDelegate::QStyledItemDelegate;
 
-void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
-{
-QStyledItemDelegate::initStyleOption(option, index);
-option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
-const auto verdictIdx = index.sibling(index.row(), 5);
-const QString verdict = verdictIdx.data(Qt::DisplayRole).toString();
-const auto &p = Theme::palette();
-if (verdict == QStringLiteral("ok")) {
-option->palette.setColor(QPalette::Text, p.ok);
-} else if (verdict == QStringLiteral("warn")) {
-option->palette.setColor(QPalette::Text, p.warn);
-} else if (verdict == QStringLiteral("err")) {
-option->palette.setColor(QPalette::Text, p.err);
-}
-}
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->font = QFont(QStringLiteral("Consolas"), option->font.pointSize());
+        const auto verdictIdx = index.sibling(index.row(), 5);
+        const QString verdict = verdictIdx.data(Qt::DisplayRole).toString();
+        const auto &p = Theme::palette();
+        if (verdict == QStringLiteral("ok")) {
+            option->palette.setColor(QPalette::Text, p.ok);
+        } else if (verdict == QStringLiteral("warn")) {
+            option->palette.setColor(QPalette::Text, p.warn);
+        } else if (verdict == QStringLiteral("err")) {
+            option->palette.setColor(QPalette::Text, p.err);
+        } else {
+            option->palette.setColor(QPalette::Text, p.text);
+        }
+    }
 };
 }
 
@@ -237,12 +252,14 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->setAlternatingRowColors(true);
     m_table->setShowGrid(false);
     m_table->setStyleSheet(QStringLiteral(
-        "QTableView{border:none;background:%2;alternate-background-color:%7;gridline-color:%3;color:%4;}"
+        "QTableView{border:none;background:%2;alternate-background-color:%7;gridline-color:%3;}"
         "QHeaderView::section{background:%2;border:none;border-bottom:1px solid %3;padding:8px 10px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;}"
         "QTableCornerButton::section{background:%2;border:none;border-bottom:1px solid %3;}"
-        "QTableView::item{padding:4px 8px;color:%4;}"
+        "QTableView::item{padding:4px 8px;}"
         "QTableView::item:selected{background:%6;color:%5;}"
     ).arg(p.border.name(), p.bgPanel.name(), p.divider.name(), p.text.name(), p.textMuted.name(), p.brandWeak.name(), p.bgSunken.name()));
+
+    m_table->setItemDelegate(new HistoryDefaultDelegate(m_table));
 
     auto *verdictDelegate = new HistoryVerdictDelegate(m_table);
     verdictDelegate->setObjectName(QStringLiteral("historyVerdictDelegate"));
