@@ -125,7 +125,14 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     progressWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
     m_progressTitleLabel = new QLabel(QStringLiteral("测量进度"));
-    m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
+    m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:0.5px;color:%1;").arg(Theme::palette().textMuted.name()));
+    {
+        QFont tightFont(m_progressTitleLabel->font());
+        tightFont.setPointSizeF(10.5);
+        tightFont.setWeight(QFont::DemiBold);
+        QFontMetrics fm(tightFont);
+        m_progressTitleLabel->setFixedWidth(fm.horizontalAdvance(QStringLiteral("测量进度")) + 2);
+    }
 
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
