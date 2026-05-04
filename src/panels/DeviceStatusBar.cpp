@@ -57,9 +57,9 @@ private:
     {
         const auto &p = Theme::palette();
         if (!m_measuring) {
-            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.textMuted.name()));
+            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.err.name()));
         } else if (m_visible) {
-            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.brand.name()));
+            setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.ok.name()));
         } else {
             setStyleSheet(QStringLiteral("background:%1;border-radius:4px;").arg(p.border.name()));
         }
@@ -206,7 +206,7 @@ void DeviceStatusBar::setMeasuring(bool measuring)
     if (m_stateLabel) {
         m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
         m_stateLabel->setStyleSheet(QStringLiteral("font-family:Consolas;font-size:9px;font-weight:bold;color:%1;")
-            .arg(measuring ? Theme::palette().brand.name() : Theme::palette().textMuted.name()));
+            .arg(measuring ? Theme::palette().ok.name() : Theme::palette().err.name()));
     }
 
     if (m_startButton) m_startButton->setVisible(!measuring);
