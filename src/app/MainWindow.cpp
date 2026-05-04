@@ -474,8 +474,6 @@ void MainWindow::updateFromController()
     m_measurePanel->setSampleCount(state.sampleCount);
     m_bottomStatusBar->setPosition(state.pos);
     m_bottomStatusBar->setProbeValue(record.left);
-    m_bottomStatusBar->setSampleProgress(record.point, 24);
-    m_bottomStatusBar->setFrameRate(22.0);
     m_bottomStatusBar->setConnected(true);
     m_bottomStatusBar->setMeasuring(state.measuring);
     m_servoPanel->setPosition(state.pos);
