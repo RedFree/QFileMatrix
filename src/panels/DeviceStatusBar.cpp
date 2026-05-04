@@ -121,12 +121,12 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     auto *progressWrap = new QWidget;
     auto *progressLayout = new QHBoxLayout(progressWrap);
     progressLayout->setContentsMargins(0, 0, 0, 0);
-    progressLayout->setSpacing(10);
+    progressLayout->setSpacing(4);
     progressWrap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
     m_progressTitleLabel = new QLabel(QStringLiteral("测量进度"));
     m_progressTitleLabel->setStyleSheet(QStringLiteral("font-size:10.5px;font-weight:600;letter-spacing:1px;color:%1;").arg(Theme::palette().textMuted.name()));
-    m_stateLabel = new StatusPillWidget(progressWrap);
-    m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
+
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setValue(0);
@@ -134,10 +134,14 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     m_progressBar->setMinimumWidth(160);
     m_progressBar->setMaximumWidth(220);
     m_progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     m_percentLabel = new QLabel(QStringLiteral("0%"));
     m_percentLabel->setObjectName(QStringLiteral("statusPercentLabel"));
     m_percentLabel->setMinimumWidth(34);
     m_percentLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text1.name()));
+
+    m_stateLabel = new StatusPillWidget(progressWrap);
+    m_stateLabel->setObjectName(QStringLiteral("statusStateLabel"));
 
     progressLayout->addWidget(m_progressTitleLabel);
     progressLayout->addWidget(m_progressBar);
@@ -146,32 +150,38 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     layout->addWidget(progressWrap, 1);
 
     auto *actionWrap = new QWidget;
+    actionWrap->setFixedWidth(200);
     auto *actionLayout = new QHBoxLayout(actionWrap);
     actionLayout->setContentsMargins(0, 0, 0, 0);
     actionLayout->setSpacing(6);
 
- auto *startButton = new QPushButton(QStringLiteral("开始测量"));
- startButton->setObjectName(QStringLiteral("statusStartButton"));
- startButton->setProperty("role", QStringLiteral("primary"));
- startButton->setFixedHeight(22);
- m_startButton = startButton;
- auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
- manualButton->setObjectName(QStringLiteral("statusManualButton"));
- manualButton->setFixedHeight(22);
- m_manualButton = manualButton;
- auto *stopButton = new QPushButton(QStringLiteral("停止"));
- stopButton->setObjectName(QStringLiteral("statusStopButton"));
- stopButton->setFixedHeight(22);
- m_stopButton = stopButton;
+    auto *startButton = new QPushButton(QStringLiteral("开始测量"));
+    startButton->setObjectName(QStringLiteral("statusStartButton"));
+    startButton->setProperty("role", QStringLiteral("primary"));
+    startButton->setFixedHeight(22);
+    startButton->setFixedWidth(80);
+    m_startButton = startButton;
 
- connect(startButton, &QPushButton::clicked, this, &DeviceStatusBar::startRequested);
- connect(manualButton, &QPushButton::clicked, this, &DeviceStatusBar::manualRequested);
- connect(stopButton, &QPushButton::clicked, this, &DeviceStatusBar::stopRequested);
+    auto *manualButton = new QPushButton(QStringLiteral("手动采样"));
+    manualButton->setObjectName(QStringLiteral("statusManualButton"));
+    manualButton->setFixedHeight(22);
+    manualButton->setFixedWidth(80);
+    m_manualButton = manualButton;
 
- actionLayout->addWidget(startButton);
- actionLayout->addWidget(manualButton);
- actionLayout->addWidget(stopButton);
- stopButton->hide();
+    auto *stopButton = new QPushButton(QStringLiteral("停止"));
+    stopButton->setObjectName(QStringLiteral("statusStopButton"));
+    stopButton->setFixedHeight(22);
+    stopButton->setFixedWidth(80);
+    m_stopButton = stopButton;
+
+    connect(startButton, &QPushButton::clicked, this, &DeviceStatusBar::startRequested);
+    connect(manualButton, &QPushButton::clicked, this, &DeviceStatusBar::manualRequested);
+    connect(stopButton, &QPushButton::clicked, this, &DeviceStatusBar::stopRequested);
+
+    actionLayout->addWidget(startButton);
+    actionLayout->addWidget(manualButton);
+    actionLayout->addWidget(stopButton);
+    stopButton->hide();
     layout->addWidget(actionWrap);
 
  setStyleSheet(QStringLiteral(
