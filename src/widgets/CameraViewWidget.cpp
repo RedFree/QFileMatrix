@@ -11,7 +11,7 @@ CameraViewWidget::CameraViewWidget(QWidget *parent)
     : QWidget(parent)
     , m_refreshTimer(new QTimer(this))
 {
-    setMinimumSize(380, 240);
+    setMinimumSize(380, 220);
     setMouseTracking(true);
     connect(m_refreshTimer, &QTimer::timeout, this, qOverload<>(&CameraViewWidget::update));
     m_refreshTimer->setInterval(60);
@@ -208,7 +208,7 @@ void CameraViewWidget::mouseMoveEvent(QMouseEvent *event)
 
 QSize CameraViewWidget::sizeHint() const
 {
-    return QSize(480, 300);
+    return QSize(480, 280);
 }
 
 void CameraViewWidget::updateCrosshair(const QPoint &point)
