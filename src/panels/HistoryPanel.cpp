@@ -251,13 +251,21 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setAlternatingRowColors(true);
     m_table->setShowGrid(false);
+    const auto tableBg      = p.bgPanel.name();
+    const auto headerBorder = p.brand.name();
+    const auto headerText   = p.textMuted.name();
+    const auto gridColor    = p.divider.name();
+    const auto altRowBg     = QStringLiteral("#F5F8FF");
+    const auto selRowBg     = QStringLiteral("#E0ECFF");
+    const auto selRowText   = p.brand.name();
+
     m_table->setStyleSheet(QStringLiteral(
-        "QTableView{border:none;background:%2;alternate-background-color:%7;gridline-color:%3;}"
-        "QHeaderView::section{background:%2;border:none;border-bottom:1px solid %3;padding:8px 10px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;}"
-        "QTableCornerButton::section{background:%2;border:none;border-bottom:1px solid %3;}"
+        "QTableView{border:none;background:%1;alternate-background-color:%2;gridline-color:%3;}"
+        "QHeaderView::section{background:%1;border:none;border-bottom:1px solid %4;padding:8px 10px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;}"
+        "QTableCornerButton::section{background:%1;border:none;border-bottom:1px solid %4;}"
         "QTableView::item{padding:4px 8px;}"
-        "QTableView::item:selected{background:%6;color:%5;}"
-    ).arg(p.border.name(), p.bgPanel.name(), p.divider.name(), p.text.name(), p.textMuted.name(), p.brandWeak.name(), p.bgSunken.name()));
+        "QTableView::item:selected{background:%6;color:%7;}"
+    ).arg(tableBg, altRowBg, gridColor, headerBorder, headerText, selRowBg, selRowText));
 
     m_table->setItemDelegate(new HistoryDefaultDelegate(m_table));
 
