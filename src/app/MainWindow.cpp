@@ -11,6 +11,7 @@
 #include <QScrollArea>
 #include <QSplitter>
 #include <QStyleFactory>
+#include <QTimer>
 #include <QVBoxLayout>
 
 #include "app/AppController.h"
@@ -357,7 +358,9 @@ void MainWindow::buildUi()
     centerSplitter->addWidget(makeBodyPanel(m_historyPanel));
     centerSplitter->setStretchFactor(0, 2);
     centerSplitter->setStretchFactor(1, 3);
-    centerSplitter->setSizes({360, 560});
+    QTimer::singleShot(0, this, [centerSplitter] {
+        centerSplitter->setSizes({340, 580});
+    });
 
     bodySplitter->addWidget(centerSplitter);
 
