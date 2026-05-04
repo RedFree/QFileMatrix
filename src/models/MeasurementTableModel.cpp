@@ -139,7 +139,7 @@ QVariant MeasurementTableModel::data(const QModelIndex &index, int role) const
     }
 
     if (role == Qt::TextAlignmentRole) {
-        return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+        return static_cast<int>(Qt::AlignCenter | Qt::AlignVCenter);
     }
 
     return {};

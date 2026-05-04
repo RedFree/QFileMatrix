@@ -246,7 +246,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
     m_table = new QTableView;
     m_table->setObjectName(QStringLiteral("historyTable"));
     m_table->horizontalHeader()->setStretchLastSection(true);
-    m_table->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_table->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
     m_table->horizontalHeader()->setSortIndicatorShown(false);
     m_table->verticalHeader()->setVisible(false);
     m_table->verticalHeader()->setDefaultSectionSize(28);
@@ -263,7 +263,7 @@ HistoryPanel::HistoryPanel(QWidget *parent)
 
     m_table->setStyleSheet(QStringLiteral(
         "QTableView{border:none;background:%1;alternate-background-color:%2;gridline-color:%3;}"
-        "QHeaderView::section{background:%1;border:none;border-bottom:1px solid %4;padding:8px 10px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;alignment:AlignLeft;}"
+        "QHeaderView::section{background:%1;border:none;border-bottom:1px solid %4;padding:8px 10px;color:%5;font-size:10.5px;font-weight:600;letter-spacing:0.02em;alignment:AlignCenter;}"
         "QTableCornerButton::section{background:%1;border:none;border-bottom:1px solid %4;}"
         "QTableView::item,QTableView::item:selected,QTableView::item:focus,QTableView::item:selected:focus{padding:4px 10px;border:none;outline:none;}"
         "QTableView::item:selected{background:%6;color:%7;}"
