@@ -349,13 +349,13 @@ void MainWindow::buildUi()
     rightTopLayout->addWidget(createStatsPanel());
     rightTopLayout->addWidget(createProfilePanel(), 1);
     topSplitter->addWidget(rightTop);
-    topSplitter->setStretchFactor(0, 3);
+    topSplitter->setStretchFactor(0, 2);
     topSplitter->setStretchFactor(1, 2);
 
     centerSplitter->addWidget(topSplitter);
     m_historyPanel = new HistoryPanel;
     centerSplitter->addWidget(makeBodyPanel(m_historyPanel));
-    centerSplitter->setStretchFactor(0, 3);
+    centerSplitter->setStretchFactor(0, 2);
     centerSplitter->setStretchFactor(1, 2);
 
     bodySplitter->addWidget(centerSplitter);
