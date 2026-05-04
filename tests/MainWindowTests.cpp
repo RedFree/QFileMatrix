@@ -38,6 +38,7 @@ private slots:
     void shellUsesCompactHeaderControlSizing();
     void shellUsesPaletteDrivenControlStyles();
     void shellUsesPrototypeOuterFrame();
+    void shellDoesNotInsetTopBarFromWindowContent();
     void historyTableUsesDenseRowSizing();
     void mainWindowUsesRenamedSoftwareTitle();
     void mainWindowStartsMaximized();
@@ -296,6 +297,20 @@ void MainWindowTests::shellUsesPrototypeOuterFrame()
 
     QVERIFY(shell->styleSheet().contains(QStringLiteral("border-radius:16px"), Qt::CaseInsensitive));
     QVERIFY(shell->styleSheet().contains(Theme::palette().borderStrong.name(), Qt::CaseInsensitive));
+}
+
+void MainWindowTests::shellDoesNotInsetTopBarFromWindowContent()
+{
+    MainWindow window;
+    window.show();
+    QCoreApplication::processEvents();
+
+    auto *shell = window.findChild<QFrame*>(QStringLiteral("mainShellFrame"));
+    QVERIFY(shell != nullptr);
+
+    const QRect centralRect = window.centralWidget()->rect();
+    QCOMPARE(shell->geometry().left(), centralRect.left());
+    QCOMPARE(shell->geometry().right(), centralRect.right());
 }
 
 void MainWindowTests::historyTableUsesDenseRowSizing()

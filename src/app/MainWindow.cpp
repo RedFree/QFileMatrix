@@ -313,7 +313,7 @@ void MainWindow::buildUi()
     auto *central = new QWidget;
     central->setStyleSheet(QStringLiteral("background:%1;").arg(Theme::palette().bgApp.name()));
     auto *root = new QVBoxLayout(central);
-    root->setContentsMargins(16, 16, 16, 16);
+    root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(0);
 
     auto *shell = new QFrame;
