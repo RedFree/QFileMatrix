@@ -53,8 +53,8 @@ SensorPanel::SensorPanel(QWidget *parent)
     layout->addWidget(header);
 
     auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
-    body->setSpacing(8);
+    body->setContentsMargins(8, 8, 8, 8);
+    body->setSpacing(6);
 
     m_gauge = new SensorGaugeWidget;
     m_gauge->setLabel(QStringLiteral("高度 H"));
@@ -94,7 +94,7 @@ SensorPanel::SensorPanel(QWidget *parent)
     detailGrid->addWidget(pkValue, 2, 1);
 
     auto *detailWrap = new QWidget;
-    detailWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;padding-top:8px;").arg(Theme::palette().divider.name()));
+    detailWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;padding-top:6px;").arg(Theme::palette().divider.name()));
     detailWrap->setLayout(detailGrid);
     body->addWidget(detailWrap);
 

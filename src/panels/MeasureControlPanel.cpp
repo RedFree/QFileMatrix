@@ -109,8 +109,8 @@ if (active) {
     layout->addWidget(header);
 
     auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
-    body->setSpacing(8);
+    body->setContentsMargins(8, 8, 8, 8);
+    body->setSpacing(6);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
     m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
@@ -146,8 +146,8 @@ if (active) {
     connect(m_sampleCount, &QSpinBox::valueChanged, this, &MeasureControlPanel::sampleCountChanged);
 
  auto *buttons = new QGridLayout;
- buttons->setHorizontalSpacing(6);
- buttons->setVerticalSpacing(6);
+ buttons->setHorizontalSpacing(4);
+ buttons->setVerticalSpacing(4);
  auto *startButton = new MeasureIconButton(MeasureIconButton::Icon::Play, QStringLiteral("开始测量"));
  startButton->setObjectName(QStringLiteral("startButton"));
  startButton->setProperty("role", QStringLiteral("primary"));

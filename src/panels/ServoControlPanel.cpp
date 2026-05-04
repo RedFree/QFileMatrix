@@ -69,8 +69,8 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     layout->addWidget(header);
 
     auto *body = new QVBoxLayout;
-    body->setContentsMargins(10, 10, 10, 10);
-    body->setSpacing(8);
+    body->setContentsMargins(8, 8, 8, 8);
+    body->setSpacing(6);
 
     m_dpad = new DpadControlWidget;
     body->addWidget(m_dpad);
@@ -86,7 +86,7 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     m_stepSpin = new QSpinBox;
     m_stepSpin->setRange(1, 1000000);
     m_stepSpin->setValue(200);
-    m_stepSpin->setFixedHeight(26);
+    m_stepSpin->setFixedHeight(24);
     stepRow->addWidget(m_stepSpin, 1);
     body->addLayout(stepRow);
     connect(m_stepSpin, &QSpinBox::valueChanged, this, &ServoControlPanel::stepChanged);
@@ -120,7 +120,7 @@ body->addLayout(hintRow);
 
     auto *gotoWrap = new QWidget;
     auto *gotoLayout = new QGridLayout(gotoWrap);
-    gotoLayout->setContentsMargins(0, 8, 0, 0);
+    gotoLayout->setContentsMargins(0, 6, 0, 0);
     gotoLayout->setHorizontalSpacing(6);
     gotoLayout->setVerticalSpacing(6);
     gotoWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;").arg(Theme::palette().divider.name()));
@@ -136,12 +136,12 @@ body->addLayout(hintRow);
     m_ySpin->setRange(0, 1000000);
     m_xSpin->setValue(10000);
     m_ySpin->setValue(10000);
-    m_xSpin->setFixedHeight(26);
-    m_ySpin->setFixedHeight(26);
+    m_xSpin->setFixedHeight(24);
+    m_ySpin->setFixedHeight(24);
     auto *moveButton = new QPushButton(QStringLiteral("移动"));
     moveButton->setObjectName(QStringLiteral("servoMoveButton"));
     moveButton->setProperty("role", QStringLiteral("primary"));
-    moveButton->setFixedHeight(24);
+    moveButton->setFixedHeight(22);
     gotoLayout->addWidget(gotoXLabel, 0, 0);
     gotoLayout->addWidget(gotoYLabel, 0, 1);
     gotoLayout->addWidget(m_xSpin, 1, 0);
