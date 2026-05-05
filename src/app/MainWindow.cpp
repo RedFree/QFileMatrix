@@ -379,10 +379,10 @@ void MainWindow::buildUi()
     centerSplitter->addWidget(topSplitter);
     m_historyPanel = new HistoryPanel;
     centerSplitter->addWidget(makeBodyPanel(m_historyPanel));
-    centerSplitter->setStretchFactor(0, 2);
-    centerSplitter->setStretchFactor(1, 3);
+    centerSplitter->setStretchFactor(0, 3);
+    centerSplitter->setStretchFactor(1, 2);
     QTimer::singleShot(0, this, [centerSplitter] {
-        centerSplitter->setSizes({340, 580});
+        centerSplitter->setSizes({460, 280});
     });
 
     bodySplitter->addWidget(centerSplitter);
