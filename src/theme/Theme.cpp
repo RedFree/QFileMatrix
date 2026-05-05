@@ -107,14 +107,14 @@ QString railButtonStyle(bool active)
     const auto &p = palette();
     if (active) {
         return QStringLiteral(
-            "QPushButton{background:%1;border:none;border-radius:6px;padding:4px;color:%2;font-size:10px;font-weight:700;}"
+            "QPushButton{background:%1;border:none;border-radius:6px;padding:4px 8px;color:%2;font-size:10px;font-weight:700;}"
             "QPushButton:hover{background:%3;}"
         )
         .arg(p.brandWeak.name(), p.brand.name(), p.brandWeak.darker(105).name());
     }
 
     return QStringLiteral(
-        "QPushButton{background:transparent;border:none;border-radius:6px;padding:4px;color:%1;font-size:10px;font-weight:600;}"
+        "QPushButton{background:transparent;border:none;border-radius:6px;padding:4px 8px;color:%1;font-size:10px;font-weight:600;}"
         "QPushButton:hover{background:%2;color:%3;}"
     )
     .arg(p.textMuted.name(), p.bgSunken.name(), p.text.name());

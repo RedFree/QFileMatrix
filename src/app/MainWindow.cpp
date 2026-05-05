@@ -45,12 +45,13 @@ public:
         User,
     };
 
-    explicit RailIconButton(IconKind kind, QWidget *parent = nullptr)
+    explicit RailIconButton(IconKind kind, const QString &text = QString(), QWidget *parent = nullptr)
         : QPushButton(parent)
         , m_kind(kind)
+        , m_text(text)
     {
-        setText(QString());
         setProperty("railIcon", iconName(kind));
+        setAccessibleName(text.isEmpty() ? iconName(kind) : text);
     }
 
 protected:
@@ -63,13 +64,17 @@ protected:
         const bool active = property("active").toBool();
         const QColor color = active ? Theme::palette().brand : Theme::palette().textMuted;
         QPen pen(color);
-        pen.setWidthF(1.6);
+        pen.setWidthF(1.5);
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
         painter.setPen(pen);
         painter.setBrush(Qt::NoBrush);
 
-        const QRectF r = rect().adjusted(11, 11, -11, -11);
+        constexpr int iconLeft = 6;
+        constexpr int iconSize = 16;
+        const int iconTop = (height() - iconSize) / 2;
+        const QRectF r(iconLeft, iconTop, iconSize, iconSize);
+
         switch (m_kind) {
         case IconKind::Camera:
             painter.drawRoundedRect(r.adjusted(0, 2, 0, 0), 2, 2);
@@ -118,6 +123,17 @@ protected:
             painter.drawArc(QRectF(r.left() + 1, r.center().y() - 1, r.width() - 2, r.height() - 3), 30 * 16, 120 * 16);
             break;
         }
+
+        if (!m_text.isEmpty()) {
+            painter.setPen(active ? Theme::palette().brand : Theme::palette().text1);
+            QFont f = font();
+            f.setPointSizeF(10.5);
+            f.setBold(active);
+            painter.setFont(f);
+            const int textLeft = iconLeft + iconSize + 8;
+            painter.drawText(QRectF(textLeft, 0, width() - textLeft - 4, height()),
+                             Qt::AlignLeft | Qt::AlignVCenter, m_text);
+        }
     }
 
 private:
@@ -137,6 +153,7 @@ private:
     }
 
     IconKind m_kind;
+    QString m_text;
 };
 
 class SmallIconButton : public QPushButton
@@ -406,7 +423,7 @@ void MainWindow::buildUi()
     bodySplitter->setStretchFactor(0, 0);
     bodySplitter->setStretchFactor(1, 1);
     bodySplitter->setStretchFactor(2, 0);
-    bodySplitter->setSizes({44, 1080, 320});
+    bodySplitter->setSizes({90, 1080, 320});
 
     shellLayout->addWidget(bodySplitter, 1);
     shellLayout->addWidget(m_bottomStatusBar);
@@ -509,17 +526,17 @@ void MainWindow::updateFromController()
 QWidget *MainWindow::createLeftRail()
 {
     auto *rail = new QWidget;
-    rail->setFixedWidth(44);
+    rail->setFixedWidth(90);
     rail->setStyleSheet(QStringLiteral("background:%1;border-right:1px solid %2;")
                             .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     auto *layout = new QVBoxLayout(rail);
-    layout->setContentsMargins(2, 8, 2, 8);
-    layout->setSpacing(6);
+    layout->setContentsMargins(4, 8, 4, 8);
+    layout->setSpacing(4);
 
     const struct {
         const char *name;
         RailIconButton::IconKind iconKind;
-        const char *tooltip;
+        const char *text;
         bool active;
     } navButtons[] = {
         {"railCameraButton", RailIconButton::IconKind::Camera, "相机", true},
@@ -532,10 +549,10 @@ QWidget *MainWindow::createLeftRail()
 
     QList<QPushButton*> navButtonWidgets;
     for (const auto &spec : navButtons) {
-        auto *button = new RailIconButton(spec.iconKind);
+        auto *button = new RailIconButton(spec.iconKind, QString::fromUtf8(spec.text));
         button->setObjectName(QString::fromLatin1(spec.name));
-        button->setToolTip(QString::fromUtf8(spec.tooltip));
-        button->setFixedSize(40, 40);
+        button->setToolTip(QString::fromUtf8(spec.text));
+        button->setFixedHeight(34);
         button->setCursor(Qt::PointingHandCursor);
         button->setProperty("active", spec.active);
         button->setStyleSheet(Theme::railButtonStyle(spec.active));
@@ -555,18 +572,18 @@ QWidget *MainWindow::createLeftRail()
 
     layout->addStretch();
 
-    auto *settingsButton = new RailIconButton(RailIconButton::IconKind::Settings);
+    auto *settingsButton = new RailIconButton(RailIconButton::IconKind::Settings, QStringLiteral("设置"));
     settingsButton->setObjectName(QStringLiteral("railSettingsButton"));
     settingsButton->setToolTip(QStringLiteral("设置"));
-    settingsButton->setFixedSize(40, 40);
+    settingsButton->setFixedHeight(34);
     settingsButton->setCursor(Qt::PointingHandCursor);
     settingsButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(settingsButton);
 
-    auto *userButton = new RailIconButton(RailIconButton::IconKind::User);
+    auto *userButton = new RailIconButton(RailIconButton::IconKind::User, QStringLiteral("用户"));
     userButton->setObjectName(QStringLiteral("railUserButton"));
     userButton->setToolTip(QStringLiteral("用户"));
-    userButton->setFixedSize(40, 40);
+    userButton->setFixedHeight(34);
     userButton->setCursor(Qt::PointingHandCursor);
     userButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(userButton);
