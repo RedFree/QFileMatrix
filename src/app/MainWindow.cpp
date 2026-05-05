@@ -406,7 +406,7 @@ void MainWindow::buildUi()
     bodySplitter->setStretchFactor(0, 0);
     bodySplitter->setStretchFactor(1, 1);
     bodySplitter->setStretchFactor(2, 0);
-    bodySplitter->setSizes({52, 1080, 320});
+    bodySplitter->setSizes({44, 1080, 320});
 
     shellLayout->addWidget(bodySplitter, 1);
     shellLayout->addWidget(m_bottomStatusBar);
