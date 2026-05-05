@@ -25,30 +25,33 @@ void ProfileChartWidget::setupPlot()
 
     m_plot->setBackground(QBrush(p.bgPanel));
     m_plot->axisRect()->setBackground(QBrush(p.bgPanel));
-    m_plot->axisRect()->setMargins(QMargins(40, 14, 14, 28));
+    m_plot->axisRect()->setMargins(QMargins(44, 10, 10, 24));
 
-    m_plot->xAxis->setBasePen(QPen(p.divider));
-    m_plot->yAxis->setBasePen(QPen(p.divider));
-    m_plot->xAxis->setTickPen(QPen(p.divider));
-    m_plot->yAxis->setTickPen(QPen(p.divider));
+    m_plot->xAxis->setBasePen(QPen(p.border));
+    m_plot->yAxis->setBasePen(QPen(p.border));
+    m_plot->xAxis->setTickPen(QPen(p.border));
+    m_plot->yAxis->setTickPen(QPen(p.border));
     m_plot->xAxis->setSubTickPen(QPen(Qt::NoPen));
     m_plot->yAxis->setSubTickPen(QPen(Qt::NoPen));
     m_plot->xAxis->setTickLabelColor(p.textMuted);
     m_plot->yAxis->setTickLabelColor(p.textMuted);
     m_plot->xAxis->setTickLabelFont(QFont(QStringLiteral("Consolas"), 8));
     m_plot->yAxis->setTickLabelFont(QFont(QStringLiteral("Consolas"), 8));
-    m_plot->xAxis->setLabel(QString());
-    m_plot->yAxis->setLabel(QString());
 
+    const QColor gridColor = QColor(QStringLiteral("#D0D5DE"));
     m_plot->xAxis->grid()->setVisible(true);
-    m_plot->xAxis->grid()->setPen(QPen(p.divider, 1, Qt::DotLine));
-    m_plot->xAxis->grid()->setZeroLinePen(QPen(p.divider, 1, Qt::SolidLine));
+    m_plot->xAxis->grid()->setPen(QPen(gridColor, 1, Qt::DotLine));
+    m_plot->xAxis->grid()->setZeroLinePen(QPen(gridColor, 1, Qt::SolidLine));
     m_plot->yAxis->grid()->setVisible(true);
-    m_plot->yAxis->grid()->setPen(QPen(p.divider, 1, Qt::DotLine));
-    m_plot->yAxis->grid()->setZeroLinePen(QPen(p.divider, 1, Qt::SolidLine));
+    m_plot->yAxis->grid()->setPen(QPen(gridColor, 1, Qt::DotLine));
+    m_plot->yAxis->grid()->setZeroLinePen(QPen(gridColor, 1, Qt::SolidLine));
 
     m_plot->xAxis2->setVisible(false);
     m_plot->yAxis2->setVisible(false);
+
+    updateAxisRanges();
+
+    updateBands();
 
     m_profileGraph = m_plot->addGraph();
     m_profileGraph->setPen(QPen(p.accentTrace, 2.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -68,8 +71,7 @@ void ProfileChartWidget::setupPlot()
     m_axisLabel->position->setType(QCPItemPosition::ptAxisRectRatio);
     m_axisLabel->position->setCoords(0.02, 0.02);
 
-    updateAxisRanges();
-    updateBands();
+    m_plot->replot();
 }
 
 void ProfileChartWidget::updateAxisRanges()
@@ -156,14 +158,6 @@ ProfileData ProfileChartWidget::profile() const
 QVector<RefBand> ProfileChartWidget::bands() const
 {
     return {};
-}
-
-void ProfileChartWidget::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    if (m_plot) {
-        m_plot->setGeometry(rect());
-    }
 }
 
 QSize ProfileChartWidget::sizeHint() const

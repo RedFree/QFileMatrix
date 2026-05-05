@@ -36,7 +36,6 @@ public:
     [[nodiscard]] QVector<RefBand> bands() const;
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
     QSize sizeHint() const override;
 
 private:
