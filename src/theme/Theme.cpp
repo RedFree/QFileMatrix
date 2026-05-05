@@ -56,7 +56,7 @@ const Palette &palette()
 QString frameStyle()
 {
     const auto &p = palette();
-    return QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;")
+    return QStringLiteral("background:%1;border:1px solid %2;border-radius:0px;")
         .arg(p.bgPanel.name(), p.border.name());
 }
 
