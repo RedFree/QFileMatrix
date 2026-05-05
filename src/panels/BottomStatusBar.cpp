@@ -12,7 +12,7 @@ BottomStatusBar::BottomStatusBar(QWidget *parent)
     setFixedHeight(28);
 
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(12, 0, 12, 0);
+    layout->setContentsMargins(4, 0, 12, 0);
     layout->setSpacing(0);
 
     m_probeLabel = new QLabel;

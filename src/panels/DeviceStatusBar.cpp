@@ -77,7 +77,7 @@ DeviceStatusBar::DeviceStatusBar(QWidget *parent)
     setFixedHeight(44);
 
     auto *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(14, 0, 14, 0);
+    layout->setContentsMargins(4, 0, 14, 0);
     layout->setSpacing(6);
 
     auto *leftWrap = new QWidget;
