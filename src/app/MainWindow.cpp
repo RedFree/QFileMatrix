@@ -320,7 +320,7 @@ void MainWindow::buildUi()
 
     auto *shell = new QFrame;
     shell->setObjectName(QStringLiteral("mainShellFrame"));
-    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border:1px solid %2;border-radius:0px;}")
+    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border-top:1px solid %2;border-right:1px solid %2;border-bottom:1px solid %2;border-left:none;border-radius:0px;}")
         .arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name()));
     auto *shellLayout = new QVBoxLayout(shell);
     shellLayout->setContentsMargins(0, 0, 0, 0);
@@ -334,13 +334,19 @@ void MainWindow::buildUi()
 
     auto *bodySplitter = new QSplitter(Qt::Horizontal);
     bodySplitter->setChildrenCollapsible(false);
+    bodySplitter->setHandleWidth(1);
+    bodySplitter->setStyleSheet(QStringLiteral("QSplitter::handle{background:transparent;}"));
     bodySplitter->addWidget(createLeftRail());
 
     auto *centerSplitter = new QSplitter(Qt::Vertical);
     centerSplitter->setChildrenCollapsible(false);
+    centerSplitter->setHandleWidth(1);
+    centerSplitter->setStyleSheet(QStringLiteral("QSplitter::handle{background:transparent;}"));
 
     auto *topSplitter = new QSplitter(Qt::Horizontal);
     topSplitter->setChildrenCollapsible(false);
+    topSplitter->setHandleWidth(1);
+    topSplitter->setStyleSheet(QStringLiteral("QSplitter::handle{background:transparent;}"));
     topSplitter->addWidget(createCameraPanel());
 
     auto *rightTop = new QWidget;
@@ -503,11 +509,11 @@ void MainWindow::updateFromController()
 QWidget *MainWindow::createLeftRail()
 {
     auto *rail = new QWidget;
-    rail->setFixedWidth(52);
+    rail->setFixedWidth(44);
     rail->setStyleSheet(QStringLiteral("background:%1;border-right:1px solid %2;")
                             .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     auto *layout = new QVBoxLayout(rail);
-    layout->setContentsMargins(6, 8, 6, 8);
+    layout->setContentsMargins(2, 8, 2, 8);
     layout->setSpacing(6);
 
     const struct {
