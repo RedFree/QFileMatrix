@@ -45,12 +45,25 @@ private:
     void updateTargetLine();
     void updateAxisRanges();
 
+    double pixelToDataX(double px) const;
+    int hitBand(const QPoint &pos, int *mode) const;
+
     QPointer<QCustomPlot> m_plot;
     QCPGraph *m_profileGraph = nullptr;
     QCPItemStraightLine *m_targetLine = nullptr;
     QVector<QCPItemRect*> m_bandRects;
     QCPItemText *m_axisLabel = nullptr;
 
+    QVector<RefBand> m_bands;
     ProfileData m_profile;
     bool m_measuring = false;
+
+    struct DragState {
+        int bandIndex = -1;
+        int mode = 0;
+        double startBandX = 0.0;
+        double startBandWidth = 0.0;
+        double startDataX = 0.0;
+    };
+    DragState m_drag;
 };

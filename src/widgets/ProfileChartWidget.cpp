@@ -1,5 +1,6 @@
 #include "widgets/ProfileChartWidget.h"
 
+#include <QMouseEvent>
 #include "qcustomplot.h"
 #include "theme/Theme.h"
 
@@ -17,6 +18,47 @@ ProfileChartWidget::ProfileChartWidget(QWidget *parent)
     layout->addWidget(m_plot, 1);
 
     setupPlot();
+
+    connect(m_plot, &QCustomPlot::mousePress, this, [this](QMouseEvent *event) {
+        int mode = 0;
+        const int index = hitBand(event->pos(), &mode);
+        if (index >= 0) {
+            m_drag.bandIndex = index;
+            m_drag.mode = mode;
+            m_drag.startBandX = m_bands[index].x;
+            m_drag.startBandWidth = m_bands[index].width;
+            m_drag.startDataX = pixelToDataX(event->pos().x());
+        }
+    });
+
+    connect(m_plot, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event) {
+        if (m_drag.bandIndex < 0) return;
+
+        auto &band = m_bands[m_drag.bandIndex];
+        const double currentX = pixelToDataX(event->pos().x());
+        const double dx = currentX - m_drag.startDataX;
+
+        if (m_drag.mode == 1) {
+            band.x = qBound(0.0, m_drag.startBandX + dx, 1280.0 - band.width);
+        } else if (m_drag.mode == 2) {
+            const double newX = qBound(0.0, m_drag.startBandX + dx, m_drag.startBandX + m_drag.startBandWidth - 10.0);
+            band.width = m_drag.startBandWidth - (newX - m_drag.startBandX);
+            band.x = newX;
+        } else if (m_drag.mode == 3) {
+            band.width = qBound(10.0, m_drag.startBandWidth + dx, 1280.0 - band.x);
+        }
+
+        if (m_drag.bandIndex < m_bandRects.size()) {
+            auto *rect = m_bandRects[m_drag.bandIndex];
+            rect->topLeft->setCoords(band.x, 100);
+            rect->bottomRight->setCoords(band.x + band.width, -25);
+        }
+        m_plot->replot();
+    });
+
+    connect(m_plot, &QCustomPlot::mouseRelease, this, [this](QMouseEvent *) {
+        m_drag = DragState{};
+    });
 }
 
 void ProfileChartWidget::setupPlot()
@@ -38,7 +80,7 @@ void ProfileChartWidget::setupPlot()
     m_plot->xAxis->setTickLabelFont(QFont(QStringLiteral("Consolas"), 8));
     m_plot->yAxis->setTickLabelFont(QFont(QStringLiteral("Consolas"), 8));
 
-    const QColor gridColor = QColor(QStringLiteral("#D0D5DE"));
+    const QColor gridColor = QColor(QStringLiteral("#808080"));
     m_plot->xAxis->grid()->setVisible(true);
     m_plot->xAxis->grid()->setPen(QPen(gridColor, 1, Qt::DotLine));
     m_plot->xAxis->grid()->setZeroLinePen(QPen(gridColor, 1, Qt::SolidLine));
@@ -50,7 +92,6 @@ void ProfileChartWidget::setupPlot()
     m_plot->yAxis2->setVisible(false);
 
     updateAxisRanges();
-
     updateBands();
 
     m_profileGraph = m_plot->addGraph();
@@ -91,13 +132,13 @@ void ProfileChartWidget::updateBands()
     m_bandRects.clear();
 
     const auto &p = Theme::palette();
-    const QVector<RefBand> bands {
+    m_bands = {
         {250.0, 80.0, QStringLiteral("起始"), Theme::withAlpha(p.accentRef, 40), Theme::withAlpha(p.accentRef, 180)},
         {600.0, 120.0, QStringLiteral("数据"), Theme::withAlpha(p.ok, 30), Theme::withAlpha(p.ok, 180)},
         {900.0, 90.0, QStringLiteral("结束"), Theme::withAlpha(p.accentRef, 40), Theme::withAlpha(p.accentRef, 180)}
     };
 
-    for (const auto &band : bands) {
+    for (const auto &band : m_bands) {
         auto *rect = new QCPItemRect(m_plot);
         rect->setPen(QPen(band.stroke, 1.5));
         rect->setBrush(QBrush(band.fill));
@@ -157,10 +198,40 @@ ProfileData ProfileChartWidget::profile() const
 
 QVector<RefBand> ProfileChartWidget::bands() const
 {
-    return {};
+    return m_bands;
 }
 
 QSize ProfileChartWidget::sizeHint() const
 {
     return QSize(560, 320);
+}
+
+double ProfileChartWidget::pixelToDataX(double px) const
+{
+    return m_plot->xAxis->pixelToCoord(px);
+}
+
+int ProfileChartWidget::hitBand(const QPoint &pos, int *mode) const
+{
+    const double dataX = pixelToDataX(pos.x());
+    for (int i = 0; i < m_bands.size(); ++i) {
+        const double left = m_bands[i].x;
+        const double right = m_bands[i].x + m_bands[i].width;
+        const double handleWidth = qMax(4.0, pixelToDataX(pos.x() + 4) - pixelToDataX(pos.x()));
+
+        if (qAbs(dataX - left) <= handleWidth) {
+            *mode = 2;
+            return i;
+        }
+        if (qAbs(dataX - right) <= handleWidth) {
+            *mode = 3;
+            return i;
+        }
+        if (dataX >= left && dataX <= right) {
+            *mode = 1;
+            return i;
+        }
+    }
+    *mode = 0;
+    return -1;
 }
