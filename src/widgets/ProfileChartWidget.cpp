@@ -53,6 +53,10 @@ ProfileChartWidget::ProfileChartWidget(QWidget *parent)
             rect->topLeft->setCoords(band.x, 100);
             rect->bottomRight->setCoords(band.x + band.width, -25);
         }
+        if (m_drag.bandIndex < m_bandLabels.size()) {
+            auto *label = m_bandLabels[m_drag.bandIndex];
+            label->position->setCoords(band.x + 4, 96);
+        }
         m_plot->replot();
     });
 
@@ -129,7 +133,11 @@ void ProfileChartWidget::updateBands()
     for (auto *rect : m_bandRects) {
         m_plot->removeItem(rect);
     }
+    for (auto *label : m_bandLabels) {
+        m_plot->removeItem(label);
+    }
     m_bandRects.clear();
+    m_bandLabels.clear();
 
     const auto &p = Theme::palette();
     m_bands = {
@@ -152,6 +160,7 @@ void ProfileChartWidget::updateBands()
         label->setColor(band.stroke);
         label->setPositionAlignment(Qt::AlignLeft | Qt::AlignTop);
         label->position->setCoords(band.x + 4, 96);
+        m_bandLabels.append(label);
     }
 }
 

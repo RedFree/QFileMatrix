@@ -52,6 +52,7 @@ private:
     QCPGraph *m_profileGraph = nullptr;
     QCPItemStraightLine *m_targetLine = nullptr;
     QVector<QCPItemRect*> m_bandRects;
+    QVector<QCPItemText*> m_bandLabels;
     QCPItemText *m_axisLabel = nullptr;
 
     QVector<RefBand> m_bands;
