@@ -22,7 +22,7 @@ public:
  explicit MeasureIconButton(Icon icon, const QString &text, QWidget *parent = nullptr)
  : QPushButton(text, parent), m_icon(icon)
  {
- setFixedHeight(28);
+   setFixedHeight(22);
  setCursor(Qt::PointingHandCursor);
  }
 
@@ -134,7 +134,7 @@ if (active) {
     m_sampleCount = new QSpinBox;
     m_sampleCount->setRange(1, 999);
     m_sampleCount->setValue(5);
-  m_sampleCount->setStyleSheet(QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;text-align:right;min-width:50px;max-height:22px;}"
+   m_sampleCount->setStyleSheet(QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;text-align:right;min-width:50px;max-height:24px;}"
     "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}")
     .arg(Theme::palette().borderStrong.name(), Theme::palette().bgPanel.name(), Theme::palette().text.name()));
     sampleRow->addWidget(m_sampleCount);

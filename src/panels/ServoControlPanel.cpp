@@ -81,7 +81,7 @@ ServoControlPanel::ServoControlPanel(QWidget *parent)
     stepRow->setContentsMargins(0, 0, 0, 0);
     stepRow->setSpacing(6);
     auto *stepLabel = new QLabel(QStringLiteral("步长"));
-    stepLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
+    stepLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
     stepRow->addWidget(stepLabel);
     m_stepSpin = new QSpinBox;
     m_stepSpin->setRange(1, 1000000);
@@ -95,9 +95,9 @@ m_jogHintLabel = nullptr;
 auto *hintRow = new QHBoxLayout;
 hintRow->setContentsMargins(0, 0, 0, 0);
 hintRow->setSpacing(4);
-  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 10px Consolas;padding:0 4px;}")
-    .arg(Theme::palette().borderStrong.name(), Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
-const auto hintSpanStyle = QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
+   const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 11px Consolas;padding:0 4px;}")
+     .arg(Theme::palette().borderStrong.name(), Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
+const auto hintSpanStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
 for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
 auto *kbd = new QLabel(key);
 kbd->setStyleSheet(kbdStyle);
@@ -129,8 +129,8 @@ body->addLayout(hintRow);
 
     auto *gotoXLabel = new QLabel(QStringLiteral("GOTO X"));
     auto *gotoYLabel = new QLabel(QStringLiteral("GOTO Y"));
-    gotoXLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
-    gotoYLabel->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
+    gotoXLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
+    gotoYLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;letter-spacing:1px;font-weight:600;").arg(Theme::palette().textMuted.name()));
 
     m_xSpin = new QSpinBox;
     m_ySpin = new QSpinBox;
