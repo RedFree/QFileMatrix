@@ -1,13 +1,18 @@
 #pragma once
 
 #include <QColor>
-#include <QPaintEvent>
-#include <QPointF>
+#include <QPointer>
 #include <QString>
 #include <QVector>
 #include <QWidget>
 
 #include "domain/ProfileData.h"
+
+class QCustomPlot;
+class QCPGraph;
+class QCPItemStraightLine;
+class QCPItemRect;
+class QCPItemText;
 
 struct RefBand {
     double x {};
@@ -31,37 +36,22 @@ public:
     [[nodiscard]] QVector<RefBand> bands() const;
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     QSize sizeHint() const override;
 
 private:
-    struct DragState {
-        int bandIndex = -1;
-        enum Mode {
-            None,
-            Move,
-            Left,
-            Right
-        } mode = None;
-        double startBandX = 0.0;
-        double startBandWidth = 0.0;
-        double startDataX = 0.0;
-    };
+    void setupPlot();
+    void updateGraphData();
+    void updateBands();
+    void updateTargetLine();
+    void updateAxisRanges();
 
-    QRectF plotRect() const;
-    double xToPixel(double x) const;
-    double yToPixel(double y) const;
-    double pixelToDataX(double x) const;
-    void updateHover(const QPoint &pos);
-    int hitBand(const QPoint &pos, DragState::Mode *mode) const;
+    QPointer<QCustomPlot> m_plot;
+    QCPGraph *m_profileGraph = nullptr;
+    QCPItemStraightLine *m_targetLine = nullptr;
+    QVector<QCPItemRect*> m_bandRects;
+    QCPItemText *m_axisLabel = nullptr;
 
     ProfileData m_profile;
-    QVector<RefBand> m_bands;
     bool m_measuring = false;
-    bool m_hovering = false;
-    QPointF m_hoverPoint;
-    DragState m_drag;
 };

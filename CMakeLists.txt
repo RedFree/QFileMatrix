@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Test)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Test PrintSupport)
 
 qt_standard_project_setup()
 
@@ -49,13 +49,14 @@ add_library(qfilematrix_widgets
  src/widgets/StatCardWidget.cpp
  src/widgets/SensorGaugeWidget.cpp
  src/widgets/DpadControlWidget.cpp
+ src/widgets/qcustomplot.cpp
  src/dialogs/ManualSampleDialog.cpp
  src/dialogs/AlarmCenterDialog.cpp
 )
 
 target_include_directories(qfilematrix_widgets PUBLIC src)
 
-target_link_libraries(qfilematrix_widgets PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets qfilematrix_app)
+target_link_libraries(qfilematrix_widgets PUBLIC Qt6::Core Qt6::Gui Qt6::Widgets Qt6::PrintSupport qfilematrix_app)
 
 add_library(qfilematrix_panels
     src/app/MainWindow.cpp

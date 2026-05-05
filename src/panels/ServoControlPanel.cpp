@@ -95,13 +95,14 @@ m_jogHintLabel = nullptr;
 auto *hintRow = new QHBoxLayout;
 hintRow->setContentsMargins(0, 0, 0, 0);
 hintRow->setSpacing(4);
-  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 10px Consolas;qproperty-alignment:AlignCenter;padding:0 4px;}")
+  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 10px Consolas;padding:0 4px;}")
     .arg(Theme::palette().borderStrong.name(), Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
 const auto hintSpanStyle = QStringLiteral("font-size:10px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
 for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
 auto *kbd = new QLabel(key);
 kbd->setStyleSheet(kbdStyle);
 kbd->setFixedHeight(18);
+kbd->setAlignment(Qt::AlignCenter);
 hintRow->addWidget(kbd);
 }
 auto *jogSpan = new QLabel(QStringLiteral("JOG"));
@@ -111,6 +112,7 @@ hintRow->addStretch();
 auto *hKbd = new QLabel(QStringLiteral("H"));
 hKbd->setStyleSheet(kbdStyle);
 hKbd->setFixedHeight(18);
+hKbd->setAlignment(Qt::AlignCenter);
 hintRow->addWidget(hKbd);
 auto *homeSpan = new QLabel(QStringLiteral("HOME"));
 homeSpan->setObjectName(QStringLiteral("servoJogHintLabel"));
