@@ -64,16 +64,16 @@ protected:
         const bool active = property("active").toBool();
         const QColor color = active ? Theme::palette().brand : Theme::palette().textMuted;
         QPen pen(color);
-        pen.setWidthF(1.5);
+        pen.setWidthF(1.2);
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
         painter.setPen(pen);
         painter.setBrush(Qt::NoBrush);
 
-        constexpr int iconLeft = 6;
-        constexpr int iconSize = 16;
-        const int iconTop = (height() - iconSize) / 2;
-        const QRectF r(iconLeft, iconTop, iconSize, iconSize);
+        constexpr int iconSize = 14;
+        const int iconX = (width() - iconSize) / 2;
+        const int iconY = 5;
+        const QRectF r(iconX, iconY, iconSize, iconSize);
 
         switch (m_kind) {
         case IconKind::Camera:
@@ -125,14 +125,14 @@ protected:
         }
 
         if (!m_text.isEmpty()) {
-            painter.setPen(active ? Theme::palette().brand : Theme::palette().text1);
+            painter.setPen(active ? Theme::palette().brand : Theme::palette().textMuted);
             QFont f = font();
-            f.setPointSizeF(10.5);
+            f.setPointSizeF(8.5);
             f.setBold(active);
             painter.setFont(f);
-            const int textLeft = iconLeft + iconSize + 8;
-            painter.drawText(QRectF(textLeft, 0, width() - textLeft - 4, height()),
-                             Qt::AlignLeft | Qt::AlignVCenter, m_text);
+            const int textTop = iconY + iconSize + 3;
+            painter.drawText(QRectF(0, textTop, width(), height() - textTop - 3),
+                             Qt::AlignHCenter | Qt::AlignTop, m_text);
         }
     }
 
@@ -423,7 +423,7 @@ void MainWindow::buildUi()
     bodySplitter->setStretchFactor(0, 0);
     bodySplitter->setStretchFactor(1, 1);
     bodySplitter->setStretchFactor(2, 0);
-    bodySplitter->setSizes({90, 1080, 320});
+    bodySplitter->setSizes({48, 1080, 320});
 
     shellLayout->addWidget(bodySplitter, 1);
     shellLayout->addWidget(m_bottomStatusBar);
@@ -526,7 +526,7 @@ void MainWindow::updateFromController()
 QWidget *MainWindow::createLeftRail()
 {
     auto *rail = new QWidget;
-    rail->setFixedWidth(90);
+    rail->setFixedWidth(48);
     rail->setStyleSheet(QStringLiteral("background:%1;border-right:1px solid %2;")
                             .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     auto *layout = new QVBoxLayout(rail);
@@ -552,7 +552,7 @@ QWidget *MainWindow::createLeftRail()
         auto *button = new RailIconButton(spec.iconKind, QString::fromUtf8(spec.text));
         button->setObjectName(QString::fromLatin1(spec.name));
         button->setToolTip(QString::fromUtf8(spec.text));
-        button->setFixedHeight(34);
+        button->setFixedHeight(38);
         button->setCursor(Qt::PointingHandCursor);
         button->setProperty("active", spec.active);
         button->setStyleSheet(Theme::railButtonStyle(spec.active));
@@ -575,7 +575,7 @@ QWidget *MainWindow::createLeftRail()
     auto *settingsButton = new RailIconButton(RailIconButton::IconKind::Settings, QStringLiteral("设置"));
     settingsButton->setObjectName(QStringLiteral("railSettingsButton"));
     settingsButton->setToolTip(QStringLiteral("设置"));
-    settingsButton->setFixedHeight(34);
+    settingsButton->setFixedHeight(38);
     settingsButton->setCursor(Qt::PointingHandCursor);
     settingsButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(settingsButton);
@@ -583,7 +583,7 @@ QWidget *MainWindow::createLeftRail()
     auto *userButton = new RailIconButton(RailIconButton::IconKind::User, QStringLiteral("用户"));
     userButton->setObjectName(QStringLiteral("railUserButton"));
     userButton->setToolTip(QStringLiteral("用户"));
-    userButton->setFixedHeight(34);
+    userButton->setFixedHeight(38);
     userButton->setCursor(Qt::PointingHandCursor);
     userButton->setStyleSheet(Theme::railButtonStyle(false));
     layout->addWidget(userButton);
