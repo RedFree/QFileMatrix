@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QVector>
 
 #include "domain/MeasurementRecord.h"
 
@@ -11,6 +12,7 @@ class DeviceStatusBar;
 class HistoryPanel;
 class MeasureControlPanel;
 class ProfileChartWidget;
+class QPushButton;
 class QStackedWidget;
 class SensorPanel;
 class ServoControlPanel;
@@ -36,6 +38,18 @@ private:
     QWidget *createProfilePanel();
     QWidget *createStatsPanel();
     void applyRecordToSummary(const MeasurementRecord &record);
+    void applyGroupSummary(int groupIndex);
+    void setActiveGroup(int groupIndex);
+    void refreshGroupButtons();
+
+    struct GroupSummary {
+        double thick = 0.0;
+        double hmax = 0.0;
+        double hmin = 0.0;
+        double left = 0.0;
+        double right = 0.0;
+        QString verdict;
+    };
 
     AppController *m_controller = nullptr;
     TopTitleBar *m_topTitleBar = nullptr;
@@ -53,5 +67,8 @@ private:
     StatCardWidget *m_minCard = nullptr;
     StatCardWidget *m_deltaCard = nullptr;
     StatCardWidget *m_rightCard = nullptr;
+    QVector<QPushButton*> m_groupButtons;
+    QVector<GroupSummary> m_groupSummaries;
+    int m_activeGroupIndex = 0;
     int m_selectedHistoryRow = 0;
 };

@@ -754,9 +754,19 @@ QWidget *MainWindow::createStatsPanel()
 
     auto *header = new PanelHeaderWidget(QStringLiteral("当前组 · GROUP-01"));
     header->titleLabel()->setObjectName(QStringLiteral("currentGroupTitleLabel"));
+ for (int index = 0; index < 3; ++index) {
+     auto *groupButton = new QPushButton(QString::number(index + 1));
+     groupButton->setObjectName(QStringLiteral("currentGroupButton%1").arg(index + 1));
+     groupButton->setFixedSize(24, 22);
+     groupButton->setCursor(Qt::PointingHandCursor);
+     connect(groupButton, &QPushButton::clicked, this, [this, index] { setActiveGroup(index); });
+     header->rightLayout()->addWidget(groupButton);
+     m_groupButtons.append(groupButton);
+ }
  auto *verdict = new VerdictPillWidget;
  verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
  header->rightLayout()->addWidget(verdict);
+ refreshGroupButtons();
     outer->addWidget(header);
 
  auto *body = new QVBoxLayout;
@@ -829,22 +839,75 @@ m_rightCard->setUnit(QStringLiteral("μm"));
 
 void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
 {
+    const auto verdictFor = [](double thick) {
+        const double deviation = qAbs(thick - 11.5);
+        if (deviation <= 0.08) {
+            return QStringLiteral("ok");
+        }
+        if (deviation <= 0.18) {
+            return QStringLiteral("warn");
+        }
+        return QStringLiteral("err");
+    };
+
+    m_groupSummaries = {
+        {record.thick, record.hmax, record.hmin, record.left, record.right, record.verdict},
+        {record.thick + 0.036, record.hmax + 0.052, record.hmin + 0.018, record.left + 0.041, record.right + 0.027, verdictFor(record.thick + 0.036)},
+        {record.thick - 0.028, record.hmax - 0.013, record.hmin - 0.047, record.left - 0.026, record.right - 0.034, verdictFor(record.thick - 0.028)},
+    };
+
+    applyGroupSummary(m_activeGroupIndex);
+}
+
+void MainWindow::applyGroupSummary(int groupIndex)
+{
+    if (m_groupSummaries.isEmpty()) {
+        return;
+    }
+
+    const int boundedIndex = qBound(0, groupIndex, m_groupSummaries.size() - 1);
+    const auto &summary = m_groupSummaries.at(boundedIndex);
     auto *verdict = findChild<QWidget*>(QStringLiteral("currentGroupVerdictLabel"));
-    m_thicknessCard->setValue(QString::number(record.thick, 'f', 3));
-    m_maxCard->setValue(QString::number(record.hmax, 'f', 3));
-    m_minCard->setValue(QString::number(record.hmin, 'f', 3));
-    m_deltaCard->setValue(QString::number(record.left, 'f', 3));
-    m_rightCard->setValue(QString::number(record.right, 'f', 3));
+    auto *title = findChild<QLabel*>(QStringLiteral("currentGroupTitleLabel"));
+
+    if (title != nullptr) {
+        title->setText(QStringLiteral("当前组 · GROUP-%1").arg(boundedIndex + 1, 2, 10, QChar('0')));
+    }
+    m_thicknessCard->setValue(QString::number(summary.thick, 'f', 3));
+    m_maxCard->setValue(QString::number(summary.hmax, 'f', 3));
+    m_minCard->setValue(QString::number(summary.hmin, 'f', 3));
+    m_deltaCard->setValue(QString::number(summary.left, 'f', 3));
+    m_rightCard->setValue(QString::number(summary.right, 'f', 3));
     m_thicknessCard->setTarget(QStringLiteral("11.500"));
-    m_thicknessCard->setTrend(record.thick - 11.5);
-    const double deviation = qAbs(record.thick - 11.5);
+    m_thicknessCard->setTrend(summary.thick - 11.5);
+    const double deviation = qAbs(summary.thick - 11.5);
     m_thicknessCard->setProgress(qMax(0.0, 1.0 - deviation / 0.5));
-    m_thicknessCard->setAccentColor(record.verdict == QStringLiteral("ok")
+    m_thicknessCard->setAccentColor(summary.verdict == QStringLiteral("ok")
                                         ? Theme::palette().ok
-                                        : (record.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
-    m_sensorPanel->setSensorValue(record.left);
- if (verdict != nullptr) {
-     verdict->setProperty("verdict", record.verdict);
-     verdict->update();
- }
+                                        : (summary.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
+    m_sensorPanel->setSensorValue(summary.left);
+    if (verdict != nullptr) {
+        verdict->setProperty("verdict", summary.verdict);
+        verdict->update();
+    }
+}
+
+void MainWindow::setActiveGroup(int groupIndex)
+{
+    m_activeGroupIndex = qBound(0, groupIndex, 2);
+    refreshGroupButtons();
+    applyGroupSummary(m_activeGroupIndex);
+}
+
+void MainWindow::refreshGroupButtons()
+{
+    for (int index = 0; index < m_groupButtons.size(); ++index) {
+        auto *button = m_groupButtons.at(index);
+        const bool active = index == m_activeGroupIndex;
+        button->setStyleSheet(active
+            ? QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:4px;color:%3;font-size:11px;font-weight:700;}")
+                .arg(Theme::palette().brand.name(), Theme::palette().brand.name(), Theme::palette().bgPanel.name())
+            : QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:4px;color:%3;font-size:11px;font-weight:600;}QPushButton:hover{background:%4;color:%5;}")
+                .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().text1.name()));
+    }
 }
