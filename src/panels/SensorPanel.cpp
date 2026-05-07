@@ -107,11 +107,9 @@ SensorPanel::SensorPanel(QWidget *parent)
         label->setAlignment(label == absValue || label == offsetValue || label == pkValue ? Qt::AlignRight | Qt::AlignVCenter : Qt::AlignLeft | Qt::AlignVCenter);
     }
 
-    auto *detailWrap = new QWidget;
-    detailWrap->setStyleSheet(QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;padding:4px;")
-        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
-    detailWrap->setLayout(detailGrid);
-    body->addWidget(detailWrap);
+    m_detailWrap = new QWidget;
+    m_detailWrap->setLayout(detailGrid);
+    body->addWidget(m_detailWrap);
 
     layout->addLayout(body);
     refreshDisplay();
@@ -158,19 +156,33 @@ void SensorPanel::refreshDisplay()
 
 void SensorPanel::refreshDerivedLabels(double value)
 {
+    const QColor accent = m_displayMode == DisplayMode::Height ? Theme::palette().brand : Theme::palette().brandAccent;
+    const QColor accentStrong = m_displayMode == DisplayMode::Height ? Theme::palette().gaugeHighlight : Theme::palette().brandStrong;
+    if (m_detailWrap) {
+        m_detailWrap->setStyleSheet(QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;padding:4px;")
+            .arg(Theme::withAlpha(accent, 24).name(QColor::HexArgb), Theme::withAlpha(accent, 145).name(QColor::HexArgb)));
+    }
     if (auto *primaryKey = findChild<QLabel*>(QStringLiteral("sensorPrimaryKeyLabel"))) {
         primaryKey->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("ABS") : QStringLiteral("INTENSITY"));
+        primaryKey->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:0.5px;font-weight:700;").arg(accentStrong.name()));
     }
     if (auto *thirdKey = findChild<QLabel*>(QStringLiteral("sensorThirdKeyLabel"))) {
         thirdKey->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("峰谷值") : QStringLiteral("稳定度"));
+        thirdKey->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:0.5px;font-weight:700;").arg(accentStrong.name()));
+    }
+    if (auto *offsetKey = findChild<QLabel*>(QStringLiteral("sensorOffsetKeyLabel"))) {
+        offsetKey->setStyleSheet(QStringLiteral("font-size:10px;color:%1;letter-spacing:0.5px;font-weight:700;").arg(accentStrong.name()));
     }
     if (auto *absValue = findChild<QLabel*>(QStringLiteral("sensorAbsValueLabel"))) {
         absValue->setText(QString::number(value, 'f', m_displayMode == DisplayMode::Height ? 3 : 1));
+        absValue->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;font-weight:700;").arg(Theme::palette().text.name()));
     }
     if (auto *offsetValue = findChild<QLabel*>(QStringLiteral("sensorOffsetValueLabel"))) {
         offsetValue->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("0.000") : QStringLiteral("+0.2"));
+        offsetValue->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;font-weight:700;").arg(Theme::palette().text.name()));
     }
     if (auto *pkValue = findChild<QLabel*>(QStringLiteral("sensorPkPkValueLabel"))) {
+        pkValue->setStyleSheet(QStringLiteral("font-size:11px;color:%1;font-family:Consolas;font-weight:700;").arg(Theme::palette().text.name()));
         if (m_displayMode == DisplayMode::Light) {
             const double stability = qBound(0.0, 100.0 - qAbs(value - 78.0) * 2.0, 100.0);
             pkValue->setText(QStringLiteral("%1%").arg(QString::number(stability, 'f', 1)));

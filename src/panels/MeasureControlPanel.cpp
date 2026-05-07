@@ -113,8 +113,8 @@ if (active) {
     body->setSpacing(6);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-    .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
+    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
+        .arg(Theme::withAlpha(Theme::palette().err, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().err, 115).name(QColor::HexArgb), Theme::palette().err.name()));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setTextVisible(false);
@@ -135,8 +135,9 @@ if (active) {
     m_sampleCount->setRange(1, 999);
     m_sampleCount->setValue(5);
    m_sampleCount->setStyleSheet(QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;text-align:right;min-width:50px;max-height:24px;}"
+    "QSpinBox:focus{border:1px solid %4;background:%5;}"
     "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}")
-    .arg(Theme::palette().borderStrong.name(), Theme::palette().bgPanel.name(), Theme::palette().text.name()));
+    .arg(Theme::palette().borderStrong.name(), Theme::palette().bgPanel.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::withAlpha(Theme::palette().brand, 22).name(QColor::HexArgb)));
     sampleRow->addWidget(m_sampleCount);
     auto *unitLabel = new QLabel(QStringLiteral("次"));
     unitLabel->setStyleSheet(QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
@@ -169,15 +170,20 @@ if (active) {
 
   setStyleSheet(Theme::fieldStyle() + QStringLiteral(
   "QCheckBox{color:%3;font-size:11px;}"
+  "QCheckBox::indicator{width:12px;height:12px;border:1px solid %2;border-radius:3px;background:%1;}"
+  "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
   "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px 0 22px;color:%3;font-size:11px;font-weight:600;}"
-  "QPushButton:hover{background:%5;border-color:%4;}"
-   "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
+  "QPushButton:hover{background:%10;border-color:%4;}"
+  "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
+  "QPushButton[role='primary']:hover {background:%11;border-color:%11;}"
   "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
-  "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:8px;}"
+  "QPushButton[role='danger']:hover {background:%8;border-color:%8;color:%9;}"
+  "QProgressBar{background:%5;border:1px solid %4;border-radius:4px;height:8px;}"
   "QProgressBar::chunk{background:%4;border-radius:4px;}"
   )
-   .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
-   Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name()));
+    .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
+    Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name(),
+    Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)
@@ -189,10 +195,10 @@ void MeasureControlPanel::setMeasuring(bool measuring)
 {
     m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
   m_stateLabel->setStyleSheet(measuring
-    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-      .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
-    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
-      .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
+    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
+      .arg(Theme::withAlpha(Theme::palette().brandAccent, 28).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brandAccent, 150).name(QColor::HexArgb), Theme::palette().brandStrong.name())
+    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
+      .arg(Theme::withAlpha(Theme::palette().err, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().err, 115).name(QColor::HexArgb), Theme::palette().err.name()));
 }
 
 void MeasureControlPanel::setSampleCount(int sampleCount)

@@ -95,9 +95,9 @@ m_jogHintLabel = nullptr;
 auto *hintRow = new QHBoxLayout;
 hintRow->setContentsMargins(0, 0, 0, 0);
 hintRow->setSpacing(4);
-  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:600 11px Consolas;padding:0 4px;}")
-    .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().textMuted.name());
-const auto hintSpanStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
+  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %2;border-radius:4px;background:%3;color:%2;font:700 11px Consolas;padding:0 4px;}")
+    .arg(Theme::withAlpha(Theme::palette().brand, 120).name(QColor::HexArgb), Theme::palette().brand.name(), Theme::withAlpha(Theme::palette().brand, 24).name(QColor::HexArgb));
+const auto hintSpanStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;font-weight:600;").arg(Theme::palette().gaugeHighlight.name());
 for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
 auto *kbd = new QLabel(key);
 kbd->setStyleSheet(kbdStyle);
@@ -160,13 +160,22 @@ body->addLayout(hintRow);
 
     setStyleSheet(Theme::fieldStyle() + QStringLiteral(
         "QCheckBox{color:%3;font-size:11px;}"
+        "QCheckBox::indicator{width:12px;height:12px;border:1px solid %2;border-radius:3px;background:%1;}"
+        "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
         "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px;color:%3;font-size:11px;font-weight:600;}"
-        "QPushButton:hover{background:%5;border-color:%4;}"
-        "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px 0 18px;}"
-        "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
+        "QPushButton:hover{background:%5;border-color:%4;color:%4;}"
+        "QPushButton#servoHomeButton{background:%7;border:1px solid %8;color:%4;padding:0 8px 0 18px;}"
+        "QPushButton#servoHomeButton:hover{background:%5;color:%4;}"
         "QPushButton[role='primary'] {background:%4;border-color:%4;color:%6;}"
+        "QPushButton[role='primary']:hover {background:%9;border-color:%9;color:%6;}"
+        "QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %8;border-radius:4px;padding:0 4px;background:%1;color:%3;}"
+        "QSpinBox:focus{border:1px solid %4;background:%7;}"
+        "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}"
         )
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(), Theme::palette().bgPanel.name()));
+        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(),
+            Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().bgPanel.name(),
+            Theme::withAlpha(Theme::palette().brand, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brand, 135).name(QColor::HexArgb),
+            Theme::palette().gaugeHighlight.name()));
 }
 
 void ServoControlPanel::setPosition(const MachinePosition &position)

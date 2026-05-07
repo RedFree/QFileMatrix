@@ -25,6 +25,7 @@ private:
     void refreshDisplay();
 
     SensorGaugeWidget *m_gauge = nullptr;
+    QWidget *m_detailWrap = nullptr;
     DisplayMode m_displayMode = DisplayMode::Height;
     double m_heightValue = -58.79;
     double m_lightValue = 78.0;
