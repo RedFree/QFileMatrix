@@ -10,19 +10,25 @@
 #include "theme/Theme.h"
 
 namespace {
-QPushButton *makeNavButton(const QString &name, const QString &text, bool active = false)
+void applyNavButtonStyle(QPushButton *button, bool active)
 {
     const auto &p = Theme::palette();
-    auto *button = new QPushButton(text);
-    button->setObjectName(name);
-    button->setFlat(true);
-    button->setCursor(Qt::PointingHandCursor);
-    button->setFixedHeight(32);
     button->setStyleSheet(active
         ? QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:600;color:%1;border-bottom:2px solid %2;}"
                          "QPushButton:hover{color:%1;}").arg(p.headerText.name(), p.brand.name())
         : QStringLiteral("QPushButton{background:transparent;border:none;padding:0 16px;font-size:12px;font-weight:500;color:%1;border-bottom:2px solid transparent;}"
                          "QPushButton:hover{color:%2;}").arg(p.headerTextMuted.name(), p.headerTextSubtle.name()));
+}
+
+QPushButton *makeNavButton(const QString &name, const QString &text, const QString &sectionKey, bool active = false)
+{
+    auto *button = new QPushButton(text);
+    button->setObjectName(name);
+    button->setFlat(true);
+    button->setCursor(Qt::PointingHandCursor);
+    button->setFixedHeight(32);
+    button->setProperty("sectionKey", sectionKey);
+    applyNavButtonStyle(button, active);
     return button;
 }
 
@@ -174,12 +180,32 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     navLayout->setContentsMargins(18, 0, 0, 0);
     navLayout->setSpacing(2);
 
-    m_measureButton = makeNavButton(QStringLiteral("navMeasureButton"), QStringLiteral("测量"), true);
-    navLayout->addWidget(m_measureButton);
-    navLayout->addWidget(makeNavButton(QStringLiteral("navDataButton"), QStringLiteral("数据")));
-    navLayout->addWidget(makeNavButton(QStringLiteral("navRecipeButton"), QStringLiteral("配方")));
-    navLayout->addWidget(makeNavButton(QStringLiteral("navMaintenanceButton"), QStringLiteral("维护")));
-    navLayout->addWidget(makeNavButton(QStringLiteral("navAuditButton"), QStringLiteral("审计")));
+    const struct {
+        const char *objectName;
+        const char *text;
+        const char *sectionKey;
+        bool active;
+    } navItems[] = {
+        {"navMeasureButton", "测量", "measure", true},
+        {"navDataButton", "数据", "data", false},
+        {"navRecipeButton", "配方", "recipe", false},
+        {"navMaintenanceButton", "维护", "maintenance", false},
+        {"navAuditButton", "审计", "audit", false},
+    };
+
+    for (const auto &item : navItems) {
+        auto *button = makeNavButton(QString::fromLatin1(item.objectName), QString::fromUtf8(item.text), QString::fromLatin1(item.sectionKey), item.active);
+        if (QString::fromLatin1(item.sectionKey) == QStringLiteral("measure")) {
+            m_measureButton = button;
+        }
+        connect(button, &QPushButton::clicked, this, [this, button] {
+            const QString sectionKey = button->property("sectionKey").toString();
+            setActiveSection(sectionKey);
+            emit sectionRequested(sectionKey);
+        });
+        navLayout->addWidget(button);
+        m_navButtons.append(button);
+    }
 
     auto *actionWrap = new QWidget(this);
     actionWrap->setObjectName(QStringLiteral("actionWrap"));
@@ -231,6 +257,14 @@ void TopTitleBar::setUserName(const QString &userName)
 QString TopTitleBar::userName() const
 {
     return m_userLabel->text();
+}
+
+void TopTitleBar::setActiveSection(const QString &sectionKey)
+{
+    for (auto *button : m_navButtons) {
+        const bool active = button->property("sectionKey").toString() == sectionKey;
+        applyNavButtonStyle(button, active);
+    }
 }
 
 void TopTitleBar::paintEvent(QPaintEvent *event)
