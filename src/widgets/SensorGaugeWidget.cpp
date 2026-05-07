@@ -64,10 +64,9 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(rect(), Theme::palette().bgPanel);
     const QRect cardRect = rect().adjusted(0, 0, -1, -1);
     painter.setPen(QPen(accentBorder, 1.2));
-    painter.setBrush(accentWeak);
+    painter.setBrush(Qt::NoBrush);
     painter.drawRoundedRect(cardRect, 6, 6);
 
     const QRect barRect(14, 14, 14, height() - 28);
