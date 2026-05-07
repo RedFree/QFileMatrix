@@ -650,7 +650,7 @@ QWidget *MainWindow::createProfilePanel()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    auto *header = new PanelHeaderWidget(QStringLiteral("膜厚轮廓曲线"));
+    auto *header = new PanelHeaderWidget(QString());
     header->titleLabel()->setObjectName(QStringLiteral("profilePanelTitleLabel"));
 
  auto *scaleLabel = new QLabel(QStringLiteral("量程"));
