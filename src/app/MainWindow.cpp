@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSplitter>
+#include <QStackedWidget>
 #include <QStyleFactory>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -355,6 +356,33 @@ void MainWindow::buildUi()
     bodySplitter->setStyleSheet(QStringLiteral("QSplitter::handle{background:transparent;}"));
     bodySplitter->addWidget(createLeftRail());
 
+    m_workspaceStack = new QStackedWidget;
+    m_workspaceStack->setObjectName(QStringLiteral("mainWorkspaceStack"));
+    m_workspaceStack->addWidget(createMeasureWorkspace());
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("数据"), QStringLiteral("数据查询、历史记录与导出功能将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("配方"), QStringLiteral("配方列表、参数编辑与下发功能将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("维护"), QStringLiteral("设备诊断、校准与维护操作将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("审计"), QStringLiteral("操作日志、权限审计与追溯记录将在这里替换显示。")));
+    bodySplitter->addWidget(m_workspaceStack);
+
+    bodySplitter->setStretchFactor(0, 0);
+    bodySplitter->setStretchFactor(1, 1);
+    bodySplitter->setSizes({48, 1400});
+
+    shellLayout->addWidget(bodySplitter, 1);
+    shellLayout->addWidget(m_bottomStatusBar);
+    root->addWidget(shell, 1);
+
+    setCentralWidget(central);
+}
+
+QWidget *MainWindow::createMeasureWorkspace()
+{
+    auto *workspaceSplitter = new QSplitter(Qt::Horizontal);
+    workspaceSplitter->setChildrenCollapsible(false);
+    workspaceSplitter->setHandleWidth(1);
+    workspaceSplitter->setStyleSheet(QStringLiteral("QSplitter::handle{background:transparent;}"));
+
     auto *centerSplitter = new QSplitter(Qt::Vertical);
     centerSplitter->setChildrenCollapsible(false);
     centerSplitter->setHandleWidth(1);
@@ -385,7 +413,7 @@ void MainWindow::buildUi()
         centerSplitter->setSizes({460, 280});
     });
 
-    bodySplitter->addWidget(centerSplitter);
+    workspaceSplitter->addWidget(centerSplitter);
 
     auto *rightPanel = new QWidget;
     rightPanel->setObjectName(QStringLiteral("rightControlColumn"));
@@ -418,23 +446,59 @@ void MainWindow::buildUi()
     rightScrollArea->setWidgetResizable(true);
     rightScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     rightScrollArea->setWidget(rightPanel);
-    bodySplitter->addWidget(rightScrollArea);
+    workspaceSplitter->addWidget(rightScrollArea);
 
-    bodySplitter->setStretchFactor(0, 0);
-    bodySplitter->setStretchFactor(1, 1);
-    bodySplitter->setStretchFactor(2, 0);
-    bodySplitter->setSizes({48, 1080, 320});
+    workspaceSplitter->setStretchFactor(0, 1);
+    workspaceSplitter->setStretchFactor(1, 0);
+    workspaceSplitter->setSizes({1080, 320});
 
-    shellLayout->addWidget(bodySplitter, 1);
-    shellLayout->addWidget(m_bottomStatusBar);
-    root->addWidget(shell, 1);
+    return workspaceSplitter;
+}
 
-    setCentralWidget(central);
+QWidget *MainWindow::createPlaceholderWorkspace(const QString &title, const QString &description)
+{
+    auto *frame = new QFrame;
+    frame->setObjectName(QStringLiteral("placeholderWorkspacePage"));
+    frame->setStyleSheet(Theme::frameStyle());
+
+    auto *layout = new QVBoxLayout(frame);
+    layout->setContentsMargins(32, 32, 32, 32);
+    layout->setSpacing(10);
+    layout->addStretch();
+
+    auto *titleLabel = new QLabel(title);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleLabel->setStyleSheet(QStringLiteral("font-size:20px;font-weight:700;color:%1;").arg(Theme::palette().text1.name()));
+    layout->addWidget(titleLabel);
+
+    auto *descriptionLabel = new QLabel(description);
+    descriptionLabel->setAlignment(Qt::AlignCenter);
+    descriptionLabel->setWordWrap(true);
+    descriptionLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().textMuted.name()));
+    layout->addWidget(descriptionLabel);
+
+    layout->addStretch();
+    return frame;
 }
 
 void MainWindow::wireUi()
 {
     m_historyPanel->setModel(m_controller->tableModel());
+
+    connect(m_topTitleBar, &TopTitleBar::sectionRequested, this, [this](const QString &sectionKey) {
+        int pageIndex = 0;
+        if (sectionKey == QStringLiteral("data")) {
+            pageIndex = 1;
+        } else if (sectionKey == QStringLiteral("recipe")) {
+            pageIndex = 2;
+        } else if (sectionKey == QStringLiteral("maintenance")) {
+            pageIndex = 3;
+        } else if (sectionKey == QStringLiteral("audit")) {
+            pageIndex = 4;
+        }
+        m_workspaceStack->setCurrentIndex(pageIndex);
+        m_topTitleBar->setActiveSection(sectionKey);
+    });
 
     connect(m_measurePanel, &MeasureControlPanel::startRequested, m_controller, &AppController::startMeasurement);
     connect(m_measurePanel, &MeasureControlPanel::stopRequested, m_controller, &AppController::stopMeasurement);

@@ -11,6 +11,7 @@ class DeviceStatusBar;
 class HistoryPanel;
 class MeasureControlPanel;
 class ProfileChartWidget;
+class QStackedWidget;
 class SensorPanel;
 class ServoControlPanel;
 class StatCardWidget;
@@ -29,6 +30,8 @@ private:
     void wireUi();
     void updateFromController();
     QWidget *createLeftRail();
+    QWidget *createMeasureWorkspace();
+    QWidget *createPlaceholderWorkspace(const QString &title, const QString &description);
     QWidget *createCameraPanel();
     QWidget *createProfilePanel();
     QWidget *createStatsPanel();
@@ -38,6 +41,7 @@ private:
     TopTitleBar *m_topTitleBar = nullptr;
     DeviceStatusBar *m_deviceStatusBar = nullptr;
     BottomStatusBar *m_bottomStatusBar = nullptr;
+    QStackedWidget *m_workspaceStack = nullptr;
     CameraViewWidget *m_cameraView = nullptr;
     ProfileChartWidget *m_profileChart = nullptr;
     HistoryPanel *m_historyPanel = nullptr;
