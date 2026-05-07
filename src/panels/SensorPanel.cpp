@@ -70,7 +70,7 @@ SensorPanel::SensorPanel(QWidget *parent)
     body->addWidget(m_gauge);
 
     auto *detailGrid = new QGridLayout;
-    detailGrid->setHorizontalSpacing(10);
+    detailGrid->setHorizontalSpacing(6);
     detailGrid->setVerticalSpacing(6);
 
     auto *absLabel = new QLabel(QStringLiteral("ABS"));
@@ -86,8 +86,8 @@ SensorPanel::SensorPanel(QWidget *parent)
     pkValue->setObjectName(QStringLiteral("sensorPkPkValueLabel"));
     offsetValue->setObjectName(QStringLiteral("sensorOffsetValueLabel"));
 
-    const auto keyStyle = QStringLiteral("font-size:11px;color:%1;").arg(Theme::palette().textMuted.name());
-    const auto valStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().text.name());
+    const auto keyStyle = QStringLiteral("font-size:10px;color:%1;letter-spacing:0.5px;font-weight:600;").arg(Theme::palette().textMuted.name());
+    const auto valStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;font-weight:600;").arg(Theme::palette().text.name());
     absLabel->setStyleSheet(keyStyle);
     offsetLabel->setStyleSheet(keyStyle);
     pkLabel->setStyleSheet(keyStyle);
@@ -102,8 +102,14 @@ SensorPanel::SensorPanel(QWidget *parent)
     detailGrid->addWidget(pkLabel, 2, 0);
     detailGrid->addWidget(pkValue, 2, 1);
 
+    for (auto *label : {absLabel, offsetLabel, pkLabel, absValue, offsetValue, pkValue}) {
+        label->setMinimumHeight(22);
+        label->setAlignment(label == absValue || label == offsetValue || label == pkValue ? Qt::AlignRight | Qt::AlignVCenter : Qt::AlignLeft | Qt::AlignVCenter);
+    }
+
     auto *detailWrap = new QWidget;
-    detailWrap->setStyleSheet(QStringLiteral("border-top:1px dashed %1;padding-top:6px;").arg(Theme::palette().divider.name()));
+    detailWrap->setStyleSheet(QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;padding:4px;")
+        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     detailWrap->setLayout(detailGrid);
     body->addWidget(detailWrap);
 

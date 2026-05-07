@@ -59,10 +59,14 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(rect(), Theme::palette().bgPanel);
-
-    const QRect barRect(12, 12, 18, height() - 24);
+    const QRect cardRect = rect().adjusted(0, 0, -1, -1);
     painter.setPen(Theme::palette().border);
-    painter.drawRoundedRect(barRect, 3, 3);
+    painter.setBrush(Theme::palette().bgPanel);
+    painter.drawRoundedRect(cardRect, 6, 6);
+
+    const QRect barRect(14, 14, 14, height() - 28);
+    painter.setPen(Theme::palette().border);
+    painter.drawRoundedRect(barRect, 4, 4);
     painter.fillRect(barRect.adjusted(1, 1, -1, -1), Theme::palette().bgSunken);
 
     const double ticks[] = {0.0, 0.25, 0.5, 0.75, 1.0};
@@ -86,19 +90,19 @@ void SensorGaugeWidget::paintEvent(QPaintEvent *event)
  QFont labelFont(QStringLiteral("Segoe UI"), 9, QFont::DemiBold);
  labelFont.setLetterSpacing(QFont::AbsoluteSpacing, 1);
  painter.setFont(labelFont);
- painter.drawText(QRect(44, 12, width() - 56, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label.toUpper());
+ painter.drawText(QRect(44, 14, width() - 58, 16), Qt::AlignLeft | Qt::AlignVCenter, m_label.toUpper());
 painter.setPen(Theme::palette().text);
-QFont valFont(QStringLiteral("Consolas"), 22, QFont::DemiBold);
+QFont valFont(QStringLiteral("Consolas"), 24, QFont::DemiBold);
 valFont.setLetterSpacing(QFont::AbsoluteSpacing, -1);
 painter.setFont(valFont);
-painter.drawText(QRect(44, 28, width() - 56, 28), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_value, 'f', 2));
+painter.drawText(QRect(44, 30, width() - 58, 30), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_value, 'f', 2));
 const int valWidth = painter.fontMetrics().horizontalAdvance(QString::number(m_value, 'f', 2));
 painter.setPen(Theme::palette().textMuted);
 painter.setFont(QFont(QStringLiteral("Consolas"), 10));
-painter.drawText(QRect(46 + valWidth, 40, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
+painter.drawText(QRect(48 + valWidth, 43, 40, 14), Qt::AlignLeft | Qt::AlignVCenter, m_unit);
 painter.setFont(QFont(QStringLiteral("Consolas"), 10));
-painter.drawText(QRect(44, 68, width() / 2 - 50, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_min, 'f', 0));
-painter.drawText(QRect(width() / 2, 68, width() / 2 - 12, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(m_max, 'f', 0));
+painter.drawText(QRect(44, 74, width() / 2 - 50, 16), Qt::AlignLeft | Qt::AlignVCenter, QString::number(m_min, 'f', 0));
+painter.drawText(QRect(width() / 2, 74, width() / 2 - 14, 16), Qt::AlignRight | Qt::AlignVCenter, QString::number(m_max, 'f', 0));
 }
 
 QSize SensorGaugeWidget::sizeHint() const
