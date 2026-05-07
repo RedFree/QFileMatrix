@@ -2,7 +2,6 @@
 
 #include <QWidget>
 
-class QLabel;
 class QCheckBox;
 class QProgressBar;
 class QSpinBox;
@@ -27,7 +26,6 @@ signals:
 private:
     QCheckBox *m_autoSampleCheck = nullptr;
     QCheckBox *m_cycleTestCheck = nullptr;
-    QLabel *m_stateLabel = nullptr;
     QProgressBar *m_progressBar = nullptr;
     QSpinBox *m_sampleCount = nullptr;
 };

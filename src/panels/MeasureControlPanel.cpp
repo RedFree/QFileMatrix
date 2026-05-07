@@ -112,14 +112,10 @@ if (active) {
     body->setContentsMargins(8, 8, 8, 8);
     body->setSpacing(6);
 
-    m_stateLabel = new QLabel(QStringLiteral("待机"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
-        .arg(Theme::withAlpha(Theme::palette().err, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().err, 115).name(QColor::HexArgb), Theme::palette().err.name()));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
     m_progressBar->setTextVisible(false);
     m_progressBar->setFixedHeight(8);
-    body->addWidget(m_stateLabel);
     body->addWidget(m_progressBar);
 
     m_autoSampleCheck = new QCheckBox(QStringLiteral("自动采样"));
@@ -193,12 +189,7 @@ void MeasureControlPanel::setProgress(double progress)
 
 void MeasureControlPanel::setMeasuring(bool measuring)
 {
-    m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
-  m_stateLabel->setStyleSheet(measuring
-    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
-      .arg(Theme::withAlpha(Theme::palette().brandAccent, 28).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brandAccent, 150).name(QColor::HexArgb), Theme::palette().brandStrong.name())
-    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-left:4px solid %3;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:700;font-family:Consolas;}")
-      .arg(Theme::withAlpha(Theme::palette().err, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().err, 115).name(QColor::HexArgb), Theme::palette().err.name()));
+    Q_UNUSED(measuring)
 }
 
 void MeasureControlPanel::setSampleCount(int sampleCount)
