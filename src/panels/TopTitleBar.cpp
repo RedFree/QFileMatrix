@@ -155,11 +155,13 @@ TopTitleBar::TopTitleBar(QWidget *parent)
     auto *slash = new QLabel(QStringLiteral("/"), brandWrap);
     slash->setAttribute(Qt::WA_TranslucentBackground);
     slash->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:11px;").arg(Theme::palette().headerTextMuted.name()));
+    slash->hide();
 
     auto *subtitle = new QLabel(QStringLiteral("全自动膜厚测试系统"), brandWrap);
     subtitle->setObjectName(QStringLiteral("brandSubtitleLabel"));
     subtitle->setAttribute(Qt::WA_TranslucentBackground);
     subtitle->setStyleSheet(QStringLiteral("background:transparent;color:%1;font-size:12px;").arg(Theme::palette().headerTextSubtle.name()));
+    subtitle->hide();
 
     m_userLabel = new QLabel(QStringLiteral("HXS · 操作员"), this);
     m_userLabel->setAttribute(Qt::WA_TranslucentBackground);
