@@ -15,7 +15,17 @@ public:
     [[nodiscard]] double sensorValue() const;
 
 private:
+    enum class DisplayMode {
+        Height,
+        Light,
+    };
+
     void refreshDerivedLabels(double value);
+    void setDisplayMode(DisplayMode mode);
+    void refreshDisplay();
 
     SensorGaugeWidget *m_gauge = nullptr;
+    DisplayMode m_displayMode = DisplayMode::Height;
+    double m_heightValue = -58.79;
+    double m_lightValue = 78.0;
 };

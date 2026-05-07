@@ -46,8 +46,14 @@ SensorPanel::SensorPanel(QWidget *parent)
         heightTab->setStyleSheet(tabStyle(heightActive));
         lightTab->setStyleSheet(tabStyle(!heightActive));
     };
-    connect(heightTab, &QPushButton::clicked, this, [applyTabState, heightTab] { applyTabState(heightTab); });
-    connect(lightTab, &QPushButton::clicked, this, [applyTabState, lightTab] { applyTabState(lightTab); });
+    connect(heightTab, &QPushButton::clicked, this, [this, applyTabState, heightTab] {
+        applyTabState(heightTab);
+        setDisplayMode(DisplayMode::Height);
+    });
+    connect(lightTab, &QPushButton::clicked, this, [this, applyTabState, lightTab] {
+        applyTabState(lightTab);
+        setDisplayMode(DisplayMode::Light);
+    });
     header->rightLayout()->addWidget(heightTab);
     header->rightLayout()->addWidget(lightTab);
     layout->addWidget(header);
@@ -70,6 +76,9 @@ SensorPanel::SensorPanel(QWidget *parent)
     auto *absLabel = new QLabel(QStringLiteral("ABS"));
     auto *offsetLabel = new QLabel(QStringLiteral("OFFSET"));
     auto *pkLabel = new QLabel(QStringLiteral("峰谷值"));
+    absLabel->setObjectName(QStringLiteral("sensorPrimaryKeyLabel"));
+    offsetLabel->setObjectName(QStringLiteral("sensorOffsetKeyLabel"));
+    pkLabel->setObjectName(QStringLiteral("sensorThirdKeyLabel"));
     auto *absValue = new QLabel;
     auto *offsetValue = new QLabel(QStringLiteral("0.000"));
     auto *pkValue = new QLabel;
@@ -99,26 +108,68 @@ SensorPanel::SensorPanel(QWidget *parent)
     body->addWidget(detailWrap);
 
     layout->addLayout(body);
-    refreshDerivedLabels(-58.79);
+    refreshDisplay();
 }
 
 void SensorPanel::setSensorValue(double value)
 {
-    m_gauge->setValue(value);
-    refreshDerivedLabels(value);
+    m_heightValue = value;
+    m_lightValue = qBound(0.0, 78.0 + value * 0.012, 100.0);
+    refreshDisplay();
 }
 
 double SensorPanel::sensorValue() const
 {
-    return m_gauge->value();
+    return m_heightValue;
+}
+
+void SensorPanel::setDisplayMode(DisplayMode mode)
+{
+    if (m_displayMode == mode) {
+        return;
+    }
+    m_displayMode = mode;
+    refreshDisplay();
+}
+
+void SensorPanel::refreshDisplay()
+{
+    if (m_displayMode == DisplayMode::Height) {
+        m_gauge->setLabel(QStringLiteral("高度 H"));
+        m_gauge->setUnit(QStringLiteral("μm"));
+        m_gauge->setRange(-1000.0, 1000.0);
+        m_gauge->setValue(m_heightValue);
+        refreshDerivedLabels(m_heightValue);
+        return;
+    }
+
+    m_gauge->setLabel(QStringLiteral("光强 I"));
+    m_gauge->setUnit(QStringLiteral("%"));
+    m_gauge->setRange(0.0, 100.0);
+    m_gauge->setValue(m_lightValue);
+    refreshDerivedLabels(m_lightValue);
 }
 
 void SensorPanel::refreshDerivedLabels(double value)
 {
+    if (auto *primaryKey = findChild<QLabel*>(QStringLiteral("sensorPrimaryKeyLabel"))) {
+        primaryKey->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("ABS") : QStringLiteral("INTENSITY"));
+    }
+    if (auto *thirdKey = findChild<QLabel*>(QStringLiteral("sensorThirdKeyLabel"))) {
+        thirdKey->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("峰谷值") : QStringLiteral("稳定度"));
+    }
     if (auto *absValue = findChild<QLabel*>(QStringLiteral("sensorAbsValueLabel"))) {
-        absValue->setText(QString::number(value, 'f', 3));
+        absValue->setText(QString::number(value, 'f', m_displayMode == DisplayMode::Height ? 3 : 1));
+    }
+    if (auto *offsetValue = findChild<QLabel*>(QStringLiteral("sensorOffsetValueLabel"))) {
+        offsetValue->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("0.000") : QStringLiteral("+0.2"));
     }
     if (auto *pkValue = findChild<QLabel*>(QStringLiteral("sensorPkPkValueLabel"))) {
+        if (m_displayMode == DisplayMode::Light) {
+            const double stability = qBound(0.0, 100.0 - qAbs(value - 78.0) * 2.0, 100.0);
+            pkValue->setText(QStringLiteral("%1%").arg(QString::number(stability, 'f', 1)));
+            return;
+        }
         const double peak = std::abs(value);
         pkValue->setText(QStringLiteral("%1 / %2")
                              .arg(QString::number(peak, 'f', 2), QString::number(-peak * 0.8, 'f', 2)));
