@@ -113,7 +113,7 @@ if (active) {
     body->setSpacing(6);
 
     m_stateLabel = new QLabel(QStringLiteral("待机"));
-    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
+    m_stateLabel->setStyleSheet(QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
     .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
     m_progressBar = new QProgressBar;
     m_progressBar->setRange(0, 100);
@@ -167,15 +167,17 @@ if (active) {
 
     layout->addLayout(body);
 
- setStyleSheet(Theme::fieldStyle() + QStringLiteral(
- "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px 0 22px;color:%3;font-size:11px;}"
-  "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
- "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
- "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:6px;}"
- "QProgressBar::chunk{background:%4;border-radius:4px;}"
- )
-  .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
-  Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name()));
+  setStyleSheet(Theme::fieldStyle() + QStringLiteral(
+  "QCheckBox{color:%3;font-size:11px;}"
+  "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px 0 22px;color:%3;font-size:11px;font-weight:600;}"
+  "QPushButton:hover{background:%5;border-color:%4;}"
+   "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
+  "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
+  "QProgressBar{background:%5;border:1px solid %2;border-radius:4px;height:8px;}"
+  "QProgressBar::chunk{background:%4;border-radius:4px;}"
+  )
+   .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
+   Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)
@@ -187,9 +189,9 @@ void MeasureControlPanel::setMeasuring(bool measuring)
 {
     m_stateLabel->setText(measuring ? QStringLiteral("测量中") : QStringLiteral("待机"));
   m_stateLabel->setStyleSheet(measuring
-    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
+    ? QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
       .arg(Theme::palette().brandWeak.name(), Theme::palette().brandWeak.darker(115).name(), Theme::palette().brandStrong.name())
-    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:10px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
+    : QStringLiteral("QLabel{background:%1;border:1px solid %2;border-radius:4px;padding:2px 8px;color:%3;font-size:11px;font-weight:600;font-family:Consolas;}")
       .arg(Theme::palette().bgSunken.name(), Theme::palette().border.name(), Theme::palette().textMuted.name()));
 }
 

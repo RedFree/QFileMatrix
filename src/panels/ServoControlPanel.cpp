@@ -95,8 +95,8 @@ m_jogHintLabel = nullptr;
 auto *hintRow = new QHBoxLayout;
 hintRow->setContentsMargins(0, 0, 0, 0);
 hintRow->setSpacing(4);
-   const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:500 11px Consolas;padding:0 4px;}")
-     .arg(Theme::palette().borderStrong.name(), Theme::palette().bgRail.name(), Theme::palette().textMuted.name());
+  const auto kbdStyle = QStringLiteral("QLabel{min-width:18px;height:18px;border:1px solid %1;border-bottom:2px solid %1;border-radius:4px;background:%2;color:%3;font:600 11px Consolas;padding:0 4px;}")
+    .arg(Theme::palette().border.name(), Theme::palette().bgSunken.name(), Theme::palette().textMuted.name());
 const auto hintSpanStyle = QStringLiteral("font-size:11px;color:%1;font-family:Consolas;").arg(Theme::palette().textMuted.name());
 for (const auto &key : {QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("←"), QStringLiteral("→")}) {
 auto *kbd = new QLabel(key);
@@ -159,7 +159,9 @@ body->addLayout(hintRow);
     layout->addLayout(body);
 
     setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-        "QPushButton{background:%1;border:1px solid %2;border-radius:6px;padding:0 10px;color:%3;font-size:11px;}"
+        "QCheckBox{color:%3;font-size:11px;}"
+        "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px;color:%3;font-size:11px;font-weight:600;}"
+        "QPushButton:hover{background:%5;border-color:%4;}"
         "QPushButton#servoHomeButton{background:transparent;border:none;color:%4;padding:0 8px 0 18px;}"
         "QPushButton#servoHomeButton:hover{background:%5;color:%3;}"
         "QPushButton[role='primary'] {background:%4;border-color:%4;color:%6;}"
