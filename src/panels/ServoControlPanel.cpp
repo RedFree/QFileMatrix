@@ -164,10 +164,13 @@ body->addLayout(hintRow);
         "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
         "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px;color:%3;font-size:11px;font-weight:600;}"
         "QPushButton:hover{background:%5;border-color:%4;color:%4;}"
+        "QPushButton:pressed{background:%10;border-color:%4;color:%4;}"
         "QPushButton#servoHomeButton{background:%7;border:1px solid %8;color:%4;padding:0 8px 0 18px;}"
-        "QPushButton#servoHomeButton:hover{background:%5;color:%4;}"
+        "QPushButton#servoHomeButton:hover{background:%5;color:%11;}"
+        "QPushButton#servoHomeButton:pressed{background:%10;color:%11;}"
         "QPushButton[role='primary'] {background:%4;border-color:%4;color:%6;}"
-        "QPushButton[role='primary']:hover {background:%9;border-color:%9;color:%6;}"
+        "QPushButton[role='primary']:hover {background:%11;border-color:%11;color:%6;}"
+        "QPushButton[role='primary']:pressed {background:%12;border-color:%12;color:%6;}"
         "QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %8;border-radius:4px;padding:0 4px;background:%1;color:%3;}"
         "QSpinBox:focus{border:1px solid %4;background:%7;}"
         "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}"
@@ -175,7 +178,9 @@ body->addLayout(hintRow);
         .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(),
             Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().bgPanel.name(),
             Theme::withAlpha(Theme::palette().brand, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brand, 135).name(QColor::HexArgb),
-            Theme::palette().gaugeHighlight.name()));
+            Theme::palette().gaugeHighlight.name(),
+            Theme::withAlpha(Theme::palette().brand, 45).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name(),
+            Theme::palette().brandStrong.name()));
 }
 
 void ServoControlPanel::setPosition(const MachinePosition &position)

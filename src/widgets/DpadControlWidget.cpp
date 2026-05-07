@@ -19,9 +19,10 @@ public:
         : QPushButton(parent), m_dir(dir)
     {
         setCursor(Qt::PointingHandCursor);
+        setMouseTracking(true);
     }
 
-    QSize sizeHint() const override { return QSize(32, 32); }
+    QSize sizeHint() const override { return QSize(34, 34); }
 
 protected:
     void paintEvent(QPaintEvent *event) override
@@ -30,7 +31,22 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        const QColor color = isDown() ? Theme::palette().brand : Theme::palette().text;
+        const bool pressed = isDown();
+        const bool hovered = underMouse();
+        const auto &p = Theme::palette();
+
+        if (pressed) {
+            painter.setBrush(p.brand);
+            painter.setPen(Qt::NoPen);
+        } else {
+            const QColor bg = hovered ? Theme::withAlpha(p.brand, 18) : p.bgPanel;
+            const QColor border = hovered ? Theme::withAlpha(p.brand, 160) : p.borderStrong;
+            painter.setBrush(bg);
+            painter.setPen(QPen(border, 1));
+        }
+        painter.drawRoundedRect(rect().adjusted(1, 1, -1, -1), 5, 5);
+
+        const QColor color = pressed ? p.bgPanel : (hovered ? p.brand : p.text1);
         QPen pen(color);
         pen.setWidthF(1.8);
         pen.setCapStyle(Qt::RoundCap);

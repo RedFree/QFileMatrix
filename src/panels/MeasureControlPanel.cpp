@@ -32,11 +32,13 @@ protected:
  QPushButton::paintEvent(event);
  QPainter painter(this);
  painter.setRenderHint(QPainter::Antialiasing);
-  const QColor iconColor = property("role").toString() == QStringLiteral("primary")
-  ? Theme::palette().bgPanel
-  : (property("role").toString() == QStringLiteral("danger")
-  ? Theme::palette().err
-  : Theme::palette().textMuted);
+   const QColor iconColor = property("role").toString() == QStringLiteral("primary")
+   ? Theme::palette().bgPanel
+   : (property("role").toString() == QStringLiteral("danger")
+   ? Theme::palette().err
+   : (property("role").toString() == QStringLiteral("secondary")
+   ? Theme::palette().brand
+   : Theme::palette().textMuted));
  QPen pen(iconColor);
  pen.setWidthF(1.3);
  pen.setCapStyle(Qt::RoundCap);
@@ -145,17 +147,21 @@ if (active) {
  auto *buttons = new QGridLayout;
  buttons->setHorizontalSpacing(4);
  buttons->setVerticalSpacing(4);
- auto *startButton = new MeasureIconButton(MeasureIconButton::Icon::Play, QStringLiteral("开始测量"));
- startButton->setObjectName(QStringLiteral("startButton"));
- startButton->setProperty("role", QStringLiteral("primary"));
- auto *manualButton = new MeasureIconButton(MeasureIconButton::Icon::Hand, QStringLiteral("手动采样"));
- manualButton->setObjectName(QStringLiteral("manualButton"));
- auto *stopButton = new MeasureIconButton(MeasureIconButton::Icon::Stop, QStringLiteral("停止测量"));
- stopButton->setObjectName(QStringLiteral("stopButton"));
- stopButton->setProperty("role", QStringLiteral("danger"));
- buttons->addWidget(startButton, 0, 0);
- buttons->addWidget(manualButton, 0, 1);
- buttons->addWidget(stopButton, 1, 0, 1, 2);
+  auto *startButton = new MeasureIconButton(MeasureIconButton::Icon::Play, QStringLiteral("开始测量"));
+  startButton->setObjectName(QStringLiteral("startButton"));
+  startButton->setProperty("role", QStringLiteral("primary"));
+  startButton->setFixedHeight(24);
+  auto *manualButton = new MeasureIconButton(MeasureIconButton::Icon::Hand, QStringLiteral("手动采样"));
+  manualButton->setObjectName(QStringLiteral("manualButton"));
+  manualButton->setProperty("role", QStringLiteral("secondary"));
+  manualButton->setFixedHeight(24);
+  auto *stopButton = new MeasureIconButton(MeasureIconButton::Icon::Stop, QStringLiteral("停止测量"));
+  stopButton->setObjectName(QStringLiteral("stopButton"));
+  stopButton->setProperty("role", QStringLiteral("danger"));
+  stopButton->setFixedHeight(24);
+  buttons->addWidget(startButton, 0, 0);
+  buttons->addWidget(manualButton, 0, 1);
+  buttons->addWidget(stopButton, 1, 0, 1, 2);
  body->addLayout(buttons);
 
  connect(startButton, &QPushButton::clicked, this, &MeasureControlPanel::startRequested);
@@ -169,17 +175,26 @@ if (active) {
   "QCheckBox::indicator{width:12px;height:12px;border:1px solid %2;border-radius:3px;background:%1;}"
   "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
   "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px 0 22px;color:%3;font-size:11px;font-weight:600;}"
-  "QPushButton:hover{background:%10;border-color:%4;}"
+  "QPushButton:hover{background:%10;border-color:%4;color:%4;}"
+  "QPushButton:pressed{background:%12;border-color:%4;color:%4;}"
   "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
   "QPushButton[role='primary']:hover {background:%11;border-color:%11;}"
+  "QPushButton[role='primary']:pressed {background:%13;border-color:%13;}"
+  "QPushButton[role='secondary'] {background:%14;border:1px solid %15;color:%4;}"
+  "QPushButton[role='secondary']:hover {background:%10;border-color:%4;color:%4;}"
+  "QPushButton[role='secondary']:pressed {background:%12;border-color:%4;color:%4;}"
   "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
   "QPushButton[role='danger']:hover {background:%8;border-color:%8;color:%9;}"
+  "QPushButton[role='danger']:pressed {background:%16;border-color:%16;color:%9;}"
   "QProgressBar{background:%5;border:1px solid %4;border-radius:4px;height:8px;}"
   "QProgressBar::chunk{background:%4;border-radius:4px;}"
   )
     .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
     Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name(),
-    Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name()));
+    Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name(),
+    Theme::withAlpha(Theme::palette().brand, 45).name(QColor::HexArgb), Theme::palette().brandStrong.name(),
+    Theme::withAlpha(Theme::palette().brand, 10).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brand, 135).name(QColor::HexArgb),
+    Theme::palette().err.darker(120).name()));
 }
 
 void MeasureControlPanel::setProgress(double progress)
