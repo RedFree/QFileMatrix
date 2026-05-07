@@ -159,8 +159,8 @@ void SensorPanel::refreshDerivedLabels(double value)
     const QColor accent = m_displayMode == DisplayMode::Height ? Theme::palette().brand : Theme::palette().brandAccent;
     const QColor accentStrong = m_displayMode == DisplayMode::Height ? Theme::palette().gaugeHighlight : Theme::palette().brandStrong;
     if (m_detailWrap) {
-        m_detailWrap->setStyleSheet(QStringLiteral("background:%1;border:1px solid %2;border-radius:6px;padding:4px;")
-            .arg(Theme::withAlpha(accent, 24).name(QColor::HexArgb), Theme::withAlpha(accent, 145).name(QColor::HexArgb)));
+        m_detailWrap->setStyleSheet(QStringLiteral("background:transparent;border:1px solid %1;border-radius:6px;padding:4px;")
+            .arg(Theme::withAlpha(accent, 145).name(QColor::HexArgb)));
     }
     if (auto *primaryKey = findChild<QLabel*>(QStringLiteral("sensorPrimaryKeyLabel"))) {
         primaryKey->setText(m_displayMode == DisplayMode::Height ? QStringLiteral("ABS") : QStringLiteral("INTENSITY"));
