@@ -652,6 +652,7 @@ QWidget *MainWindow::createProfilePanel()
 
     auto *header = new PanelHeaderWidget(QString());
     header->titleLabel()->setObjectName(QStringLiteral("profilePanelTitleLabel"));
+    header->titleLabel()->hide();
 
  auto *scaleLabel = new QLabel(QStringLiteral("量程"));
  scaleLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
