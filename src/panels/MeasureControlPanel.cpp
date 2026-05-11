@@ -200,16 +200,16 @@ if (active) {
                        "padding:0 10px 0 22px;color:%4;font-size:11px;font-weight:600;}").arg(bgPanel, border, brandAlpha45, text) +
         QStringLiteral("QPushButton:hover{background:%1;border-color:%2;border-bottom-color:%2;color:%2;}").arg(brandAlpha26, brand) +
         QStringLiteral("QPushButton:pressed{background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
-        QStringLiteral("QPushButton[role='primary'] {background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 %1,stop:1 %2);"
+        QStringLiteral("QPushButton#startButton{background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 %1,stop:1 %2);"
                        "border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(brandAlpha80, brand, brandDark, white) +
-        QStringLiteral("QPushButton[role='primary']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
-        QStringLiteral("QPushButton[role='primary']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
-        QStringLiteral("QPushButton[role='secondary'] {background:%1;border:1px solid %2;border-bottom:1px solid %2;color:%3;}").arg(brandAlpha10, brandAlpha135, brand) +
-        QStringLiteral("QPushButton[role='secondary']:hover {background:%1;border-color:%2;border-bottom:2px solid %2;color:%2;}").arg(brandAlpha26, brand) +
-        QStringLiteral("QPushButton[role='secondary']:pressed {background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
-        QStringLiteral("QPushButton[role='danger'] {background:%1;border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(errWeak, errWeakDark, errDark, err) +
-        QStringLiteral("QPushButton[role='danger']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(err, errDark, white) +
-        QStringLiteral("QPushButton[role='danger']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(errDark, white) +
+        QStringLiteral("QPushButton#startButton:hover{background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
+        QStringLiteral("QPushButton#startButton:pressed{background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
+        QStringLiteral("QPushButton#manualButton{background:%1;border:1px solid %2;border-bottom:1px solid %2;color:%3;}").arg(brandAlpha10, brandAlpha135, brand) +
+        QStringLiteral("QPushButton#manualButton:hover{background:%1;border-color:%2;border-bottom:2px solid %2;color:%2;}").arg(brandAlpha26, brand) +
+        QStringLiteral("QPushButton#manualButton:pressed{background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
+        QStringLiteral("QPushButton#stopButton{background:%1;border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(errWeak, errWeakDark, errDark, err) +
+        QStringLiteral("QPushButton#stopButton:hover{background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(err, errDark, white) +
+        QStringLiteral("QPushButton#stopButton:pressed{background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(errDark, white) +
         QStringLiteral("QProgressBar{background:%1;border:1px solid %2;border-radius:4px;height:8px;}").arg(bgSunken, brand) +
         QStringLiteral("QProgressBar::chunk{background:%1;border-radius:4px;}").arg(brand));
 }

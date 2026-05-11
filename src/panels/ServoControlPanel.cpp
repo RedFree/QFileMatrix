@@ -1,4 +1,4 @@
-#include "panels/ServoControlPanel.h"
+﻿#include "panels/ServoControlPanel.h"
 
 #include <cmath>
 
@@ -186,9 +186,9 @@ body->addLayout(hintRow);
         QStringLiteral("QPushButton#servoHomeButton{background:%1;border:1px solid %2;border-bottom:1px solid %2;color:%3;padding:0 8px 0 18px;}").arg(brandAlpha20, brandAlpha135, brand) +
         QStringLiteral("QPushButton#servoHomeButton:hover{background:%1;border-bottom:2px solid %2;color:%3;}").arg(brandAlpha26, brand, gaugeHighlight) +
         QStringLiteral("QPushButton#servoHomeButton:pressed{background:%1;border-bottom:1px solid %2;padding-top:1px;color:%3;}").arg(brandAlpha45, brand, gaugeHighlight) +
-        QStringLiteral("QPushButton[role='primary'] {background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 %1,stop:1 %2);border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(brandAlpha80, brand, brandDark, white) +
-        QStringLiteral("QPushButton[role='primary']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
-        QStringLiteral("QPushButton[role='primary']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
+        QStringLiteral("QPushButton#servoMoveButton{background:qlineargradient(x1:0,y1=0,x2:0,y2=1,stop:0 %1,stop:1 %2);border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(brandAlpha80, brand, brandDark, white) +
+        QStringLiteral("QPushButton#servoMoveButton:hover{background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
+        QStringLiteral("QPushButton#servoMoveButton:pressed{background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
         QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;}").arg(brandAlpha135, bgPanel, text) +
         QStringLiteral("QSpinBox:focus{border:1px solid %1;background:%2;}").arg(brand, brandAlpha20) +
         QStringLiteral("QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}"));
