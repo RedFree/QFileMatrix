@@ -174,7 +174,9 @@ body->addLayout(hintRow);
     const QString gaugeHighlight = p.gaugeHighlight.name();
     const QString white         = p.bgPanel.name();
 
-    setStyleSheet(Theme::fieldStyle() +
+    setStyleSheet(
+        QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;").arg(bgPanel, border) +
+        Theme::fieldStyle() +
         QStringLiteral("QCheckBox{color:%1;font-size:11px;}").arg(text) +
         QStringLiteral("QCheckBox::indicator{width:12px;height:12px;border:1px solid %1;border-radius:3px;background:%2;}").arg(border, bgPanel) +
         QStringLiteral("QCheckBox::indicator:checked{background:%1;border-color:%1;}").arg(brand) +

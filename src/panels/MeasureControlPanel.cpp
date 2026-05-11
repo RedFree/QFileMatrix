@@ -190,7 +190,9 @@ if (active) {
     const QString errDark         = p.err.darker(130).name();
     const QString brandAlpha80    = Theme::withAlpha(p.brand, 80).name(QColor::HexArgb);
 
-    setStyleSheet(Theme::fieldStyle() +
+    setStyleSheet(
+        QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;").arg(p.bgPanel.name(), p.border.name()) +
+        Theme::fieldStyle() +
         QStringLiteral("QCheckBox{color:%1;font-size:11px;}").arg(text) +
         QStringLiteral("QCheckBox::indicator{width:12px;height:12px;border:1px solid %1;border-radius:3px;background:%2;}").arg(border, bgPanel) +
         QStringLiteral("QCheckBox::indicator:checked{background:%1;border-color:%1;}").arg(brand) +

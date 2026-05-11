@@ -429,8 +429,6 @@ QWidget *MainWindow::createMeasureWorkspace()
     const auto flushPanelStyle = QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;")
         .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name());
     m_sensorPanel->setStyleSheet(flushPanelStyle);
-    m_measurePanel->setStyleSheet(flushPanelStyle);
-    m_servoPanel->setStyleSheet(flushPanelStyle);
 
     m_sensorPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     m_measurePanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
