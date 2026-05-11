@@ -25,6 +25,7 @@ public:
     {
         setFixedHeight(22);
         setCursor(Qt::PointingHandCursor);
+        setMouseTracking(true);
     }
 
 protected:
@@ -33,9 +34,10 @@ protected:
         QPushButton::paintEvent(event);
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        const QColor iconColor = Theme::palette().textMuted;
+        const QColor iconColor = isDown() ? Theme::palette().brandStrong
+            : (underMouse() ? Theme::palette().brand : Theme::palette().textMuted);
         QPen pen(iconColor);
-        pen.setWidthF(1.3);
+        pen.setWidthF(1.4);
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
         painter.setPen(pen);
@@ -158,29 +160,36 @@ body->addLayout(hintRow);
 
     layout->addLayout(body);
 
-    setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-        "QCheckBox{color:%3;font-size:11px;}"
-        "QCheckBox::indicator{width:12px;height:12px;border:1px solid %2;border-radius:3px;background:%1;}"
-        "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
-        "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px;color:%3;font-size:11px;font-weight:600;}"
-        "QPushButton:hover{background:%5;border-color:%4;color:%4;}"
-        "QPushButton:pressed{background:%10;border-color:%4;color:%4;}"
-        "QPushButton#servoHomeButton{background:%7;border:1px solid %8;color:%4;padding:0 8px 0 18px;}"
-        "QPushButton#servoHomeButton:hover{background:%5;color:%11;}"
-        "QPushButton#servoHomeButton:pressed{background:%10;color:%11;}"
-        "QPushButton[role='primary'] {background:%4;border-color:%4;color:%6;}"
-        "QPushButton[role='primary']:hover {background:%11;border-color:%11;color:%6;}"
-        "QPushButton[role='primary']:pressed {background:%12;border-color:%12;color:%6;}"
-        "QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %8;border-radius:4px;padding:0 4px;background:%1;color:%3;}"
-        "QSpinBox:focus{border:1px solid %4;background:%7;}"
-        "QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}"
-        )
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(),
-            Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().bgPanel.name(),
-            Theme::withAlpha(Theme::palette().brand, 20).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brand, 135).name(QColor::HexArgb),
-            Theme::palette().gaugeHighlight.name(),
-            Theme::withAlpha(Theme::palette().brand, 45).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name(),
-            Theme::palette().brandStrong.name()));
+    const auto &p = Theme::palette();
+    const QString bgPanel       = p.bgPanel.name();
+    const QString border        = p.border.name();
+    const QString text          = p.text.name();
+    const QString brand         = p.brand.name();
+    const QString brandDark     = p.brandStrong.name();
+    const QString brandAlpha20  = Theme::withAlpha(p.brand, 20).name(QColor::HexArgb);
+    const QString brandAlpha26  = Theme::withAlpha(p.brand, 26).name(QColor::HexArgb);
+    const QString brandAlpha45  = Theme::withAlpha(p.brand, 45).name(QColor::HexArgb);
+    const QString brandAlpha80  = Theme::withAlpha(p.brand, 80).name(QColor::HexArgb);
+    const QString brandAlpha135 = Theme::withAlpha(p.brand, 135).name(QColor::HexArgb);
+    const QString gaugeHighlight = p.gaugeHighlight.name();
+    const QString white         = p.bgPanel.name();
+
+    setStyleSheet(Theme::fieldStyle() +
+        QStringLiteral("QCheckBox{color:%1;font-size:11px;}").arg(text) +
+        QStringLiteral("QCheckBox::indicator{width:12px;height:12px;border:1px solid %1;border-radius:3px;background:%2;}").arg(border, bgPanel) +
+        QStringLiteral("QCheckBox::indicator:checked{background:%1;border-color:%1;}").arg(brand) +
+        QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-bottom:2px solid %3;border-radius:4px;padding:0 10px;color:%4;font-size:11px;font-weight:600;}").arg(bgPanel, border, brandAlpha45, text) +
+        QStringLiteral("QPushButton:hover{background:%1;border-color:%2;border-bottom-color:%2;color:%2;}").arg(brandAlpha26, brand) +
+        QStringLiteral("QPushButton:pressed{background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
+        QStringLiteral("QPushButton#servoHomeButton{background:%1;border:1px solid %2;border-bottom:1px solid %2;color:%3;padding:0 8px 0 18px;}").arg(brandAlpha20, brandAlpha135, brand) +
+        QStringLiteral("QPushButton#servoHomeButton:hover{background:%1;border-bottom:2px solid %2;color:%3;}").arg(brandAlpha26, brand, gaugeHighlight) +
+        QStringLiteral("QPushButton#servoHomeButton:pressed{background:%1;border-bottom:1px solid %2;padding-top:1px;color:%3;}").arg(brandAlpha45, brand, gaugeHighlight) +
+        QStringLiteral("QPushButton[role='primary'] {background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 %1,stop:1 %2);border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(brandAlpha80, brand, brandDark, white) +
+        QStringLiteral("QPushButton[role='primary']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
+        QStringLiteral("QPushButton[role='primary']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
+        QStringLiteral("QSpinBox{font-family:Consolas;font-size:11px;border:1px solid %1;border-radius:4px;padding:0 4px;background:%2;color:%3;}").arg(brandAlpha135, bgPanel, text) +
+        QStringLiteral("QSpinBox:focus{border:1px solid %1;background:%2;}").arg(brand, brandAlpha20) +
+        QStringLiteral("QSpinBox::up-button,QSpinBox::down-button{width:16px;border:none;background:transparent;}"));
 }
 
 void ServoControlPanel::setPosition(const MachinePosition &position)

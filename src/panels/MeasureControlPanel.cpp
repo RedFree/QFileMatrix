@@ -27,25 +27,26 @@ public:
  }
 
 protected:
- void paintEvent(QPaintEvent *event) override
- {
- QPushButton::paintEvent(event);
- QPainter painter(this);
- painter.setRenderHint(QPainter::Antialiasing);
-   const QColor iconColor = property("role").toString() == QStringLiteral("primary")
-   ? Theme::palette().bgPanel
-   : (property("role").toString() == QStringLiteral("danger")
-   ? Theme::palette().err
-   : (property("role").toString() == QStringLiteral("secondary")
-   ? Theme::palette().brand
-   : Theme::palette().textMuted));
- QPen pen(iconColor);
- pen.setWidthF(1.3);
- pen.setCapStyle(Qt::RoundCap);
- pen.setJoinStyle(Qt::RoundJoin);
- painter.setPen(pen);
- painter.setBrush(Qt::NoBrush);
- const qreal cx = 12, cy = height() / 2.0;
+  void paintEvent(QPaintEvent *event) override
+  {
+  QPushButton::paintEvent(event);
+  QPainter painter(this);
+  painter.setRenderHint(QPainter::Antialiasing);
+    const QColor iconColor = property("role").toString() == QStringLiteral("primary")
+    ? Theme::palette().bgPanel
+    : (property("role").toString() == QStringLiteral("danger")
+    ? Theme::palette().err
+    : (property("role").toString() == QStringLiteral("secondary")
+    ? Theme::palette().brand
+    : Theme::palette().textMuted));
+  QPen pen(iconColor);
+  pen.setWidthF(1.4);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setJoinStyle(Qt::RoundJoin);
+  painter.setPen(pen);
+  painter.setBrush(Qt::NoBrush);
+  const qreal offset = isDown() ? 1.0 : 0.0;
+  const qreal cx = 12 + offset, cy = height() / 2.0 + offset;
  switch (m_icon) {
  case Icon::Play:
  painter.setBrush(iconColor);
@@ -170,31 +171,45 @@ if (active) {
 
     layout->addLayout(body);
 
-  setStyleSheet(Theme::fieldStyle() + QStringLiteral(
-  "QCheckBox{color:%3;font-size:11px;}"
-  "QCheckBox::indicator{width:12px;height:12px;border:1px solid %2;border-radius:3px;background:%1;}"
-  "QCheckBox::indicator:checked{background:%4;border-color:%4;}"
-  "QPushButton{background:%1;border:1px solid %2;border-radius:4px;padding:0 10px 0 22px;color:%3;font-size:11px;font-weight:600;}"
-  "QPushButton:hover{background:%10;border-color:%4;color:%4;}"
-  "QPushButton:pressed{background:%12;border-color:%4;color:%4;}"
-  "QPushButton[role='primary'] {background:%4;border-color:%4;color:%9;}"
-  "QPushButton[role='primary']:hover {background:%11;border-color:%11;}"
-  "QPushButton[role='primary']:pressed {background:%13;border-color:%13;}"
-  "QPushButton[role='secondary'] {background:%14;border:1px solid %15;color:%4;}"
-  "QPushButton[role='secondary']:hover {background:%10;border-color:%4;color:%4;}"
-  "QPushButton[role='secondary']:pressed {background:%12;border-color:%4;color:%4;}"
-  "QPushButton[role='danger'] {background:%6;border-color:%7;color:%8;}"
-  "QPushButton[role='danger']:hover {background:%8;border-color:%8;color:%9;}"
-  "QPushButton[role='danger']:pressed {background:%16;border-color:%16;color:%9;}"
-  "QProgressBar{background:%5;border:1px solid %4;border-radius:4px;height:8px;}"
-  "QProgressBar::chunk{background:%4;border-radius:4px;}"
-  )
-    .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().text.name(), Theme::palette().brand.name(), Theme::palette().bgSunken.name(),
-    Theme::palette().errWeak.name(), Theme::palette().errWeak.darker(115).name(), Theme::palette().err.name(), Theme::palette().bgPanel.name(),
-    Theme::withAlpha(Theme::palette().brand, 26).name(QColor::HexArgb), Theme::palette().gaugeHighlight.name(),
-    Theme::withAlpha(Theme::palette().brand, 45).name(QColor::HexArgb), Theme::palette().brandStrong.name(),
-    Theme::withAlpha(Theme::palette().brand, 10).name(QColor::HexArgb), Theme::withAlpha(Theme::palette().brand, 135).name(QColor::HexArgb),
-    Theme::palette().err.darker(120).name()));
+    const auto &p = Theme::palette();
+    const QString bgPanel         = p.bgPanel.name();
+    const QString border          = p.border.name();
+    const QString text            = p.text.name();
+    const QString brand           = p.brand.name();
+    const QString bgSunken        = p.bgSunken.name();
+    const QString errWeak         = p.errWeak.name();
+    const QString errWeakDark     = p.errWeak.darker(115).name();
+    const QString err             = p.err.name();
+    const QString white           = p.bgPanel.name();
+    const QString brandAlpha26    = Theme::withAlpha(p.brand, 26).name(QColor::HexArgb);
+    const QString gaugeHighlight  = p.gaugeHighlight.name();
+    const QString brandAlpha45    = Theme::withAlpha(p.brand, 45).name(QColor::HexArgb);
+    const QString brandDark       = p.brandStrong.name();
+    const QString brandAlpha10    = Theme::withAlpha(p.brand, 10).name(QColor::HexArgb);
+    const QString brandAlpha135   = Theme::withAlpha(p.brand, 135).name(QColor::HexArgb);
+    const QString errDark         = p.err.darker(130).name();
+    const QString brandAlpha80    = Theme::withAlpha(p.brand, 80).name(QColor::HexArgb);
+
+    setStyleSheet(Theme::fieldStyle() +
+        QStringLiteral("QCheckBox{color:%1;font-size:11px;}").arg(text) +
+        QStringLiteral("QCheckBox::indicator{width:12px;height:12px;border:1px solid %1;border-radius:3px;background:%2;}").arg(border, bgPanel) +
+        QStringLiteral("QCheckBox::indicator:checked{background:%1;border-color:%1;}").arg(brand) +
+        QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-bottom:2px solid %3;border-radius:4px;"
+                       "padding:0 10px 0 22px;color:%4;font-size:11px;font-weight:600;}").arg(bgPanel, border, brandAlpha45, text) +
+        QStringLiteral("QPushButton:hover{background:%1;border-color:%2;border-bottom-color:%2;color:%2;}").arg(brandAlpha26, brand) +
+        QStringLiteral("QPushButton:pressed{background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
+        QStringLiteral("QPushButton[role='primary'] {background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 %1,stop:1 %2);"
+                       "border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(brandAlpha80, brand, brandDark, white) +
+        QStringLiteral("QPushButton[role='primary']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(gaugeHighlight, brandDark, white) +
+        QStringLiteral("QPushButton[role='primary']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(brandDark, white) +
+        QStringLiteral("QPushButton[role='secondary'] {background:%1;border:1px solid %2;border-bottom:1px solid %2;color:%3;}").arg(brandAlpha10, brandAlpha135, brand) +
+        QStringLiteral("QPushButton[role='secondary']:hover {background:%1;border-color:%2;border-bottom:2px solid %2;color:%2;}").arg(brandAlpha26, brand) +
+        QStringLiteral("QPushButton[role='secondary']:pressed {background:%1;border-color:%2;border-bottom:1px solid %2;padding-top:1px;color:%2;}").arg(brandAlpha45, brand) +
+        QStringLiteral("QPushButton[role='danger'] {background:%1;border-color:%2;border-bottom:2px solid %3;color:%4;}").arg(errWeak, errWeakDark, errDark, err) +
+        QStringLiteral("QPushButton[role='danger']:hover {background:%1;border-color:%1;border-bottom:2px solid %2;color:%3;}").arg(err, errDark, white) +
+        QStringLiteral("QPushButton[role='danger']:pressed {background:%1;border-color:%1;border-bottom:1px solid %1;padding-top:1px;color:%2;}").arg(errDark, white) +
+        QStringLiteral("QProgressBar{background:%1;border:1px solid %2;border-radius:4px;height:8px;}").arg(bgSunken, brand) +
+        QStringLiteral("QProgressBar::chunk{background:%1;border-radius:4px;}").arg(brand));
 }
 
 void MeasureControlPanel::setProgress(double progress)

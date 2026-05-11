@@ -35,16 +35,34 @@ protected:
         const bool hovered = underMouse();
         const auto &p = Theme::palette();
 
+        const QRect r = rect().adjusted(1, 1, -1, -1);
         if (pressed) {
-            painter.setBrush(p.brand);
             painter.setPen(Qt::NoPen);
+            QLinearGradient grad(r.topLeft(), r.bottomLeft());
+            grad.setColorAt(0.0, p.brandStrong);
+            grad.setColorAt(1.0, p.brand);
+            painter.setBrush(grad);
+            painter.drawRoundedRect(r, 5, 5);
+            painter.setPen(QPen(QColor(0,0,0,18), 1));
+            painter.drawLine(QPoint(r.left()+3, r.top()+1), QPoint(r.right()-3, r.top()+1));
         } else {
             const QColor bg = hovered ? Theme::withAlpha(p.brand, 18) : p.bgPanel;
-            const QColor border = hovered ? Theme::withAlpha(p.brand, 160) : p.borderStrong;
-            painter.setBrush(bg);
-            painter.setPen(QPen(border, 1));
+            const QColor borderColor = hovered ? Theme::withAlpha(p.brand, 160) : p.borderStrong;
+            if (!hovered) {
+                QLinearGradient grad(r.topLeft(), r.bottomLeft());
+                grad.setColorAt(0.0, p.bgPanel);
+                grad.setColorAt(1.0, Theme::withAlpha(p.border, 80));
+                painter.setBrush(grad);
+            } else {
+                painter.setBrush(bg);
+            }
+            painter.setPen(QPen(borderColor, 1));
+            painter.drawRoundedRect(r, 5, 5);
+            if (!hovered) {
+                painter.setPen(QPen(Theme::withAlpha(p.bgPanel, 220), 1));
+                painter.drawLine(QPoint(r.left()+3, r.top()+1), QPoint(r.right()-3, r.top()+1));
+            }
         }
-        painter.drawRoundedRect(rect().adjusted(1, 1, -1, -1), 5, 5);
 
         const QColor color = pressed ? p.bgPanel : (hovered ? p.brand : p.text1);
         QPen pen(color);
@@ -54,8 +72,9 @@ protected:
         painter.setPen(pen);
         painter.setBrush(Qt::NoBrush);
 
-        const qreal cx = width() / 2.0;
-        const qreal cy = height() / 2.0;
+        const qreal offset = pressed ? 1.0 : 0.0;
+        const qreal cx = width() / 2.0 + offset;
+        const qreal cy = height() / 2.0 + offset;
         const qreal s = 6.0;
 
         switch (m_dir) {
