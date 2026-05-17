@@ -46,9 +46,12 @@ add_library(qfilematrix_widgets
  src/widgets/LedIndicatorWidget.cpp
  src/widgets/PanelHeaderWidget.cpp
  src/widgets/ProfileChartWidget.cpp
+ src/widgets/RailIconButton.cpp
+ src/widgets/SmallIconButton.cpp
  src/widgets/StatCardWidget.cpp
  src/widgets/SensorGaugeWidget.cpp
  src/widgets/DpadControlWidget.cpp
+ src/widgets/VerdictPillWidget.cpp
  src/widgets/qcustomplot.cpp
  src/dialogs/ManualSampleDialog.cpp
  src/dialogs/AlarmCenterDialog.cpp

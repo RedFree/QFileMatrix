@@ -6,7 +6,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QPainter>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSplitter>
@@ -16,6 +15,9 @@
 #include <QVBoxLayout>
 
 #include "app/AppController.h"
+#include "dialogs/AlarmCenterDialog.h"
+#include "dialogs/ManualSampleDialog.h"
+#include "domain/MeasurementConstants.h"
 #include "panels/BottomStatusBar.h"
 #include "panels/DeviceStatusBar.h"
 #include "panels/HistoryPanel.h"
@@ -27,209 +29,12 @@
 #include "widgets/CameraViewWidget.h"
 #include "widgets/PanelHeaderWidget.h"
 #include "widgets/ProfileChartWidget.h"
+#include "widgets/RailIconButton.h"
+#include "widgets/SmallIconButton.h"
 #include "widgets/StatCardWidget.h"
-#include "dialogs/ManualSampleDialog.h"
-#include "dialogs/AlarmCenterDialog.h"
+#include "widgets/VerdictPillWidget.h"
 
 namespace {
-class RailIconButton : public QPushButton
-{
-public:
-    enum class IconKind {
-        Camera,
-        Curve,
-        Servo,
-        History,
-        Stats,
-        Gauge,
-        Settings,
-        User,
-    };
-
-    explicit RailIconButton(IconKind kind, const QString &text = QString(), QWidget *parent = nullptr)
-        : QPushButton(parent)
-        , m_kind(kind)
-        , m_text(text)
-    {
-        setProperty("railIcon", iconName(kind));
-        setAccessibleName(text.isEmpty() ? iconName(kind) : text);
-    }
-
-protected:
-    void paintEvent(QPaintEvent *event) override
-    {
-        QPushButton::paintEvent(event);
-
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-        const bool active = property("active").toBool();
-        const QColor color = active ? Theme::palette().brand : Theme::palette().textMuted;
-        QPen pen(color);
-        pen.setWidthF(1.2);
-        pen.setCapStyle(Qt::RoundCap);
-        pen.setJoinStyle(Qt::RoundJoin);
-        painter.setPen(pen);
-        painter.setBrush(Qt::NoBrush);
-
-        constexpr int iconSize = 14;
-        const int iconX = (width() - iconSize) / 2;
-        const int iconY = 5;
-        const QRectF r(iconX, iconY, iconSize, iconSize);
-
-        switch (m_kind) {
-        case IconKind::Camera:
-            painter.drawRoundedRect(r.adjusted(0, 2, 0, 0), 2, 2);
-            painter.drawEllipse(r.center(), 3.2, 3.2);
-            painter.drawLine(QPointF(r.left() + 2, r.top() + 2), QPointF(r.left() + 5, r.top() + 2));
-            break;
-        case IconKind::Curve:
-            painter.drawPolyline(QPolygonF({QPointF(r.left(), r.center().y() + 2), QPointF(r.left() + 3, r.center().y() + 1), QPointF(r.left() + 6, r.center().y() - 4), QPointF(r.left() + 9, r.center().y() + 4), QPointF(r.right(), r.center().y() - 1)}));
-            break;
-        case IconKind::Servo:
-            painter.drawEllipse(r.center(), 6.0, 6.0);
-            painter.drawEllipse(r.center(), 1.6, 1.6);
-            painter.drawLine(QPointF(r.center().x(), r.top()), QPointF(r.center().x(), r.top() + 3));
-            painter.drawLine(QPointF(r.center().x(), r.bottom()), QPointF(r.center().x(), r.bottom() - 3));
-            painter.drawLine(QPointF(r.left(), r.center().y()), QPointF(r.left() + 3, r.center().y()));
-            painter.drawLine(QPointF(r.right(), r.center().y()), QPointF(r.right() - 3, r.center().y()));
-            break;
-        case IconKind::History:
-            painter.drawLine(QPointF(r.left() + 2, r.top() + 2), QPointF(r.right(), r.top() + 2));
-            painter.drawLine(QPointF(r.left() + 2, r.center().y()), QPointF(r.right(), r.center().y()));
-            painter.drawLine(QPointF(r.left() + 2, r.bottom() - 2), QPointF(r.right(), r.bottom() - 2));
-            painter.drawEllipse(QPointF(r.left(), r.top() + 2), 0.8, 0.8);
-            painter.drawEllipse(QPointF(r.left(), r.center().y()), 0.8, 0.8);
-            painter.drawEllipse(QPointF(r.left(), r.bottom() - 2), 0.8, 0.8);
-            break;
-        case IconKind::Stats:
-            painter.drawLine(QPointF(r.left(), r.bottom()), QPointF(r.right(), r.bottom()));
-            painter.drawLine(QPointF(r.left() + 1, r.bottom()), QPointF(r.left() + 1, r.center().y() + 2));
-            painter.drawLine(QPointF(r.center().x(), r.bottom()), QPointF(r.center().x(), r.top() + 2));
-            painter.drawLine(QPointF(r.right() - 1, r.bottom()), QPointF(r.right() - 1, r.center().y() - 1));
-            break;
-        case IconKind::Gauge:
-            painter.drawArc(r.adjusted(0, 2, 0, 6), 0, 180 * 16);
-            painter.drawLine(QPointF(r.center().x(), r.center().y() + 2), QPointF(r.right() - 1, r.top() + 4));
-            break;
-        case IconKind::Settings:
-            painter.drawEllipse(r.center(), 4.4, 4.4);
-            painter.drawEllipse(r.center(), 1.5, 1.5);
-            painter.drawLine(QPointF(r.center().x(), r.top()), QPointF(r.center().x(), r.top() + 2));
-            painter.drawLine(QPointF(r.center().x(), r.bottom()), QPointF(r.center().x(), r.bottom() - 2));
-            painter.drawLine(QPointF(r.left(), r.center().y()), QPointF(r.left() + 2, r.center().y()));
-            painter.drawLine(QPointF(r.right(), r.center().y()), QPointF(r.right() - 2, r.center().y()));
-            break;
-        case IconKind::User:
-            painter.drawEllipse(QPointF(r.center().x(), r.top() + 4), 3.0, 3.0);
-            painter.drawArc(QRectF(r.left() + 1, r.center().y() - 1, r.width() - 2, r.height() - 3), 30 * 16, 120 * 16);
-            break;
-        }
-
-        if (!m_text.isEmpty()) {
-            painter.setPen(active ? Theme::palette().brand : Theme::palette().textMuted);
-            QFont f = font();
-            f.setPointSizeF(8.5);
-            f.setBold(active);
-            painter.setFont(f);
-            const int textTop = iconY + iconSize + 3;
-            painter.drawText(QRectF(0, textTop, width(), height() - textTop - 3),
-                             Qt::AlignHCenter | Qt::AlignTop, m_text);
-        }
-    }
-
-private:
-    static QString iconName(IconKind kind)
-    {
-        switch (kind) {
-        case IconKind::Camera: return QStringLiteral("camera");
-        case IconKind::Curve: return QStringLiteral("curve");
-        case IconKind::Servo: return QStringLiteral("servo");
-        case IconKind::History: return QStringLiteral("history");
-        case IconKind::Stats: return QStringLiteral("stats");
-        case IconKind::Gauge: return QStringLiteral("gauge");
-        case IconKind::Settings: return QStringLiteral("settings");
-        case IconKind::User: return QStringLiteral("user");
-        }
-        return QString();
-    }
-
-    IconKind m_kind;
-    QString m_text;
-};
-
-class SmallIconButton : public QPushButton
-{
-public:
-  enum class Icon { Play, Pause, Expand };
-
-  explicit SmallIconButton(Icon icon, const QString &text, QWidget *parent = nullptr)
-    : QPushButton(text, parent), m_icon(icon)
-  {
-    const auto &p = Theme::palette();
-    setFixedHeight(24);
-    setCursor(Qt::PointingHandCursor);
-    setStyleSheet(QStringLiteral(
-      "QPushButton{background:transparent;border:none;border-radius:6px;padding:0 8px 0 22px;color:%1;font-size:11px;}"
-      "QPushButton:hover{background:%2;color:%3;}"
-    ).arg(p.textMuted.name(), p.bgSunken.name(), p.text1.name()));
-  }
-
-  void setIconType(Icon icon) { m_icon = icon; update(); }
-
-protected:
-  void paintEvent(QPaintEvent *event) override
-  {
-    QPushButton::paintEvent(event);
-    const auto &p = Theme::palette();
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    const QColor iconColor = underMouse() ? p.text1 : p.textMuted;
-    QPen pen(iconColor);
-    pen.setWidthF(1.4);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setJoinStyle(Qt::RoundJoin);
-    painter.setPen(pen);
-    painter.setBrush(Qt::NoBrush);
-    const qreal cx = 10, cy = height() / 2.0;
-    switch (m_icon) {
-    case Icon::Play:
-      painter.setBrush(iconColor);
-      painter.drawPolygon(QPolygonF({QPointF(cx - 3, cy - 4), QPointF(cx - 3, cy + 4), QPointF(cx + 4, cy)}));
-      break;
-    case Icon::Pause:
-      painter.setBrush(iconColor);
-      painter.drawRect(QRectF(cx - 4, cy - 3.5, 2.8, 7));
-      painter.drawRect(QRectF(cx + 1.2, cy - 3.5, 2.8, 7));
-      break;
-    case Icon::Expand:
-      painter.drawLine(QPointF(cx - 4, cy - 4), QPointF(cx - 1, cy - 4));
-      painter.drawLine(QPointF(cx - 4, cy - 4), QPointF(cx - 4, cy - 1));
-      painter.drawLine(QPointF(cx + 4, cy - 4), QPointF(cx + 1, cy - 4));
-      painter.drawLine(QPointF(cx + 4, cy - 4), QPointF(cx + 4, cy - 1));
-      painter.drawLine(QPointF(cx - 4, cy + 4), QPointF(cx - 1, cy + 4));
-      painter.drawLine(QPointF(cx - 4, cy + 4), QPointF(cx - 4, cy + 1));
-      painter.drawLine(QPointF(cx + 4, cy + 4), QPointF(cx + 1, cy + 4));
-      painter.drawLine(QPointF(cx + 4, cy + 4), QPointF(cx + 4, cy + 1));
-      break;
-    }
-  }
-
-private:
-  Icon m_icon;
-};
-
-QFrame *makePanel(const QString &title, QWidget *content)
-{
-    auto *frame = new QFrame;
-    frame->setStyleSheet(Theme::frameStyle());
-    auto *layout = new QVBoxLayout(frame);
-    layout->setContentsMargins(10, 10, 10, 10);
-    auto *label = new QLabel(title);
-    label->setStyleSheet(Theme::titleStyle());
-    layout->addWidget(label);
-    layout->addWidget(content, 1);
-    return frame;
-}
 
 QFrame *makeBodyPanel(QWidget *content)
 {
@@ -242,69 +47,7 @@ QFrame *makeBodyPanel(QWidget *content)
     return frame;
 }
 
-class VerdictPillWidget : public QWidget
-{
-public:
-    explicit VerdictPillWidget(QWidget *parent = nullptr)
-        : QWidget(parent)
-    {
-        setFixedHeight(20);
-        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        setProperty("verdict", QStringLiteral("ok"));
-    }
-
-    QSize sizeHint() const override { return QSize(52, 20); }
-
-protected:
-    void paintEvent(QPaintEvent *) override
-    {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        const QString v = property("verdict").toString();
-        QColor bg = Theme::palette().bgSunken;
-        QColor border = Theme::palette().border;
-        QColor fg = Theme::palette().textMuted;
-        QString text = QStringLiteral("待定");
-
-        if (v == QStringLiteral("ok")) {
-            bg = Theme::palette().okWeak;
-            border = Theme::palette().okWeak.darker(115);
-            fg = Theme::palette().ok;
-            text = QStringLiteral("合格");
-        } else if (v == QStringLiteral("warn")) {
-            bg = Theme::palette().warnWeak;
-            border = Theme::palette().warnWeak.darker(115);
-            fg = Theme::palette().warn.darker(140);
-            text = QStringLiteral("临界");
-        } else if (v == QStringLiteral("err")) {
-            bg = Theme::palette().errWeak;
-            border = Theme::palette().errWeak.darker(115);
-            fg = Theme::palette().err;
-            text = QStringLiteral("超差");
-        }
-
-        const QRect pillRect = rect().adjusted(0, 1, 0, -1);
-        painter.setPen(border);
-        painter.setBrush(bg);
-        painter.drawRoundedRect(pillRect, pillRect.height() / 2.0, pillRect.height() / 2.0);
-
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(fg);
-        const qreal dotR = 3.0;
-        const qreal dotX = pillRect.left() + pillRect.height() / 2.0;
-        const qreal dotY = pillRect.center().y();
-        painter.drawEllipse(QPointF(dotX, dotY), dotR, dotR);
-
-        painter.setPen(fg);
-        painter.setBrush(Qt::NoBrush);
-        const QFont font(QStringLiteral("Consolas"), 9);
-        painter.setFont(font);
-        const QRect textRect = pillRect.adjusted(qRound(pillRect.height() / 2.0) + 2, 0, -4, 0);
-        painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, text);
-    }
-};
-}
+} // namespace
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -320,12 +63,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (m_historyPanel != nullptr) {
+    if (m_historyPanel)
         m_historyPanel->disconnect(this);
-    }
-    if (m_controller != nullptr) {
+    if (m_controller)
         m_controller->disconnect(this);
-    }
 }
 
 void MainWindow::buildUi()
@@ -338,7 +79,10 @@ void MainWindow::buildUi()
 
     auto *shell = new QFrame;
     shell->setObjectName(QStringLiteral("mainShellFrame"));
-    shell->setStyleSheet(QStringLiteral("QFrame#mainShellFrame{background:%1;border-top:1px solid %2;border-right:1px solid %2;border-bottom:1px solid %2;border-left:none;border-radius:0px;}")
+    shell->setStyleSheet(QStringLiteral(
+        "QFrame#mainShellFrame{background:%1;border-top:1px solid %2;"
+        "border-right:1px solid %2;border-bottom:1px solid %2;"
+        "border-left:none;border-radius:0px;}")
         .arg(Theme::palette().bgPanel.name(), Theme::palette().borderStrong.name()));
     auto *shellLayout = new QVBoxLayout(shell);
     shellLayout->setContentsMargins(0, 0, 0, 0);
@@ -359,10 +103,14 @@ void MainWindow::buildUi()
     m_workspaceStack = new QStackedWidget;
     m_workspaceStack->setObjectName(QStringLiteral("mainWorkspaceStack"));
     m_workspaceStack->addWidget(createMeasureWorkspace());
-    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("数据"), QStringLiteral("数据查询、历史记录与导出功能将在这里替换显示。")));
-    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("配方"), QStringLiteral("配方列表、参数编辑与下发功能将在这里替换显示。")));
-    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("维护"), QStringLiteral("设备诊断、校准与维护操作将在这里替换显示。")));
-    m_workspaceStack->addWidget(createPlaceholderWorkspace(QStringLiteral("审计"), QStringLiteral("操作日志、权限审计与追溯记录将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(
+        QStringLiteral("数据"), QStringLiteral("数据查询、历史记录与导出功能将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(
+        QStringLiteral("配方"), QStringLiteral("配方列表、参数编辑与下发功能将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(
+        QStringLiteral("维护"), QStringLiteral("设备诊断、校准与维护操作将在这里替换显示。")));
+    m_workspaceStack->addWidget(createPlaceholderWorkspace(
+        QStringLiteral("审计"), QStringLiteral("操作日志、权限审计与追溯记录将在这里替换显示。")));
     bodySplitter->addWidget(m_workspaceStack);
 
     bodySplitter->setStretchFactor(0, 0);
@@ -422,17 +170,24 @@ QWidget *MainWindow::createMeasureWorkspace()
     auto *rightLayout = new QVBoxLayout(rightPanel);
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
+
     m_sensorPanel = new SensorPanel;
+    m_sensorPanel->setObjectName(QStringLiteral("sensorPanel"));
     m_measurePanel = new MeasureControlPanel;
+    m_measurePanel->setObjectName(QStringLiteral("measureControlPanel"));
     m_servoPanel = new ServoControlPanel;
+    m_servoPanel->setObjectName(QStringLiteral("servoPanel"));
+    m_servoPanel->setStyleSheet(QStringLiteral(
+        "background:%1;border:none;border-bottom:1px solid %2;")
+        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
 
-    const auto flushPanelStyle = QStringLiteral("background:%1;border:none;border-bottom:1px solid %2;border-radius:0;")
-        .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name());
-    m_sensorPanel->setStyleSheet(flushPanelStyle);
-
+    m_sensorPanel->setStyleSheet(QStringLiteral(
+        "background:%1;border:none;border-bottom:1px solid %2;")
+        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
     m_sensorPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     m_measurePanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     m_servoPanel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+
     rightLayout->addWidget(m_sensorPanel);
     rightLayout->addWidget(m_measurePanel);
     rightLayout->addWidget(m_servoPanel);
@@ -440,12 +195,12 @@ QWidget *MainWindow::createMeasureWorkspace()
 
     auto *rightScrollArea = new QScrollArea;
     rightScrollArea->setObjectName(QStringLiteral("rightControlScrollArea"));
-    rightScrollArea->setFrameShape(QFrame::NoFrame);
     rightScrollArea->setWidgetResizable(true);
+    rightScrollArea->setFrameShape(QFrame::NoFrame);
     rightScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     rightScrollArea->setWidget(rightPanel);
-    workspaceSplitter->addWidget(rightScrollArea);
 
+    workspaceSplitter->addWidget(rightScrollArea);
     workspaceSplitter->setStretchFactor(0, 1);
     workspaceSplitter->setStretchFactor(1, 0);
     workspaceSplitter->setSizes({1080, 320});
@@ -453,205 +208,223 @@ QWidget *MainWindow::createMeasureWorkspace()
     return workspaceSplitter;
 }
 
+// --- createPlaceholderWorkspace ---
+
 QWidget *MainWindow::createPlaceholderWorkspace(const QString &title, const QString &description)
 {
-    auto *frame = new QFrame;
-    frame->setObjectName(QStringLiteral("placeholderWorkspacePage"));
-    frame->setStyleSheet(Theme::frameStyle());
-
-    auto *layout = new QVBoxLayout(frame);
-    layout->setContentsMargins(32, 32, 32, 32);
-    layout->setSpacing(10);
-    layout->addStretch();
+    auto *page = new QFrame;
+    page->setObjectName(QStringLiteral("placeholderWorkspacePage"));
+    page->setStyleSheet(Theme::frameStyle());
+    auto *layout = new QVBoxLayout(page);
+    layout->setAlignment(Qt::AlignCenter);
 
     auto *titleLabel = new QLabel(title);
+    titleLabel->setStyleSheet(QStringLiteral(
+        "font-size:22px;font-weight:700;color:%1;").arg(Theme::palette().text.name()));
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet(QStringLiteral("font-size:20px;font-weight:700;color:%1;").arg(Theme::palette().text1.name()));
+
+    auto *descLabel = new QLabel(description);
+    descLabel->setStyleSheet(QStringLiteral(
+        "font-size:13px;color:%1;").arg(Theme::palette().textMuted.name()));
+    descLabel->setAlignment(Qt::AlignCenter);
+
     layout->addWidget(titleLabel);
-
-    auto *descriptionLabel = new QLabel(description);
-    descriptionLabel->setAlignment(Qt::AlignCenter);
-    descriptionLabel->setWordWrap(true);
-    descriptionLabel->setStyleSheet(QStringLiteral("font-size:12px;color:%1;").arg(Theme::palette().textMuted.name()));
-    layout->addWidget(descriptionLabel);
-
-    layout->addStretch();
-    return frame;
+    layout->addWidget(descLabel);
+    return page;
 }
+
+// --- wireUi ---
 
 void MainWindow::wireUi()
 {
     m_historyPanel->setModel(m_controller->tableModel());
 
-    connect(m_topTitleBar, &TopTitleBar::sectionRequested, this, [this](const QString &sectionKey) {
-        int pageIndex = 0;
-        if (sectionKey == QStringLiteral("data")) {
-            pageIndex = 1;
-        } else if (sectionKey == QStringLiteral("recipe")) {
-            pageIndex = 2;
-        } else if (sectionKey == QStringLiteral("maintenance")) {
-            pageIndex = 3;
-        } else if (sectionKey == QStringLiteral("audit")) {
-            pageIndex = 4;
-        }
-        m_workspaceStack->setCurrentIndex(pageIndex);
-        m_topTitleBar->setActiveSection(sectionKey);
+    connect(m_topTitleBar, &TopTitleBar::sectionRequested, this, [this](const QString &key) {
+        static const QStringList keys = {
+            QStringLiteral("measure"), QStringLiteral("data"),
+            QStringLiteral("recipe"), QStringLiteral("maintenance"),
+            QStringLiteral("audit")};
+        int idx = keys.indexOf(key);
+        if (idx >= 0)
+            m_workspaceStack->setCurrentIndex(idx);
+        m_topTitleBar->setActiveSection(key);
     });
 
-    connect(m_measurePanel, &MeasureControlPanel::startRequested, m_controller, &AppController::startMeasurement);
-    connect(m_measurePanel, &MeasureControlPanel::stopRequested, m_controller, &AppController::stopMeasurement);
-    connect(m_measurePanel, &MeasureControlPanel::manualRequested, m_controller, &AppController::manualSample);
-    connect(m_measurePanel, &MeasureControlPanel::sampleCountChanged, m_controller, &AppController::setSampleCount);
+    connect(m_measurePanel, &MeasureControlPanel::startRequested,
+            m_controller, &AppController::startMeasurement);
+    connect(m_measurePanel, &MeasureControlPanel::stopRequested,
+            m_controller, &AppController::stopMeasurement);
+    connect(m_measurePanel, &MeasureControlPanel::manualRequested,
+            m_controller, &AppController::manualSample);
+    connect(m_measurePanel, &MeasureControlPanel::sampleCountChanged,
+            m_controller, &AppController::setSampleCount);
 
-    connect(m_deviceStatusBar, &DeviceStatusBar::startRequested, m_controller, &AppController::startMeasurement);
-    connect(m_deviceStatusBar, &DeviceStatusBar::stopRequested, m_controller, &AppController::stopMeasurement);
+    connect(m_deviceStatusBar, &DeviceStatusBar::startRequested,
+            m_controller, &AppController::startMeasurement);
+    connect(m_deviceStatusBar, &DeviceStatusBar::stopRequested,
+            m_controller, &AppController::stopMeasurement);
     connect(m_deviceStatusBar, &DeviceStatusBar::manualRequested, this, [this] {
-        auto *dialog = new ManualSampleDialog(this);
-        const auto &pos = m_controller->state().pos;
-        dialog->setPosition(QString::number(pos.x, 'f', 3), QString::number(pos.y, 'f', 3));
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
-        connect(dialog, &ManualSampleDialog::sampleConfirmed, m_controller, &AppController::manualSample);
-        dialog->exec();
+        auto *dlg = new ManualSampleDialog(this);
+        const auto &st = m_controller->state();
+        dlg->setPosition(QString::number(double(st.pos.x), 'f', 3), QString::number(double(st.pos.y), 'f', 3));
+        connect(dlg, &ManualSampleDialog::sampleConfirmed,
+                m_controller, &AppController::manualSample);
+        dlg->open();
     });
 
-    connect(m_servoPanel, &ServoControlPanel::jogRequested, this, [this](int dx, int dy) {
-        const auto step = m_controller->state().step;
-        m_controller->jog(dx * step, dy * step);
+    connect(m_servoPanel, &ServoControlPanel::jogRequested,
+            this, [this](int dx, int dy) {
+        const auto &state = m_controller->state();
+        m_controller->jog(dx * state.step, dy * state.step);
     });
-    connect(m_servoPanel, &ServoControlPanel::homeRequested, m_controller, &AppController::goHome);
-    connect(m_servoPanel, &ServoControlPanel::gotoRequested, this, [this](int x, int y) {
-        const auto pos = m_controller->state().pos;
-        m_controller->jog(x - pos.x, y - pos.y);
-    });
-    connect(m_servoPanel, &ServoControlPanel::stepChanged, m_controller, &AppController::setStep);
+    connect(m_servoPanel, &ServoControlPanel::homeRequested,
+            m_controller, &AppController::goHome);
+    connect(m_servoPanel, &ServoControlPanel::gotoRequested,
+            m_controller, &AppController::jog);
+    connect(m_servoPanel, &ServoControlPanel::stepChanged,
+            m_controller, &AppController::setStep);
 
-    connect(m_controller, &AppController::stateChanged, this, [this](const AppState &) { updateFromController(); });
-    connect(m_controller, &AppController::latestRecordChanged, this, [this](const MeasurementRecord &) { updateFromController(); });
-    connect(m_controller, &AppController::profileChanged, this, [this](const ProfileData &profile) { m_profileChart->setProfile(profile); });
+    connect(m_controller, &AppController::stateChanged,
+            this, &MainWindow::updateFromController);
+    connect(m_controller, &AppController::latestRecordChanged,
+            this, &MainWindow::updateFromController);
+    connect(m_controller, &AppController::profileChanged,
+            this, &MainWindow::updateFromController);
+
     connect(m_historyPanel, &HistoryPanel::currentRowChanged, this, [this](int row) {
-        if (row < 0) {
-            return;
-        }
         m_selectedHistoryRow = row;
         updateFromController();
     });
 
- auto *alarmButton = m_topTitleBar->findChild<QPushButton*>(QStringLiteral("alarmButton"));
- if (alarmButton) {
-     connect(alarmButton, &QPushButton::clicked, this, [this, alarmButton] {
-         auto *popup = new AlarmCenterDialog(this);
-         const QPoint btnTopRight = alarmButton->mapToGlobal(QPoint(alarmButton->width(), 0));
-         popup->showPopup(btnTopRight);
-     });
- }
+    auto *alarmButton = m_topTitleBar->findChild<QPushButton*>(QStringLiteral("alarmButton"));
+    if (alarmButton) {
+        connect(alarmButton, &QPushButton::clicked, this, [this, alarmButton] {
+            auto *dlg = new AlarmCenterDialog(this);
+            QPoint pos = alarmButton->mapToGlobal(QPoint(0, alarmButton->height()));
+            dlg->showPopup(pos);
+        });
+    }
 }
+
+// --- updateFromController ---
 
 void MainWindow::updateFromController()
 {
-    const auto &state = m_controller->state();
-    const auto rowCount = m_controller->tableModel()->rowCount();
-    if (rowCount > 0) {
-        m_selectedHistoryRow = qBound(0, m_selectedHistoryRow, rowCount - 1);
-    } else {
-        m_selectedHistoryRow = 0;
-    }
-    const auto record = rowCount > 0 ? m_controller->tableModel()->recordAt(m_selectedHistoryRow) : m_controller->latestRecord();
+    const auto &st = m_controller->state();
 
-    m_deviceStatusBar->setProgress(state.progress);
-    m_deviceStatusBar->setMeasuring(state.measuring);
-    m_measurePanel->setProgress(state.progress);
-    m_measurePanel->setMeasuring(state.measuring);
-    m_measurePanel->setSampleCount(state.sampleCount);
-    m_bottomStatusBar->setPosition(state.pos);
-    m_bottomStatusBar->setProbeValue(record.left);
+    m_deviceStatusBar->setProgress(st.progress);
+    m_deviceStatusBar->setMeasuring(st.measuring);
+    m_measurePanel->setProgress(st.progress);
+    m_measurePanel->setMeasuring(st.measuring);
+    m_measurePanel->setSampleCount(st.sampleCount);
+    m_servoPanel->setPosition(st.pos);
+    m_servoPanel->setStep(st.step);
+
+    m_bottomStatusBar->setPosition(st.pos);
     m_bottomStatusBar->setConnected(true);
-    m_bottomStatusBar->setMeasuring(state.measuring);
-    m_servoPanel->setPosition(state.pos);
-    m_servoPanel->setStep(state.step);
-    m_cameraView->setPaused(state.paused);
-    m_cameraView->setMeasuring(state.measuring);
+    m_bottomStatusBar->setMeasuring(st.measuring);
+
+    m_cameraView->setPaused(st.paused);
+    m_cameraView->setMeasuring(st.measuring);
     m_cameraView->setStation(1);
     m_cameraView->setFrameRate(22.0);
     m_cameraView->setExposureMs(3.2);
     m_cameraView->setGain(1.4);
-    m_profileChart->setMeasuring(state.measuring);
+
+    m_profileChart->setMeasuring(st.measuring);
+
+    auto *pauseBtn = findChild<SmallIconButton*>(QStringLiteral("cameraPauseButton"));
+    if (pauseBtn) {
+        pauseBtn->setIconType(st.paused ? SmallIconButton::Icon::Play
+                                        : SmallIconButton::Icon::Pause);
+    }
+
+    auto *model = m_controller->tableModel();
+    MeasurementRecord record;
+    if (model->rowCount() > 0 && m_selectedHistoryRow < model->rowCount())
+        record = model->recordAt(m_selectedHistoryRow);
+    else
+        record = m_controller->latestRecord();
+
+    m_bottomStatusBar->setProbeValue(record.left);
     m_profileChart->setProfile(m_controller->currentProfile());
- if (auto *pauseButton = findChild<QPushButton*>(QStringLiteral("cameraPauseButton"))) {
- pauseButton->setText(state.paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
- if (auto *sb = dynamic_cast<SmallIconButton*>(pauseButton)) {
- sb->setIconType(state.paused ? SmallIconButton::Icon::Play : SmallIconButton::Icon::Pause);
- }
- }
     applyRecordToSummary(record);
 }
+
+// --- createLeftRail ---
 
 QWidget *MainWindow::createLeftRail()
 {
     auto *rail = new QWidget;
     rail->setFixedWidth(48);
     rail->setStyleSheet(QStringLiteral("background:%1;border-right:1px solid %2;")
-                            .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
+        .arg(Theme::palette().bgRail.name(), Theme::palette().border.name()));
+
     auto *layout = new QVBoxLayout(rail);
     layout->setContentsMargins(4, 8, 4, 8);
     layout->setSpacing(4);
 
-    const struct {
-        const char *name;
-        RailIconButton::IconKind iconKind;
-        const char *text;
-        bool active;
-    } navButtons[] = {
-        {"railCameraButton", RailIconButton::IconKind::Camera, "相机", true},
-        {"railCurveButton", RailIconButton::IconKind::Curve, "曲线", false},
-        {"railServoButton", RailIconButton::IconKind::Servo, "伺服", false},
-        {"railHistoryButton", RailIconButton::IconKind::History, "记录", false},
-        {"railStatsButton", RailIconButton::IconKind::Stats, "统计", false},
-        {"railGaugeButton", RailIconButton::IconKind::Gauge, "仪表", false},
-    };
+    using IK = RailIconButton::IconKind;
+    auto *btnCamera   = new RailIconButton(IK::Camera);
+    auto *btnCurve    = new RailIconButton(IK::Curve);
+    auto *btnServo    = new RailIconButton(IK::Servo);
+    auto *btnHistory  = new RailIconButton(IK::History);
+    auto *btnStats    = new RailIconButton(IK::Stats);
+    auto *btnGauge    = new RailIconButton(IK::Gauge);
+    auto *btnSettings = new RailIconButton(IK::Settings);
+    auto *btnUser     = new RailIconButton(IK::User);
 
-    QList<QPushButton*> navButtonWidgets;
-    for (const auto &spec : navButtons) {
-        auto *button = new RailIconButton(spec.iconKind, QString::fromUtf8(spec.text));
-        button->setObjectName(QString::fromLatin1(spec.name));
-        button->setToolTip(QString::fromUtf8(spec.text));
-        button->setFixedHeight(38);
-        button->setCursor(Qt::PointingHandCursor);
-        button->setProperty("active", spec.active);
-        button->setStyleSheet(Theme::railButtonStyle(spec.active));
-        layout->addWidget(button);
-        navButtonWidgets.append(button);
+    btnCamera->setObjectName(QStringLiteral("railCameraButton"));
+    btnCurve->setObjectName(QStringLiteral("railCurveButton"));
+    btnServo->setObjectName(QStringLiteral("railServoButton"));
+    btnHistory->setObjectName(QStringLiteral("railHistoryButton"));
+    btnStats->setObjectName(QStringLiteral("railStatsButton"));
+    btnGauge->setObjectName(QStringLiteral("railGaugeButton"));
+    btnSettings->setObjectName(QStringLiteral("railSettingsButton"));
+    btnUser->setObjectName(QStringLiteral("railUserButton"));
+
+    btnCamera->setToolTip(QStringLiteral("相机"));
+    btnCurve->setToolTip(QStringLiteral("曲线"));
+    btnServo->setToolTip(QStringLiteral("伺服"));
+    btnHistory->setToolTip(QStringLiteral("记录"));
+    btnStats->setToolTip(QStringLiteral("统计"));
+    btnGauge->setToolTip(QStringLiteral("仪表"));
+    btnSettings->setToolTip(QStringLiteral("设置"));
+    btnUser->setToolTip(QStringLiteral("用户"));
+
+    QList<RailIconButton*> topButtons = {
+        btnCamera, btnCurve, btnServo, btnHistory, btnStats, btnGauge};
+    QList<RailIconButton*> bottomButtons = {btnSettings, btnUser};
+    QList<RailIconButton*> allButtons = topButtons + bottomButtons;
+
+    for (auto *btn : allButtons) {
+        btn->setFixedSize(40, 40);
+        btn->setCursor(Qt::PointingHandCursor);
+        btn->setStyleSheet(Theme::railButtonStyle(false));
     }
 
-    for (auto *button : navButtonWidgets) {
-        connect(button, &QPushButton::clicked, rail, [button, navButtonWidgets] {
-            for (auto *candidate : navButtonWidgets) {
-                const bool active = candidate == button;
-                candidate->setProperty("active", active);
-                candidate->setStyleSheet(Theme::railButtonStyle(active));
+    for (auto *btn : topButtons)
+        layout->addWidget(btn);
+    layout->addStretch();
+    for (auto *btn : bottomButtons)
+        layout->addWidget(btn);
+
+    btnCamera->setProperty("active", true);
+    btnCamera->setStyleSheet(Theme::railButtonStyle(true));
+    for (auto *btn : allButtons) {
+        connect(btn, &QPushButton::clicked, this, [allButtons, btn] {
+            for (auto *other : allButtons) {
+                bool active = (other == btn);
+                other->setProperty("active", active);
+                other->setStyleSheet(Theme::railButtonStyle(active));
             }
         });
     }
 
-    layout->addStretch();
-
-    auto *settingsButton = new RailIconButton(RailIconButton::IconKind::Settings, QStringLiteral("设置"));
-    settingsButton->setObjectName(QStringLiteral("railSettingsButton"));
-    settingsButton->setToolTip(QStringLiteral("设置"));
-    settingsButton->setFixedHeight(38);
-    settingsButton->setCursor(Qt::PointingHandCursor);
-    settingsButton->setStyleSheet(Theme::railButtonStyle(false));
-    layout->addWidget(settingsButton);
-
-    auto *userButton = new RailIconButton(RailIconButton::IconKind::User, QStringLiteral("用户"));
-    userButton->setObjectName(QStringLiteral("railUserButton"));
-    userButton->setToolTip(QStringLiteral("用户"));
-    userButton->setFixedHeight(38);
-    userButton->setCursor(Qt::PointingHandCursor);
-    userButton->setStyleSheet(Theme::railButtonStyle(false));
-    layout->addWidget(userButton);
-
     return rail;
 }
+
+// --- createCameraPanel ---
 
 QWidget *MainWindow::createCameraPanel()
 {
@@ -664,45 +437,47 @@ QWidget *MainWindow::createCameraPanel()
     auto *header = new PanelHeaderWidget(QStringLiteral("实时图像 · CAM-01"));
     header->titleLabel()->setObjectName(QStringLiteral("cameraPanelTitleLabel"));
 
- auto *programLabel = new QLabel(QStringLiteral("程序号"));
- programLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
- auto *programInput = new QLineEdit(QStringLiteral("1010"));
- programInput->setObjectName(QStringLiteral("cameraProgramInput"));
- programInput->setFixedWidth(50);
- programInput->setFixedHeight(24);
- auto *batchLabel = new QLabel(QStringLiteral("批号"));
- batchLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
- auto *batchInput = new QLineEdit(QStringLiteral("3"));
- batchInput->setObjectName(QStringLiteral("cameraBatchInput"));
- batchInput->setFixedWidth(30);
- batchInput->setFixedHeight(24);
- auto *pauseButton = new SmallIconButton(SmallIconButton::Icon::Pause, QStringLiteral("暂停"));
- pauseButton->setObjectName(QStringLiteral("cameraPauseButton"));
- auto *expandButton = new SmallIconButton(SmallIconButton::Icon::Expand, QStringLiteral("展开"));
- expandButton->setObjectName(QStringLiteral("cameraExpandButton"));
-  programInput->setStyleSheet(Theme::fieldStyle());
-  batchInput->setStyleSheet(Theme::fieldStyle());
- connect(pauseButton, &QPushButton::clicked, this, [this, pauseButton] {
- m_controller->setPaused(!m_controller->state().paused);
- pauseButton->setText(m_controller->state().paused ? QStringLiteral("继续") : QStringLiteral("暂停"));
- pauseButton->setIconType(m_controller->state().paused ? SmallIconButton::Icon::Play : SmallIconButton::Icon::Pause);
- });
- header->rightLayout()->addWidget(programLabel);
- header->rightLayout()->addWidget(programInput);
- header->rightLayout()->addWidget(batchLabel);
- header->rightLayout()->addWidget(batchInput);
-    header->rightLayout()->addWidget(pauseButton);
-header->rightLayout()->addWidget(expandButton);
-layout->addWidget(header);
+    auto *programInput = new QLineEdit;
+    programInput->setObjectName(QStringLiteral("cameraProgramInput"));
+    programInput->setPlaceholderText(QStringLiteral("程序"));
+    programInput->setStyleSheet(Theme::fieldStyle());
+    programInput->setFixedSize(80, 24);
 
-auto *body = new QVBoxLayout;
-body->setContentsMargins(0, 0, 0, 0);
-m_cameraView = new CameraViewWidget;
+    auto *batchInput = new QLineEdit;
+    batchInput->setObjectName(QStringLiteral("cameraBatchInput"));
+    batchInput->setPlaceholderText(QStringLiteral("批次"));
+    batchInput->setStyleSheet(Theme::fieldStyle());
+    batchInput->setFixedSize(30, 24);
+
+    auto *pauseBtn = new SmallIconButton(SmallIconButton::Icon::Pause,
+        QStringLiteral("暂停"));
+    pauseBtn->setObjectName(QStringLiteral("cameraPauseButton"));
+    auto *expandBtn = new SmallIconButton(SmallIconButton::Icon::Expand,
+        QStringLiteral("展开"));
+    expandBtn->setObjectName(QStringLiteral("cameraExpandButton"));
+
+    header->rightLayout()->addWidget(programInput);
+    header->rightLayout()->addWidget(batchInput);
+    header->rightLayout()->addWidget(pauseBtn);
+    header->rightLayout()->addWidget(expandBtn);
+
+    m_cameraView = new CameraViewWidget;
     m_cameraView->setObjectName(QStringLiteral("cameraView"));
-    body->addWidget(m_cameraView, 1);
-    layout->addLayout(body);
+
+    connect(pauseBtn, &QPushButton::clicked, this, [this, pauseBtn] {
+        bool paused = !m_cameraView->paused();
+        m_cameraView->setPaused(paused);
+        m_controller->setPaused(paused);
+        pauseBtn->setIconType(paused ? SmallIconButton::Icon::Play
+                                     : SmallIconButton::Icon::Pause);
+    });
+
+    layout->addWidget(header);
+    layout->addWidget(m_cameraView, 1);
     return frame;
 }
+
+// --- createProfilePanel ---
 
 QWidget *MainWindow::createProfilePanel()
 {
@@ -716,196 +491,234 @@ QWidget *MainWindow::createProfilePanel()
     header->titleLabel()->setObjectName(QStringLiteral("profilePanelTitleLabel"));
     header->titleLabel()->hide();
 
- auto *scaleLabel = new QLabel(QStringLiteral("量程"));
- scaleLabel->setStyleSheet(QStringLiteral("color:%1;font-size:11px;letter-spacing:1px;font-weight:500;").arg(Theme::palette().text3.name()));
- auto *scaleCombo = new QComboBox;
- scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
- scaleCombo->setStyle(QStyleFactory::create("Fusion"));
- scaleCombo->addItems({QStringLiteral("1:1"), QStringLiteral("1:2"), QStringLiteral("2:1")});
- scaleCombo->setFixedWidth(68);
- scaleCombo->setFixedHeight(24);
-  scaleCombo->setStyleSheet(Theme::comboBoxStyle());
- auto *hint = new QLabel(QStringLiteral("Y μm · X px"));
- hint->setObjectName(QStringLiteral("profileAxisHintLabel"));
- hint->setStyleSheet(QStringLiteral("font-size:10.5px;color:%1;").arg(Theme::palette().text3.name()));
- header->rightLayout()->addWidget(scaleLabel);
- header->rightLayout()->addWidget(scaleCombo);
-    header->rightLayout()->addWidget(hint);
-    layout->addWidget(header);
+    auto *scaleCombo = new QComboBox;
+    scaleCombo->setObjectName(QStringLiteral("profileScaleCombo"));
+    scaleCombo->addItems({QStringLiteral("1x"), QStringLiteral("2x"),
+                          QStringLiteral("4x"), QStringLiteral("Auto")});
+    scaleCombo->setStyleSheet(Theme::comboBoxStyle());
+    scaleCombo->setFixedSize(60, 24);
 
- auto *body = new QVBoxLayout;
- body->setContentsMargins(4, 8, 8, 0);
- m_profileChart = new ProfileChartWidget;
+    auto *hintLabel = new QLabel(QStringLiteral("拖拽区域以标注参考带"));
+    hintLabel->setObjectName(QStringLiteral("profileAxisHintLabel"));
+    hintLabel->setStyleSheet(QStringLiteral(
+        "font-size:11px;color:%1;").arg(Theme::palette().textMuted.name()));
+
+    header->rightLayout()->addWidget(hintLabel);
+    header->rightLayout()->addWidget(scaleCombo);
+
+    m_profileChart = new ProfileChartWidget;
     m_profileChart->setObjectName(QStringLiteral("profileChart"));
-    body->addWidget(m_profileChart, 1);
-    layout->addLayout(body);
+
+    layout->addWidget(header);
+    layout->addWidget(m_profileChart, 1);
     return frame;
 }
 
+// --- createStatsPanel ---
+
 QWidget *MainWindow::createStatsPanel()
 {
-    auto *container = new QFrame;
-    container->setStyleSheet(Theme::frameStyle());
-    auto *outer = new QVBoxLayout(container);
-    outer->setContentsMargins(0, 0, 0, 0);
-    outer->setSpacing(0);
+    auto *frame = new QFrame;
+    frame->setStyleSheet(Theme::frameStyle());
+    auto *layout = new QVBoxLayout(frame);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setSpacing(6);
 
-    auto *header = new PanelHeaderWidget(QStringLiteral("当前组 · GROUP-01"));
-    header->titleLabel()->setObjectName(QStringLiteral("currentGroupTitleLabel"));
- for (int index = 0; index < 3; ++index) {
-     auto *groupButton = new QPushButton(QString::number(index + 1));
-     groupButton->setObjectName(QStringLiteral("currentGroupButton%1").arg(index + 1));
-     groupButton->setFixedSize(24, 22);
-     groupButton->setCursor(Qt::PointingHandCursor);
-     connect(groupButton, &QPushButton::clicked, this, [this, index] { setActiveGroup(index); });
-     header->rightLayout()->addWidget(groupButton);
-     m_groupButtons.append(groupButton);
- }
- auto *verdict = new VerdictPillWidget;
- verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
- header->rightLayout()->addWidget(verdict);
- refreshGroupButtons();
-    outer->addWidget(header);
+    auto *panelHeader = new PanelHeaderWidget(QStringLiteral("当前组 · GROUP-01"));
 
- auto *body = new QVBoxLayout;
- body->setContentsMargins(10, 2, 10, 2);
- body->setSpacing(2);
+    auto *titleLabel = panelHeader->titleLabel();
+    titleLabel->setObjectName(QStringLiteral("currentGroupTitleLabel"));
 
- auto *statusRow = new QWidget;
- statusRow->setObjectName(QStringLiteral("currentGroupStatusRow"));
-   auto *statusLayout = new QHBoxLayout(statusRow);
-   statusLayout->setContentsMargins(0, 0, 0, 0);
-   statusLayout->setSpacing(4);
-  const auto addStatusDot = [&](const QString &name, const QColor &color) {
-      auto *dot = new QFrame(statusRow);
-      dot->setObjectName(name);
-      dot->setFixedSize(6, 6);
-      dot->setStyleSheet(QStringLiteral("background:%1;border-radius:3px;").arg(color.name()));
-      statusLayout->addWidget(dot);
-  };
- addStatusDot(QStringLiteral("currentGroupStatusOk1"), Theme::palette().ok);
- addStatusDot(QStringLiteral("currentGroupStatusOk2"), Theme::palette().ok);
- addStatusDot(QStringLiteral("currentGroupStatusOk3"), Theme::palette().ok);
- addStatusDot(QStringLiteral("currentGroupStatusWarn"), Theme::palette().warn);
- statusLayout->addStretch();
- body->addWidget(statusRow);
+    m_groupButtons.clear();
+    for (int i = 0; i < MeasurementConstants::GroupCount; ++i) {
+        auto *btn = new QPushButton(QString::number(i + 1));
+        btn->setObjectName(QStringLiteral("currentGroupButton%1").arg(i + 1));
+        btn->setFixedSize(24, 20);
+        btn->setCursor(Qt::PointingHandCursor);
+        m_groupButtons.append(btn);
+        panelHeader->rightLayout()->addWidget(btn);
+        connect(btn, &QPushButton::clicked, this, [this, i] {
+            setActiveGroup(i);
+        });
+    }
 
-     auto *layout = new QGridLayout;
-     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setHorizontalSpacing(4);
-    layout->setVerticalSpacing(2);
+    auto *verdict = new VerdictPillWidget;
+    verdict->setObjectName(QStringLiteral("currentGroupVerdictLabel"));
+    panelHeader->rightLayout()->addWidget(verdict);
+
+    layout->addWidget(panelHeader);
+
+    // Status dots row
+    auto *dotsContainer = new QWidget;
+    dotsContainer->setObjectName(QStringLiteral("currentGroupStatusRow"));
+    auto *dotsRow = new QHBoxLayout(dotsContainer);
+    dotsRow->setContentsMargins(0, 0, 0, 0);
+    dotsRow->setSpacing(4);
+
+    auto *dot1 = new QWidget;
+    dot1->setObjectName(QStringLiteral("currentGroupStatusOk1"));
+    dot1->setFixedSize(10, 10);
+    dot1->setStyleSheet(QStringLiteral(
+        "background:%1;border-radius:5px;").arg(Theme::palette().ok.name()));
+
+    auto *dot2 = new QWidget;
+    dot2->setObjectName(QStringLiteral("currentGroupStatusOk2"));
+    dot2->setFixedSize(10, 10);
+    dot2->setStyleSheet(QStringLiteral(
+        "background:%1;border-radius:5px;").arg(Theme::palette().ok.name()));
+
+    auto *dot3 = new QWidget;
+    dot3->setObjectName(QStringLiteral("currentGroupStatusOk3"));
+    dot3->setFixedSize(10, 10);
+    dot3->setStyleSheet(QStringLiteral(
+        "background:%1;border-radius:5px;").arg(Theme::palette().ok.name()));
+
+    auto *dotWarn = new QWidget;
+    dotWarn->setObjectName(QStringLiteral("currentGroupStatusWarn"));
+    dotWarn->setFixedSize(10, 10);
+    dotWarn->setStyleSheet(QStringLiteral(
+        "background:%1;border-radius:5px;").arg(Theme::palette().warn.name()));
+
+    dotsRow->addWidget(dot1);
+    dotsRow->addWidget(dot2);
+    dotsRow->addWidget(dot3);
+    dotsRow->addWidget(dotWarn);
+    dotsRow->addStretch();
+    layout->addWidget(dotsContainer);
+
+    // Stat cards grid
+    auto *grid = new QGridLayout;
+    grid->setSpacing(6);
 
     m_thicknessCard = new StatCardWidget;
     m_thicknessCard->setObjectName(QStringLiteral("thicknessCard"));
     m_thicknessCard->setLabel(QStringLiteral("CURRENT"));
     m_thicknessCard->setUnit(QStringLiteral("μm"));
-    m_thicknessCard->setTarget(QStringLiteral("11.500"));
+    m_thicknessCard->setTarget(QString::number(MeasurementConstants::TargetThickness, 'f', 3));
     m_thicknessCard->setShowProgress(true);
-m_maxCard = new StatCardWidget;
-m_maxCard->setObjectName(QStringLiteral("maxCard"));
-m_maxCard->setSmall(true);
-m_maxCard->setLabel(QStringLiteral("MAX"));
-m_maxCard->setUnit(QStringLiteral("μm"));
-m_minCard = new StatCardWidget;
-m_minCard->setObjectName(QStringLiteral("minCard"));
-m_minCard->setSmall(true);
-m_minCard->setLabel(QStringLiteral("MIN"));
-m_minCard->setUnit(QStringLiteral("μm"));
-m_deltaCard = new StatCardWidget;
-m_deltaCard->setObjectName(QStringLiteral("leftHeightCard"));
-m_deltaCard->setSmall(true);
-m_deltaCard->setLabel(QStringLiteral("左高度"));
-m_deltaCard->setUnit(QStringLiteral("μm"));
-m_rightCard = new StatCardWidget;
-m_rightCard->setObjectName(QStringLiteral("rightHeightCard"));
-m_rightCard->setSmall(true);
-m_rightCard->setLabel(QStringLiteral("右高度"));
-m_rightCard->setUnit(QStringLiteral("μm"));
+    m_thicknessCard->setAccentColor(Theme::palette().brand);
 
- layout->addWidget(m_thicknessCard, 0, 0, 2, 1);
- layout->setColumnStretch(0, 11);
-    layout->setColumnStretch(1, 10);
-    layout->setColumnStretch(2, 10);
- layout->addWidget(m_maxCard, 0, 1);
-    layout->addWidget(m_minCard, 1, 1);
-    layout->addWidget(m_deltaCard, 0, 2);
-    layout->addWidget(m_rightCard, 1, 2);
-    body->addLayout(layout);
-    outer->addLayout(body);
-    return container;
+    m_maxCard = new StatCardWidget;
+    m_maxCard->setObjectName(QStringLiteral("maxCard"));
+    m_maxCard->setLabel(QStringLiteral("MAX"));
+    m_maxCard->setUnit(QStringLiteral("μm"));
+    m_maxCard->setSmall(true);
+    m_maxCard->setAccentColor(Theme::palette().warn);
+
+    m_minCard = new StatCardWidget;
+    m_minCard->setObjectName(QStringLiteral("minCard"));
+    m_minCard->setLabel(QStringLiteral("MIN"));
+    m_minCard->setUnit(QStringLiteral("μm"));
+    m_minCard->setSmall(true);
+    m_minCard->setAccentColor(Theme::palette().ok);
+
+    m_deltaCard = new StatCardWidget;
+    m_deltaCard->setObjectName(QStringLiteral("leftHeightCard"));
+    m_deltaCard->setLabel(QStringLiteral("左高度"));
+    m_deltaCard->setUnit(QStringLiteral("μm"));
+    m_deltaCard->setSmall(true);
+    m_deltaCard->setAccentColor(Theme::palette().accentTrace);
+
+    m_rightCard = new StatCardWidget;
+    m_rightCard->setObjectName(QStringLiteral("rightHeightCard"));
+    m_rightCard->setLabel(QStringLiteral("右高度"));
+    m_rightCard->setUnit(QStringLiteral("μm"));
+    m_rightCard->setSmall(true);
+    m_rightCard->setAccentColor(Theme::palette().accentRef);
+
+    grid->addWidget(m_thicknessCard, 0, 0, 2, 1);
+    grid->addWidget(m_maxCard, 0, 1);
+    grid->addWidget(m_minCard, 1, 1);
+    grid->addWidget(m_deltaCard, 0, 2);
+    grid->addWidget(m_rightCard, 1, 2);
+
+    layout->addLayout(grid);
+    refreshGroupButtons();
+    return frame;
 }
+
+// --- applyRecordToSummary ---
 
 void MainWindow::applyRecordToSummary(const MeasurementRecord &record)
 {
-    const auto verdictFor = [](double thick) {
-        const double deviation = qAbs(thick - 11.5);
-        if (deviation <= 0.08) {
-            return QStringLiteral("ok");
-        }
-        if (deviation <= 0.18) {
-            return QStringLiteral("warn");
-        }
-        return QStringLiteral("err");
-    };
+    m_groupSummaries.resize(MeasurementConstants::GroupCount);
 
-    m_groupSummaries = {
-        {record.thick, record.hmax, record.hmin, record.left, record.right, record.verdict},
-        {record.thick + 0.036, record.hmax + 0.052, record.hmin + 0.018, record.left + 0.041, record.right + 0.027, verdictFor(record.thick + 0.036)},
-        {record.thick - 0.028, record.hmax - 0.013, record.hmin - 0.047, record.left - 0.026, record.right - 0.034, verdictFor(record.thick - 0.028)},
-    };
+    for (int g = 0; g < MeasurementConstants::GroupCount; ++g) {
+        double offset = (g - 1) * 0.05;
+        GroupSummary &s = m_groupSummaries[g];
+        s.thick = record.thick + offset;
+        s.hmax  = record.hmax + offset;
+        s.hmin  = record.hmin + offset;
+        s.left  = record.left + offset;
+        s.right = record.right + offset;
+
+        double dev = qAbs(s.thick - MeasurementConstants::TargetThickness);
+        if (dev <= MeasurementConstants::ToleranceOk)
+            s.verdict = QStringLiteral("ok");
+        else if (dev <= MeasurementConstants::ToleranceWarn)
+            s.verdict = QStringLiteral("warn");
+        else
+            s.verdict = QStringLiteral("err");
+    }
 
     applyGroupSummary(m_activeGroupIndex);
 }
+
+// --- applyGroupSummary ---
 
 void MainWindow::applyGroupSummary(int groupIndex)
 {
-    if (m_groupSummaries.isEmpty()) {
+    if (groupIndex < 0 || groupIndex >= m_groupSummaries.size())
         return;
-    }
 
-    const int boundedIndex = qBound(0, groupIndex, m_groupSummaries.size() - 1);
-    const auto &summary = m_groupSummaries.at(boundedIndex);
-    auto *verdict = findChild<QWidget*>(QStringLiteral("currentGroupVerdictLabel"));
-    auto *title = findChild<QLabel*>(QStringLiteral("currentGroupTitleLabel"));
+    const GroupSummary &s = m_groupSummaries[groupIndex];
 
-    if (title != nullptr) {
-        title->setText(QStringLiteral("当前组 · GROUP-%1").arg(boundedIndex + 1, 2, 10, QChar('0')));
-    }
-    m_thicknessCard->setValue(QString::number(summary.thick, 'f', 3));
-    m_maxCard->setValue(QString::number(summary.hmax, 'f', 3));
-    m_minCard->setValue(QString::number(summary.hmin, 'f', 3));
-    m_deltaCard->setValue(QString::number(summary.left, 'f', 3));
-    m_rightCard->setValue(QString::number(summary.right, 'f', 3));
-    m_thicknessCard->setTarget(QStringLiteral("11.500"));
-    m_thicknessCard->setTrend(summary.thick - 11.5);
-    const double deviation = qAbs(summary.thick - 11.5);
-    m_thicknessCard->setProgress(qMax(0.0, 1.0 - deviation / 0.5));
-    m_thicknessCard->setAccentColor(summary.verdict == QStringLiteral("ok")
-                                        ? Theme::palette().ok
-                                        : (summary.verdict == QStringLiteral("warn") ? Theme::palette().warn : Theme::palette().err));
-    m_sensorPanel->setSensorValue(summary.left);
-    if (verdict != nullptr) {
-        verdict->setProperty("verdict", summary.verdict);
-        verdict->update();
-    }
+    m_thicknessCard->setValue(QString::number(s.thick, 'f', 2));
+    double dev = qAbs(s.thick - MeasurementConstants::TargetThickness);
+    double progress = qBound(0.0, 1.0 - dev * MeasurementConstants::ProgressScale, 1.0);
+    m_thicknessCard->setProgress(progress);
+    m_thicknessCard->setTrend(s.thick - MeasurementConstants::TargetThickness);
+
+    QColor accentColor = Theme::palette().ok;
+    if (s.verdict == QStringLiteral("warn"))
+        accentColor = Theme::palette().warn;
+    else if (s.verdict == QStringLiteral("err"))
+        accentColor = Theme::palette().err;
+    m_thicknessCard->setAccentColor(accentColor);
+
+    m_maxCard->setValue(QString::number(s.hmax, 'f', 2));
+    m_minCard->setValue(QString::number(s.hmin, 'f', 2));
+    m_deltaCard->setValue(QString::number(s.left, 'f', 2));
+    m_rightCard->setValue(QString::number(s.right, 'f', 2));
+
+    m_sensorPanel->setSensorValue(s.left);
 }
+
+// --- setActiveGroup ---
 
 void MainWindow::setActiveGroup(int groupIndex)
 {
-    m_activeGroupIndex = qBound(0, groupIndex, 2);
+    if (groupIndex < 0 || groupIndex >= MeasurementConstants::GroupCount)
+        return;
+    m_activeGroupIndex = groupIndex;
     refreshGroupButtons();
-    applyGroupSummary(m_activeGroupIndex);
+    applyGroupSummary(groupIndex);
 }
+
+// --- refreshGroupButtons ---
 
 void MainWindow::refreshGroupButtons()
 {
-    for (int index = 0; index < m_groupButtons.size(); ++index) {
-        auto *button = m_groupButtons.at(index);
-        const bool active = index == m_activeGroupIndex;
-        button->setStyleSheet(active
-            ? QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:4px;color:%3;font-size:11px;font-weight:700;}")
-                .arg(Theme::palette().brand.name(), Theme::palette().brand.name(), Theme::palette().bgPanel.name())
-            : QStringLiteral("QPushButton{background:%1;border:1px solid %2;border-radius:4px;color:%3;font-size:11px;font-weight:600;}QPushButton:hover{background:%4;color:%5;}")
-                .arg(Theme::palette().bgPanel.name(), Theme::palette().border.name(), Theme::palette().textMuted.name(), Theme::palette().bgSunken.name(), Theme::palette().text1.name()));
+    for (int i = 0; i < m_groupButtons.size(); ++i) {
+        bool active = (i == m_activeGroupIndex);
+        m_groupButtons[i]->setStyleSheet(active
+            ? QStringLiteral("QPushButton{background:%1;color:%2;border:none;"
+                "border-radius:4px;font-size:11px;font-weight:700;}")
+                .arg(Theme::palette().brand.name(), Theme::palette().bgPanel.name())
+            : QStringLiteral("QPushButton{background:%1;color:%2;border:1px solid %3;"
+                "border-radius:4px;font-size:11px;font-weight:500;}")
+                .arg(Theme::palette().bgSunken.name(),
+                     Theme::palette().textMuted.name(),
+                     Theme::palette().border.name()));
     }
 }

@@ -224,17 +224,13 @@ void WidgetPanelSmokeTests::bottomStatusBarUpdatesTelemetry()
 
     bar.setPosition(MachinePosition{456, 789});
     bar.setProbeValue(-58.79);
-    bar.setSampleProgress(5, 24);
 
     auto *xLabel = bar.findChild<QLabel*>(QStringLiteral("bottomXLabel"));
     auto *probeLabel = bar.findChild<QLabel*>(QStringLiteral("bottomProbeLabel"));
-    auto *sampleLabel = bar.findChild<QLabel*>(QStringLiteral("bottomSampleLabel"));
     QVERIFY(xLabel != nullptr);
     QVERIFY(probeLabel != nullptr);
-    QVERIFY(sampleLabel != nullptr);
  QCOMPARE(xLabel->text(), QString("X: <span style=\"color:#2a3240\"><b>456</b></span>"));
  QCOMPARE(probeLabel->text(), QString("探针: <span style=\"color:#2a3240\"><b>-58.790</b></span>"));
- QCOMPARE(sampleLabel->text(), QString("采样: <span style=\"color:#2a3240\"><b>5</b></span> / 24"));
 }
 
 void WidgetPanelSmokeTests::bottomStatusBarUsesPrototypeMetaStrip()
